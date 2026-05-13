@@ -1,101 +1,86 @@
-/* =========================
-   FONT SYSTEM
-========================= */
-
 :root {
-  --font-main: 'Pretendard Variable', sans-serif;
+  /* 컬러 팔레트 */
+  --color-nude-50: #FAF7F8;
+  --color-nude-100: #F0E8DC;
+  --color-nude-300: #D4C5B0;
+  --color-sunset: #E8C9A8;
+  --color-dusk: #D4A882;
+  --color-sky-100: #D8EBF0;
+  --color-sky-200: #A8CDD8;
+  --color-sky-300: #4A8FA3;
+  --color-ink-300: #C7BCB0;
+  --color-ink-500: #8F8477;
+  --color-ink-900: #2F2A27;
+  /* 폰트 종류 */
+  --fontfam-ko: 'zen-serif';
+  --fontfam-entag: "Playfair Display", serif;
+  --fontfam-caption: 'Pretendard';
+  /* 간격 */
+  --spacing-7xl:120px;
+  --spacing-6xl:80px;
+  --spacing-5xl:56px;
+  --spacing-4xl:40px;
+  --spacing-3xl:32px;
+  --spacing-2xl:24px;
+  --spacing-xl:16px;
+  --spacing-lg:12px;
+  --spacing-base:8px;
+  --spacing-sm:4px;
+  /* 그리드 max-width*/
+  --grid:1440px;
 }
 
-body {
-  font-family: var(--font-main);
-  color: #111;
+h1 {
+  font-family: var(--fontfam-ko);
+  font-size: 3rem;
+  line-height: 140%;
 }
 
-/* =========================
-   TITLE
-========================= */
-
-.title-lg {
-  font-size: 48px;
-  font-weight: 600;
-  line-height: 1.2;
+h1.display1 {
+  font-family: var(--fontfam-entag);
+  font-size: 3.5rem;
+  line-height: 110%;
 }
 
-.title-md {
-  font-size: 36px;
-  font-weight: 600;
-  line-height: 1.2;
+h1.display2 {
+  font-family: var(--fontfam-entag);
+  font-style: italic;
+  font-size: 3.5rem;
+  line-height: 110%;
 }
 
-.title-sm {
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 1.3;
+h2 {
+  font-family: var(--fontfam-ko);
+  font-size: 2rem;
+  line-height: 130%;
 }
 
-/* =========================
-   TEXT
-========================= */
-
-.text-lg {
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.4;
+h3 {
+  font-family: var(--fontfam-caption);
+  font-size: 1.5rem;
+  line-height: 130%;
 }
 
-.text-md {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.4;
+p {
+  font-family: var(--fontfam-caption);
+  font-size: 1rem;
+  line-height: 130%;
 }
 
-.text-sm {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.4;
+p.body2 {
+  font-family: var(--fontfam-caption);
+  font-size: 0.875rem;
+  line-height: 110%;
 }
 
-/* =========================
-   CAPTION
-========================= */
-
-.caption {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.4;
+p.label {
+  font-family: var(--fontfam-caption);
+  font-size: 0.75rem;
+  line-height: 110%;
 }
 
-/* =========================
-   RESPONSIVE (모바일)
-========================= */
-
-@media (max-width: 768px) {
-
-  .title-lg {
-    font-size: 30px;
-  }
-
-  .title-md {
-    font-size: 26px;
-  }
-
-  .title-sm {
-    font-size: 20px;
-  }
-
-  .text-lg {
-    font-size: 18px;
-  }
-
-  .text-md {
-    font-size: 18px;
-  }
-
-  .text-sm {
-    font-size: 16px;
-  }
-
-  .caption {
-    font-size: 14px;
-  }
+p.en-tag {
+  font-family: var(--fontfam-entag);
+  font-size: 0.8125rem;
+  line-height: 110%;
 }
