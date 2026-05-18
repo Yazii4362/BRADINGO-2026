@@ -1,5 +1,5 @@
 @font-face {
-    font-family: 'zen-serif';
+    font-family: 'Zen-serif';
     src: url(../../fonts/ZEN-SERIF-TTF-Regular.woff2) format('woff2');
     font-weight: normal;
     font-style: normal;
@@ -26,4 +26,8 @@
 .typo-grid{
     max-width: var(--grid);
     margin: 0 auto;
+}
+
+.sunset-gradient{
+    background: linear-gradient(to bottom, var(--color-sky-100), var(--color-sky-200));
 }

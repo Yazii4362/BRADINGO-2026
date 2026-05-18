@@ -1,20 +1,31 @@
 :root {
   /* 컬러 팔레트 */
+  /* 누드 계열 */
   --color-nude-50: #FAF7F8;
   --color-nude-100: #F0E8DC;
   --color-nude-300: #D4C5B0;
   --color-sunset: #E8C9A8;
   --color-dusk: #D4A882;
+  /* 스카이 계열 */
   --color-sky-100: #D8EBF0;
   --color-sky-200: #A8CDD8;
   --color-sky-300: #4A8FA3;
+  /* 잉크 계열 */
   --color-ink-300: #C7BCB0;
   --color-ink-500: #8F8477;
   --color-ink-900: #2F2A27;
   /* 폰트 종류 */
-  --fontfam-ko: 'zen-serif';
+  --fontfam-ko: 'Zen-serif', serif;
   --fontfam-entag: "Playfair Display", serif;
-  --fontfam-caption: 'Pretendard';
+  --fontfam-caption: 'Pretendard', sans-serif;
+  /* 폰트 크기 */
+  --size-hero:56px;
+  --size-h1:45px;
+  --size-h2:32px;
+  --size-h3:24px;
+  --size-body1:16px;
+  --size-body2:14px;
+  --size-caption:12px;
   /* 간격 */
   --spacing-7xl:120px;
   --spacing-6xl:80px;
@@ -32,50 +43,50 @@
 
 h1 {
   font-family: var(--fontfam-ko);
-  font-size: 3rem;
+  font-size: var(--size-h1);
   line-height: 140%;
 }
 
 h1.display1 {
   font-family: var(--fontfam-entag);
-  font-size: 3.5rem;
+  font-size: var(--size-hero);
   line-height: 110%;
 }
 
 h1.display2 {
   font-family: var(--fontfam-entag);
   font-style: italic;
-  font-size: 3.5rem;
+  font-size: var(--size-hero);
   line-height: 110%;
 }
 
 h2 {
   font-family: var(--fontfam-ko);
-  font-size: 2rem;
+  font-size: var(--size-h2);
   line-height: 130%;
 }
 
 h3 {
   font-family: var(--fontfam-caption);
-  font-size: 1.5rem;
+  font-size: var(--size-h3);
   line-height: 130%;
 }
 
-p {
+p.body1 {
   font-family: var(--fontfam-caption);
-  font-size: 1rem;
+  font-size: var(--size-body1);
   line-height: 130%;
 }
 
 p.body2 {
   font-family: var(--fontfam-caption);
-  font-size: 0.875rem;
+  font-size: var(--size-body2);
   line-height: 110%;
 }
 
-p.label {
+p.caption {
   font-family: var(--fontfam-caption);
-  font-size: 0.75rem;
+  font-size: var(--size-caption);
   line-height: 110%;
 }
 
@@ -84,3 +95,4 @@ p.en-tag {
   font-size: 0.8125rem;
   line-height: 110%;
 }
+
