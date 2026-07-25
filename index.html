@@ -1,14 +1,53 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>풋케어 브랜드 </title>
-    <link rel="stylesheet" href="assets/css/libs/normalize.css">
-    <link rel="stylesheet" href="assets/css/libs/reset.css">
-    <link rel="stylesheet" href="assets/css/common.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>모바일초대장 · 템플릿</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./dist/output.css">
 </head>
-<body>
-    
+<body class="bg-white font-sans text-ios-label antialiased">
+  <div class="shell min-h-screen px-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
+    <header class="mb-8 px-1">
+      <p class="text-[13px] font-medium tracking-[0.15em] text-ios-secondary">GRADUATION MEMORY</p>
+      <h1 class="mt-2 text-[34px] font-black leading-tight tracking-tight">졸업 축하<br>롤링페이퍼</h1>
+      <p class="mt-3 text-[15px] leading-relaxed text-ios-secondary">
+        동일 구조 · UI/인터랙션 3종<br>
+        Hero → Story → Traits → Gallery → Friends → Messages → Memory Wall → Footer
+      </p>
+    </header>
+
+    <nav class="flex flex-col gap-3" aria-label="템플릿 목록">
+      <a href="./templates/v1-letter.html" class="flex min-h-touch items-center gap-4 rounded-[20px] bg-white p-4 shadow-sm ring-1 ring-black/5 transition-transform duration-200 active:scale-[0.98]">
+        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-black text-[15px] font-bold text-white">01</span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-[15px] font-bold">편지 봉투</span>
+          <span class="mt-0.5 block text-[13px] text-ios-secondary">탭으로 오픈 → 편지 펼침</span>
+        </span>
+        <svg class="h-4 w-4 shrink-0 text-ios-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+
+      <a href="./templates/v2-collage.html" class="flex min-h-touch items-center gap-4 rounded-[20px] bg-white p-4 shadow-sm ring-1 ring-black/5 transition-transform duration-200 active:scale-[0.98]">
+        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-[#3A3A3C] text-[15px] font-bold text-white">02</span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-[15px] font-bold">에디토리얼</span>
+          <span class="mt-0.5 block text-[13px] text-ios-secondary">풀스크린 히어로 · 센터 스토리 · fade-up</span>
+        </span>
+        <svg class="h-4 w-4 shrink-0 text-ios-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+
+      <a href="./templates/v3-reveal.html" class="flex min-h-touch items-center gap-4 rounded-[20px] bg-white p-4 shadow-sm ring-1 ring-black/5 transition-transform duration-200 active:scale-[0.98]">
+        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-ios-blue text-[15px] font-bold text-white">03</span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-[15px] font-bold">시네마틱</span>
+          <span class="mt-0.5 block text-[13px] text-ios-secondary">다크 · 패럴랙스 · blur 리빌</span>
+        </span>
+        <svg class="h-4 w-4 shrink-0 text-ios-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </nav>
+  </div>
 </body>
 </html>

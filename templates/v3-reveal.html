@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>병건 · Graduation Memory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../dist/output.css">
+  <style>
+    body[data-template="v3"] { background: #0a0a0b; color: #f5f5f7; }
+    .v3-nav a { color: #fff; }
+    .v3-hero {
+      position: relative;
+      height: 100svh;
+      overflow: hidden;
+    }
+    .v3-hero__img {
+      position: absolute; inset: 0;
+      width: 100%; height: 120%;
+      object-fit: cover;
+      will-change: transform;
+    }
+    .v3-hero__veil {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.78));
+    }
+    .v3-hero__copy {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: flex-end;
+      padding: 2rem 1.25rem calc(2.75rem + env(safe-area-inset-bottom));
+    }
+    .v3-scroll {
+      display: inline-flex;
+      min-height: 44px;
+      min-width: 44px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1.5rem;
+      color: rgba(255,255,255,0.75);
+    }
+    .v3-story {
+      padding: 4rem 1.25rem;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.55;
+      letter-spacing: -0.03em;
+      word-break: keep-all;
+    }
+    @media (min-width: 768px) {
+      .v3-story { font-size: 28px; padding: 5rem 2rem; }
+    }
+    .v3-story span[data-line] {
+      display: block;
+    }
+    .v3-story .story-accent {
+      display: inline;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      font-weight: 800;
+      background-color: transparent;
+      vertical-align: baseline;
+      color: var(--story-accent);
+    }
+    .v3-masonry .masonry__item {
+      border-radius: 4px;
+      background: #1c1c1e;
+    }
+    .v3-sec-head {
+      padding: 0 1.25rem 1.25rem;
+    }
+    .v3-sec-head .sec-head__title { color: #f5f5f7; }
+    .v3-sec-head .sec-head__sub { color: #a1a1a6; }
+    .v3-msg {
+      margin: 0 1.25rem 1rem;
+      padding: 1.25rem;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: none;
+    }
+    .v3-msg .msg__name {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: #a1a1a6;
+      text-transform: none;
+    }
+    .v3-msg .msg__text { color: #f5f5f7; margin-top: 0.5rem; }
+    .v3-msg .msg__contact {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    .v3-wall {
+      position: relative;
+      min-height: 100svh;
+    }
+    .v3-wall img {
+      position: sticky; top: 0;
+      width: 100%; height: 100svh;
+      object-fit: cover;
+    }
+    .v3-wall__copy {
+      position: relative;
+      margin-top: -40vh;
+      padding: 3rem 1.5rem 4rem;
+      background: linear-gradient(to top, #0a0a0b 55%, transparent);
+      text-align: center;
+    }
+    .v3-footer {
+      padding: 2.5rem 1.25rem 3.5rem;
+      text-align: center;
+      color: #636366;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .v3-footer strong {
+      display: block;
+      color: #f5f5f7;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "gsap": "../node_modules/gsap/index.js",
+        "gsap/ScrollTrigger": "../node_modules/gsap/ScrollTrigger.js"
+      }
+    }
+  </script>
+</head>
+<body data-template="v3" class="font-sans antialiased">
+  <canvas id="congrats-confetti" aria-hidden="true"></canvas>
+
+  <nav class="v3-nav fixed left-0 right-0 top-0 z-50">
+    <div class="shell flex h-[52px] items-center px-4 ta:px-6 pt-[env(safe-area-inset-top)]">
+      <a href="../index.html" class="inline-flex min-h-touch min-w-touch items-center justify-center" aria-label="목록으로">
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+    </div>
+  </nav>
+
+  <section id="hero" class="v3-hero">
+    <img class="v3-hero__img" data-hero-parallax src="../src/assets/images/campus/hero.png" alt="대표 졸업 사진" width="900" height="1200">
+    <div class="v3-hero__veil" aria-hidden="true"></div>
+    <div class="v3-hero__copy" data-stagger-load>
+      <p class="text-[12px] font-bold tracking-[0.12em] text-white/70">졸업 축하</p>
+      <h1 class="mt-2 text-[44px] font-black leading-none tracking-tight">병건</h1>
+      <p class="mt-3 text-[14px] text-white/80">2027. 02. 18</p>
+      <p class="mt-4 max-w-[16rem] text-[15px] font-medium leading-snug text-white/95">우리의 청춘은 끝나지 않아</p>
+      <a href="#story" class="v3-scroll" aria-label="아래로 스크롤">
+        <svg data-arrow class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <section id="story" class="shell v3-story">
+    <span data-line data-reveal>4년이라는 시간이</span>
+    <span data-line data-reveal>어느새 <button type="button" class="story-accent" data-story-accent>추억이 되었습니다</button>.</span>
+    <span data-line data-reveal class="mt-6">함께 웃고,</span>
+    <span data-line data-reveal>시험기간에 밤을 새우고,</span>
+    <span data-line data-reveal>축제를 즐기던 순간들이</span>
+    <span data-line data-reveal>모두 <button type="button" class="story-accent" data-story-accent>소중한 기억</button>으로 남았습니다.</span>
+    <span data-line data-reveal class="mt-6">오늘,</span>
+    <span data-line data-reveal><button type="button" class="story-accent" data-story-accent>새로운 시작을 응원합니다</button>.</span>
+  </section>
+
+  <section id="traits" class="shell pb-16 px-4 ta:px-6">
+    <header class="sec-head v3-sec-head" data-reveal>
+      <h2 class="sec-head__title">병건은 이런 사람</h2>
+      <p class="sec-head__sub">학교생활을 키워드로 보면</p>
+    </header>
+    <div class="trait-grid" data-stagger>
+      <article class="trait-card" data-reveal data-media>
+        <div class="trait-card__media">
+          <img src="../src/assets/images/campus/01.jpg" alt="다이어리를 쓰는 병건" width="800" height="600">
+          <div class="trait-card__tags">
+            <span class="trait-card__tag">2024</span>
+            <span class="trait-card__tag">다이어리 4권</span>
+          </div>
+        </div>
+        <p class="trait-card__copy">
+          <strong class="trait-card__keyword">성실하고</strong>
+          매일의 하루를 네 권의 다이어리에 남긴 사람
+        </p>
+      </article>
+      <article class="trait-card" data-reveal data-media>
+        <div class="trait-card__media">
+          <img src="../src/assets/images/campus/02.jpg" alt="러닝하는 병건" width="800" height="600">
+          <div class="trait-card__tags">
+            <span class="trait-card__tag">2025</span>
+            <span class="trait-card__tag">Morning run</span>
+          </div>
+        </div>
+        <p class="trait-card__copy">
+          <strong class="trait-card__keyword">건강하고</strong>
+          바쁜 학기에도 러닝으로 체력을 지켜 온 사람
+        </p>
+      </article>
+      <article class="trait-card" data-reveal data-media>
+        <div class="trait-card__media">
+          <img src="../src/assets/images/campus/03.jpg" alt="귀여운 표정의 병건" width="800" height="600">
+          <div class="trait-card__tags">
+            <span class="trait-card__tag">2024</span>
+            <span class="trait-card__tag">MT 단체사진</span>
+          </div>
+        </div>
+        <p class="trait-card__copy">
+          <strong class="trait-card__keyword">창의적이고 귀엽고</strong>
+          분위기 메이커이자 늘 한 컷을 남기던 사람
+        </p>
+      </article>
+      <article class="trait-card" data-reveal data-media>
+        <div class="trait-card__media">
+          <img src="../src/assets/images/campus/04.jpg" alt="시카고 교환학생 시절의 병건" width="800" height="600">
+          <div class="trait-card__tags">
+            <span class="trait-card__tag">2023</span>
+            <span class="trait-card__tag">시카고 교환학생</span>
+          </div>
+        </div>
+        <p class="trait-card__copy">
+          <strong class="trait-card__keyword">모험심 넘치고</strong>
+          낯선 도시에서도 먼저 발을 내디딘 사람
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section id="gallery" class="shell pb-16">
+    <header class="sec-head v3-sec-head" data-reveal>
+      <h2 class="sec-head__title">함께한 순간</h2>
+      <p class="sec-head__sub">캠퍼스에서 남긴 기억들</p>
+    </header>
+    <div class="masonry v3-masonry px-4 ta:px-6" data-stagger>
+      <figure class="masonry__item" data-media><img src="../src/assets/images/campus/02.jpg" alt="친구들과의 사진" width="600" height="500"></figure>
+      <figure class="masonry__item" data-media><img src="../src/assets/images/campus/01.jpg" alt="캠퍼스 풍경" width="600" height="800"></figure>
+      <figure class="masonry__item" data-media><img src="../src/assets/images/campus/03.jpg" alt="축제 장면" width="600" height="600"></figure>
+      <figure class="masonry__item" data-media><img src="../src/assets/images/campus/04.jpg" alt="졸업 준비" width="600" height="720"></figure>
+      <figure class="masonry__item" data-media><img src="../src/assets/images/campus/hero.png" alt="대표 졸업 사진" width="600" height="900"></figure>
+    </div>
+  </section>
+
+  <section id="friends" class="shell pb-16 px-4 ta:px-6">
+    <header class="sec-head v3-sec-head" data-reveal>
+      <h2 class="sec-head__title">준비한 친구들</h2>
+      <p class="sec-head__sub">편지를 함께 쓴 사람들</p>
+    </header>
+    <div class="friend-list" data-stagger>
+      <article class="friend-card" data-reveal>
+        <img class="friend-card__photo" src="../src/assets/images/campus/02.jpg" alt="민수" width="240" height="320">
+        <div class="friend-card__body">
+          <h3 class="friend-card__name">민수</h3>
+          <p class="friend-card__badge">MT 메이트</p>
+          <ul class="friend-card__meta">
+            <li>
+              <p class="friend-card__meta-title">UIC · Communication</p>
+              <p class="friend-card__meta-sub">같은 과 동기</p>
+            </li>
+            <li>
+              <p class="friend-card__meta-title">함께한 기억</p>
+              <p class="friend-card__meta-sub">시험기간 밤샘 · 축제 부스</p>
+            </li>
+            <li>
+              <p class="friend-card__meta-title">한마디</p>
+              <p class="friend-card__meta-sub">어디서든 잘할 거야</p>
+            </li>
+          </ul>
+        </div>
+      </article>
+      <article class="friend-card" data-reveal>
+        <img class="friend-card__photo" src="../src/assets/images/campus/03.jpg" alt="지은" width="240" height="320">
+        <div class="friend-card__body">
+          <h3 class="friend-card__name">지은</h3>
+          <p class="friend-card__badge">스터디 메이트</p>
+          <ul class="friend-card__meta">
+            <li>
+              <p class="friend-card__meta-title">UIC · Psychology</p>
+              <p class="friend-card__meta-sub">교양 수업에서 만남</p>
+            </li>
+            <li>
+              <p class="friend-card__meta-title">함께한 기억</p>
+              <p class="friend-card__meta-sub">카페 스터디 · 늦은 귀가</p>
+            </li>
+            <li>
+              <p class="friend-card__meta-title">한마디</p>
+              <p class="friend-card__meta-sub">너라서 더 특별했어</p>
+            </li>
+          </ul>
+        </div>
+      </article>
+      <article class="friend-card" data-reveal>
+        <img class="friend-card__photo" src="../src/assets/images/campus/04.jpg" alt="혜린" width="240" height="320">
+        <div class="friend-card__body">
+          <h3 class="friend-card__name">혜린</h3>
+          <p class="friend-card__badge">축제 메이트</p>
+          <ul class="friend-card__meta">
+            <li>
+              <p class="friend-card__meta-title">UIC · Business</p>
+              <p class="friend-card__meta-sub">동아리에서 만남</p>
+            </li>
+            <li>
+              <p class="friend-card__meta-title">함께한 기억</p>
+              <p class="friend-card__meta-sub">축제 준비 · 시험기간</p>
+            </li>
+            <li>
+              <p class="friend-card__meta-title">한마디</p>
+              <p class="friend-card__meta-sub">새 시작도 응원할게</p>
+            </li>
+          </ul>
+        </div>
+      </article>
+      <article class="friend-card" data-reveal>
+        <img class="friend-card__photo" src="../src/assets/images/campus/01.jpg" alt="준호" width="240" height="320">
+        <div class="friend-card__body">
+          <h3 class="friend-card__name">준호</h3>
+          <p class="friend-card__badge">룸메이트</p>
+          <ul class="friend-card__meta">
+            <li>
+              <p class="friend-card__meta-title">UIC · CS</p>
+              <p class="friend-card__meta-sub">기숙사 동기</p>
+            </li>
+            <li>
+              <p class="friend-card__meta-title">함께한 기억</p>
+              <p class="friend-card__meta-sub">야식 · 게임 · 축제</p>
+            </li>
+            <li>
+              <p class="friend-card__meta-title">한마디</p>
+              <p class="friend-card__meta-sub">네 페이스로 가</p>
+            </li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="messages" class="shell pb-20 pt-4">
+    <header class="sec-head v3-sec-head" data-reveal>
+      <h2 class="sec-head__title">친구들의 편지</h2>
+      <p class="sec-head__sub">병건에게 전하는 말</p>
+    </header>
+    <article data-reveal class="v3-msg msg">
+      <p class="msg__name">민수</p>
+      <p class="msg__text">4년 동안 정말 고생했어. 같이 밤샘하던 날이 벌써 추억이라니 신기하다. 졸업 진심으로 축하하고, 어디 가든 잘할 거야. 앞으로도 자주 보자!</p>
+      <div class="msg__contacts">
+        <a class="msg__contact" href="tel:" aria-label="민수 전화"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c1.2.34 2 .57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+        <a class="msg__contact" href="#" aria-label="민수 카카오"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.84 1.84 5.33 4.61 6.72-.15.54-.96 3.4-1 3.56 0 0-.02.17.09.24.11.07.25 0 .25 0 .33-.05 3.8-2.5 4.4-2.92.54.08 1.1.12 1.65.12 5.52 0 10-3.58 10-8S17.52 3 12 3z"/></svg></a>
+        <a class="msg__contact" href="#" aria-label="민수 인스타"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+      </div>
+    </article>
+    <article data-reveal class="v3-msg msg">
+      <p class="msg__name">지은</p>
+      <p class="msg__text">앞으로 더 행복하자. 너라서 더 특별했던 시간들, 절대 안 잊을게. 졸업을 진심으로 축하해!</p>
+      <div class="msg__contacts">
+        <a class="msg__contact" href="tel:" aria-label="지은 전화"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c1.2.34 2 .57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+        <a class="msg__contact" href="#" aria-label="지은 인스타"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+      </div>
+    </article>
+    <article data-reveal class="v3-msg msg">
+      <p class="msg__name">혜린</p>
+      <p class="msg__text">언제나 응원할게. 시험기간에 서로 붙잡고 버틴 날들이 제일 그립다. 새 시작도 응원할게. 졸업 축하해!</p>
+      <div class="msg__contacts">
+        <a class="msg__contact" href="tel:" aria-label="혜린 전화"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c1.2.34 2 .57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+        <a class="msg__contact" href="#" aria-label="혜린 카카오"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.84 1.84 5.33 4.61 6.72-.15.54-.96 3.4-1 3.56 0 0-.02.17.09.24.11.07.25 0 .25 0 .33-.05 3.8-2.5 4.4-2.92.54.08 1.1.12 1.65.12 5.52 0 10-3.58 10-8S17.52 3 12 3z"/></svg></a>
+      </div>
+    </article>
+    <article data-reveal class="v3-msg msg">
+      <p class="msg__name">준호</p>
+      <p class="msg__text">앞날이 반짝이길. 축제에서 뛰어다니던 네 모습 기억나. 어디서든 네 페이스로 가. 또 만나자!</p>
+      <div class="msg__contacts">
+        <a class="msg__contact" href="tel:" aria-label="준호 전화"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c1.2.34 2 .57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+        <a class="msg__contact" href="#" aria-label="준호 인스타"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+      </div>
+    </article>
+  </section>
+
+  <section id="memory" class="v3-wall">
+    <img src="../src/assets/images/campus/01.jpg" alt="단체 사진" width="1200" height="900">
+    <div class="v3-wall__copy">
+      <p class="text-[24px] font-black leading-snug tracking-tight ta:text-[30px]">
+        우리의 청춘은<br>여기서 끝이 아니라<br>새로운 시작입니다.
+      </p>
+      <button type="button" data-congrats-btn class="congrats-btn mt-8" aria-describedby="congrats-tip" aria-pressed="false">
+        <span data-heart class="congrats-btn__heart">
+          <svg data-heart-icon class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </span>
+        <span>축하하기</span>
+        <span aria-hidden="true">·</span>
+        <span data-congrats-count>27</span>
+      </button>
+      <p id="congrats-tip" class="congrats-tip"><span data-congrats-count>27</span>명의 친구가 병건의 졸업을 축하해요</p>
+    </div>
+  </section>
+
+  <footer class="v3-footer">
+    <strong>2027 GRADUATION</strong>
+    Always Together.<br>
+    Made with ♥
+  </footer>
+
+  <script type="module" src="../src/js/template-motion.js"></script>
+</body>
+</html>
