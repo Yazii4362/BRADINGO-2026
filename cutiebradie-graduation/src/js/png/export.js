@@ -1,6 +1,7 @@
+import { EXPORT_FILE_NAME } from '../constants.js';
 import { getGraduationStats } from '../data/course.js';
 
-export const PNG_FILENAME = 'byeonggeon-graduation.png';
+export { EXPORT_FILE_NAME } from '../constants.js';
 export const PNG_SIZE = Object.freeze({ width: 1080, height: 1920 });
 
 /**
@@ -101,9 +102,9 @@ export async function renderExportCardToPngBlob(card) {
 /**
  * @param {Blob} blob
  * @param {string} filename
- * @returns {Promise<'download' | 'share' | 'preview'>}
+ * @returns {Promise<'download' | 'share' | 'cancelled'>}
  */
-export async function deliverPngBlob(blob, filename = PNG_FILENAME) {
+export async function deliverPngBlob(blob, filename = EXPORT_FILE_NAME) {
   const file = new File([blob], filename, { type: 'image/png' });
 
   if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
@@ -111,9 +112,8 @@ export async function deliverPngBlob(blob, filename = PNG_FILENAME) {
       await navigator.share({ files: [file], title: filename });
       return 'share';
     } catch (error) {
-      // User cancel is not a failure for export generation.
       if (error && typeof error === 'object' && 'name' in error && error.name === 'AbortError') {
-        return 'share';
+        return 'cancelled';
       }
     }
   }

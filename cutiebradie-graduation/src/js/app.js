@@ -8,7 +8,12 @@ import {
 import { createLockTooltip } from './components/lock-tooltip.js';
 import { renderIntro } from './screens/intro.js';
 import { renderMap } from './screens/map.js';
-import { renderQuiz } from './screens/quiz.js';
+import {
+  closeQuizExitModal,
+  isQuizExitModalOpen,
+  openQuizExitModal,
+  renderQuiz,
+} from './screens/quiz.js';
 import { renderMemory } from './screens/memory.js';
 import { renderEnding } from './screens/ending.js';
 
@@ -27,6 +32,9 @@ let route = { screen: 'intro', nodeId: null, mode: null };
 
 /** Highlight newly unlocked node once after a play-mode completion. */
 let mapHighlightNodeId = /** @type {string | null} */ (null);
+
+/** When true, quiz popstate may navigate (leave/complete) instead of exit prompt. */
+let skipQuizExitGuard = false;
 
 const lockTooltip = createLockTooltip();
 
@@ -52,6 +60,19 @@ function navigate(screen, options = {}, historyOptions = {}) {
 }
 
 /**
+ * Leave quiz by popping its history entry so it does not linger after map return.
+ * @param {{ highlightNodeId?: string | null }} [options]
+ */
+function leaveQuizViaHistoryBack(options = {}) {
+  if (options.highlightNodeId) {
+    mapHighlightNodeId = options.highlightNodeId;
+  }
+  skipQuizExitGuard = true;
+  closeQuizExitModal();
+  history.back();
+}
+
+/**
  * @param {{ highlightNodeId?: string | null }} [options]
  */
 function goToMap(options = {}) {
@@ -59,6 +80,15 @@ function goToMap(options = {}) {
   if (options.highlightNodeId) {
     mapHighlightNodeId = options.highlightNodeId;
   }
+
+  // Completing or exiting a quiz should not leave the quiz screen in history.
+  if (route.screen === 'quiz' && history.state?.screen === 'quiz') {
+    leaveQuizViaHistoryBack({
+      highlightNodeId: options.highlightNodeId ?? mapHighlightNodeId,
+    });
+    return;
+  }
+
   navigate('map');
 }
 
@@ -237,7 +267,38 @@ function render() {
   }
 }
 
+/**
+ * Restore the current quiz entry after a intercepted back gesture.
+ */
+function restoreQuizHistoryEntry() {
+  history.pushState(
+    {
+      screen: 'quiz',
+      nodeId: route.nodeId,
+      mode: route.mode,
+    },
+    ''
+  );
+}
+
 window.addEventListener('popstate', (event) => {
+  // Quiz in progress: browser back / swipe-back should confirm exit, not leave immediately.
+  if (route.screen === 'quiz') {
+    if (isQuizExitModalOpen()) {
+      closeQuizExitModal();
+      restoreQuizHistoryEntry();
+      return;
+    }
+
+    if (!skipQuizExitGuard) {
+      restoreQuizHistoryEntry();
+      openQuizExitModal(() => goToMap());
+      return;
+    }
+
+    skipQuizExitGuard = false;
+  }
+
   const state = event.state;
   if (state && typeof state.screen === 'string') {
     route = {

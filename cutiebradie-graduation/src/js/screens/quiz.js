@@ -2,6 +2,49 @@ import { getQuizByNodeId } from '../data/course.js';
 import { createFeedbackSheet } from '../components/feedback-sheet.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
 
+/** @type {{ close: () => void } | null} */
+let quizExitModal = null;
+
+export function isQuizExitModalOpen() {
+  return quizExitModal !== null;
+}
+
+export function closeQuizExitModal() {
+  if (!quizExitModal) return;
+  const handle = quizExitModal;
+  quizExitModal = null;
+  handle.close();
+}
+
+/**
+ * Shared exit confirm for quiz X button and browser back.
+ * @param {() => void} onConfirmLeave
+ */
+export function openQuizExitModal(onConfirmLeave) {
+  if (quizExitModal) return;
+
+  const handle = openConfirmModal({
+    title: '문제를 그만둘까요?',
+    body: '선택한 답은 저장되지 않아요.',
+    cancelLabel: '계속 풀기',
+    confirmLabel: '맵으로 나가기',
+    onCancel: () => {
+      quizExitModal = null;
+    },
+    onConfirm: () => {
+      quizExitModal = null;
+      onConfirmLeave();
+    },
+  });
+
+  quizExitModal = {
+    close: () => {
+      handle.close();
+      quizExitModal = null;
+    },
+  };
+}
+
 /**
  * Order-independent exact set match for answer grading.
  * @param {Iterable<string>} selectedIds
@@ -68,14 +111,7 @@ function renderQuizPlaceholder(props) {
   const leave = () => props.onLeaveToMap();
   el.querySelector('[data-action="back"]')?.addEventListener('click', leave);
   el.querySelector('[data-action="close"]')?.addEventListener('click', () => {
-    openConfirmModal({
-      title: '문제를 그만둘까요?',
-      body: '선택한 답은 저장되지 않아요.',
-      cancelLabel: '계속 풀기',
-      confirmLabel: '맵으로 나가기',
-      onCancel: () => {},
-      onConfirm: leave,
-    });
+    openQuizExitModal(leave);
   });
 
   return el;
@@ -126,7 +162,7 @@ function renderChoiceQuiz(props, quiz) {
   }
 
   const list = document.createElement('div');
-  list.className = 'answer-list';
+  list.className = 'answer-list answer-list--grid-2x2';
   list.setAttribute('role', 'group');
   list.setAttribute('aria-labelledby', 'quiz-question-title');
   if (instruction) {
@@ -303,14 +339,7 @@ function renderChoiceQuiz(props, quiz) {
   }
 
   function requestExit() {
-    openConfirmModal({
-      title: '문제를 그만둘까요?',
-      body: '선택한 답은 저장되지 않아요.',
-      cancelLabel: '계속 풀기',
-      confirmLabel: '맵으로 나가기',
-      onCancel: () => {},
-      onConfirm: () => props.onLeaveToMap(),
-    });
+    openQuizExitModal(() => props.onLeaveToMap());
   }
 
   syncCards();

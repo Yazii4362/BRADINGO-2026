@@ -1,9 +1,31 @@
 import { COURSE_NODES } from './data/course.js';
+import { LEGACY_STORAGE_KEYS, STORAGE_KEY } from './constants.js';
 
-export const STORAGE_KEY = 'byeonggeon-graduation-v2:progress';
+export { STORAGE_KEY } from './constants.js';
 
 /** @typedef {'locked' | 'active' | 'completed'} NodeStatus */
 /** @typedef {{ version: number, nodeStatus: Record<string, NodeStatus>, endingViewed: boolean }} Progress */
+
+/**
+ * Copy legacy progress into the current key when needed.
+ * Errors never interrupt app startup.
+ */
+function migrateLegacyProgress() {
+  try {
+    if (localStorage.getItem(STORAGE_KEY)) return;
+
+    for (const legacyKey of LEGACY_STORAGE_KEYS) {
+      const raw = localStorage.getItem(legacyKey);
+      if (!raw) continue;
+
+      localStorage.setItem(STORAGE_KEY, raw);
+      localStorage.removeItem(legacyKey);
+      return;
+    }
+  } catch {
+    // Keep running even if migration fails.
+  }
+}
 
 /**
  * @returns {Progress}
@@ -62,6 +84,8 @@ export function normalizeProgress(progress) {
  * @returns {Progress}
  */
 export function loadProgress() {
+  migrateLegacyProgress();
+
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return createInitialProgress();
@@ -85,14 +109,37 @@ export function loadProgress() {
 
 /**
  * @param {Progress} progress
+ * @returns {boolean}
  */
 export function saveProgress(progress) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeProgress(progress)));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeProgress(progress)));
+    return true;
+  } catch (error) {
+    console.warn('[state] saveProgress failed', error);
+    return false;
+  }
 }
 
-/** Removes only this app's progress key. */
+/**
+ * Removes only this app's progress key (and leftover legacy keys).
+ * @returns {boolean}
+ */
 export function clearProgress() {
-  localStorage.removeItem(STORAGE_KEY);
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    for (const legacyKey of LEGACY_STORAGE_KEYS) {
+      try {
+        localStorage.removeItem(legacyKey);
+      } catch (error) {
+        console.warn('[state] clearProgress legacy key failed', legacyKey, error);
+      }
+    }
+    return true;
+  } catch (error) {
+    console.warn('[state] clearProgress failed', error);
+    return false;
+  }
 }
 
 /**

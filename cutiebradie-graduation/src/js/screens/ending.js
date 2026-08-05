@@ -1,7 +1,7 @@
 import { getGraduationStats } from '../data/course.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
+import { EXPORT_FILE_NAME } from '../constants.js';
 import {
-  PNG_FILENAME,
   createExportCard,
   deliverPngBlob,
   mountExportCard,
@@ -28,7 +28,7 @@ export function renderEnding(props) {
       ? stats.totalNodes
       : stats.completedCount;
 
-  /** @type {'idle' | 'generating' | 'success' | 'failure'} */
+  /** @type {'idle' | 'generating' | 'success' | 'failure' | 'cancelled'} */
   let exportStatus = 'idle';
   let markedComplete = false;
 
@@ -134,7 +134,12 @@ export function renderEnding(props) {
       }
 
       const blob = await renderExportCardToPngBlob(exportCard);
-      const mode = await deliverPngBlob(blob, PNG_FILENAME);
+      const mode = await deliverPngBlob(blob, EXPORT_FILE_NAME);
+
+      if (mode === 'cancelled') {
+        setExportStatus('idle', '');
+        return;
+      }
 
       if (mode === 'download' && shouldShowMobilePreview()) {
         showPngPreview(blob);
