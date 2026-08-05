@@ -1,5 +1,10 @@
 import { COURSE_NODES, getNodeById } from './data/course.js';
-import { completeNode, loadProgress, saveProgress } from './state.js';
+import {
+  completeNode,
+  loadProgress,
+  resetProgress,
+  saveProgress,
+} from './state.js';
 import { createLockTooltip } from './components/lock-tooltip.js';
 import { renderIntro } from './screens/intro.js';
 import { renderMap } from './screens/map.js';
@@ -28,13 +33,21 @@ const lockTooltip = createLockTooltip();
 /**
  * @param {ScreenId} screen
  * @param {{ nodeId?: string, mode?: 'play' | 'replay' }} [options]
+ * @param {{ replace?: boolean, skipHistory?: boolean }} [historyOptions]
  */
-function navigate(screen, options = {}) {
+function navigate(screen, options = {}, historyOptions = {}) {
   route = {
     screen,
     nodeId: options.nodeId ?? null,
     mode: options.mode ?? null,
   };
+
+  if (!historyOptions.skipHistory) {
+    const state = { ...route };
+    if (historyOptions.replace) history.replaceState(state, '');
+    else history.pushState(state, '');
+  }
+
   render();
 }
 
@@ -47,6 +60,21 @@ function goToMap(options = {}) {
     mapHighlightNodeId = options.highlightNodeId;
   }
   navigate('map');
+}
+
+/**
+ * Align route mode with current progress after back/forward.
+ */
+function syncRouteWithProgress() {
+  progress = loadProgress();
+  if (!route.nodeId || route.screen === 'map' || route.screen === 'intro') return;
+
+  const status = progress.nodeStatus[route.nodeId];
+  if (!status || status === 'locked') {
+    route = { screen: 'map', nodeId: null, mode: null };
+    return;
+  }
+  route.mode = status === 'completed' ? 'replay' : 'play';
 }
 
 /**
@@ -79,10 +107,10 @@ function handleNodeTap(nodeId, status, anchor) {
 }
 
 /**
- * Play-mode correct continue: complete node, unlock next, return to map.
+ * Play-mode completion: complete node, unlock next, return to map with highlight.
  * Replay-mode: return to map without mutating progress.
  */
-function handleQuizCorrectContinue() {
+function handleNodeComplete() {
   const nodeId = route.nodeId;
   if (!nodeId) {
     goToMap();
@@ -103,7 +131,28 @@ function handleQuizCorrectContinue() {
   goToMap();
 }
 
+/** Mark N5 complete once when ending content has rendered (no navigation). */
+function handleEndingRendered() {
+  if (route.mode !== 'play') return;
+  if (progress.nodeStatus.n5 !== 'active') return;
+  progress = completeNode(progress, 'n5');
+}
+
+function handleResetConfirmed() {
+  progress = resetProgress();
+  mapHighlightNodeId = null;
+  navigate('intro', {}, { replace: true });
+}
+
+function cleanupCurrentScreen() {
+  const current = root.firstElementChild;
+  if (current && typeof current.__cleanup === 'function') {
+    current.__cleanup();
+  }
+}
+
 function render() {
+  cleanupCurrentScreen();
   root.replaceChildren();
 
   if (route.screen === 'intro') {
@@ -133,7 +182,15 @@ function render() {
 
   const node = route.nodeId ? getNodeById(route.nodeId) : null;
   if (!node || !route.mode) {
-    goToMap();
+    route = { screen: 'map', nodeId: null, mode: null };
+    progress = loadProgress();
+    root.appendChild(
+      renderMap({
+        nodeStatus: progress.nodeStatus,
+        highlightNodeId: null,
+        onNodeTap: handleNodeTap,
+      })
+    );
     return;
   }
 
@@ -145,7 +202,7 @@ function render() {
         mode: route.mode,
         choiceType: node.type === 'multi' ? 'multi' : 'single',
         onLeaveToMap: () => goToMap(),
-        onCorrectContinue: handleQuizCorrectContinue,
+        onCorrectContinue: handleNodeComplete,
       })
     );
     return;
@@ -158,21 +215,42 @@ function render() {
         title: node.title,
         mode: route.mode,
         onBackToMap: () => goToMap(),
+        onComplete: handleNodeComplete,
       })
     );
     return;
   }
 
   if (route.screen === 'ending') {
+    progress = loadProgress();
     root.appendChild(
       renderEnding({
         nodeId: node.id,
         title: node.title,
         mode: route.mode,
-        onBackToMap: () => goToMap(),
+        progress,
+        onReviewMap: () => goToMap(),
+        onEndingRendered: handleEndingRendered,
+        onResetConfirmed: handleResetConfirmed,
       })
     );
   }
 }
 
-navigate('intro');
+window.addEventListener('popstate', (event) => {
+  const state = event.state;
+  if (state && typeof state.screen === 'string') {
+    route = {
+      screen: state.screen,
+      nodeId: state.nodeId ?? null,
+      mode: state.mode ?? null,
+    };
+    syncRouteWithProgress();
+    render();
+    return;
+  }
+  route = { screen: 'map', nodeId: null, mode: null };
+  render();
+});
+
+navigate('intro', {}, { replace: true });

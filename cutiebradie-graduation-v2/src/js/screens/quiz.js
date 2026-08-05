@@ -3,6 +3,18 @@ import { createFeedbackSheet } from '../components/feedback-sheet.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
 
 /**
+ * Order-independent exact set match for answer grading.
+ * @param {Iterable<string>} selectedIds
+ * @param {ReadonlyArray<string>} correctIds
+ */
+export function isExactAnswerSet(selectedIds, correctIds) {
+  const selected = [...new Set(selectedIds)];
+  if (selected.length !== correctIds.length) return false;
+  const correct = new Set(correctIds);
+  return selected.every((id) => correct.has(id));
+}
+
+/**
  * @param {{
  *   nodeId: string,
  *   title: string,
@@ -15,12 +27,16 @@ import { openConfirmModal } from '../components/confirm-modal.js';
 export function renderQuiz(props) {
   const quiz = getQuizByNodeId(props.nodeId);
 
-  // Only N1 single-choice is implemented in this slice.
-  if (!quiz || quiz.choiceType !== 'single' || props.choiceType !== 'single') {
+  if (!quiz || (quiz.choiceType !== 'single' && quiz.choiceType !== 'multi')) {
     return renderQuizPlaceholder(props);
   }
 
-  return renderSingleChoiceQuiz(props, quiz);
+  // Prefer quiz data type; props.choiceType is a sanity check from the node.
+  if (props.choiceType && props.choiceType !== quiz.choiceType) {
+    return renderQuizPlaceholder(props);
+  }
+
+  return renderChoiceQuiz(props, quiz);
 }
 
 /**
@@ -66,20 +82,23 @@ function renderQuizPlaceholder(props) {
 }
 
 /**
+ * Shared single / multi choice quiz UI.
  * @param {Parameters<typeof renderQuiz>[0]} props
  * @param {NonNullable<ReturnType<typeof getQuizByNodeId>>} quiz
  */
-function renderSingleChoiceQuiz(props, quiz) {
-  /** @type {'idle' | 'selected' | 'grading' | 'correct' | 'incorrect'} */
+function renderChoiceQuiz(props, quiz) {
+  const isMulti = quiz.choiceType === 'multi';
+  /** @type {'idle' | 'selected' | 'selecting' | 'grading' | 'correct' | 'incorrect'} */
   let phase = 'idle';
-  /** @type {string | null} */
-  let selectedId = null;
+  /** @type {Set<string>} */
+  const selectedIds = new Set();
 
   const el = document.createElement('section');
   el.className = 'screen screen--quiz';
   el.dataset.screen = 'quiz';
   el.dataset.nodeId = props.nodeId;
   el.dataset.mode = props.mode;
+  el.dataset.choiceType = quiz.choiceType;
   el.dataset.phase = phase;
 
   const header = document.createElement('header');
@@ -97,10 +116,25 @@ function renderSingleChoiceQuiz(props, quiz) {
   title.id = 'quiz-question-title';
   title.textContent = quiz.question;
 
+  /** @type {HTMLParagraphElement | null} */
+  let instruction = null;
+  if (quiz.instruction) {
+    instruction = document.createElement('p');
+    instruction.className = 'screen__body quiz-instruction';
+    instruction.id = 'quiz-instruction';
+    instruction.textContent = quiz.instruction;
+  }
+
   const list = document.createElement('div');
   list.className = 'answer-list';
   list.setAttribute('role', 'group');
   list.setAttribute('aria-labelledby', 'quiz-question-title');
+  if (instruction) {
+    list.setAttribute('aria-describedby', 'quiz-instruction');
+  }
+  if (isMulti) {
+    list.setAttribute('aria-multiselectable', 'true');
+  }
 
   /** @type {Map<string, HTMLButtonElement>} */
   const cardButtons = new Map();
@@ -111,8 +145,8 @@ function renderSingleChoiceQuiz(props, quiz) {
     btn.className = 'answer-card is-default';
     btn.dataset.choiceId = choice.id;
     btn.setAttribute('aria-pressed', 'false');
-    btn.textContent = choice.label;
-    btn.addEventListener('click', () => selectChoice(choice.id));
+    fillAnswerCardContent(btn, choice);
+    btn.addEventListener('click', () => onCardTap(choice.id));
     cardButtons.set(choice.id, btn);
     list.appendChild(btn);
   });
@@ -133,81 +167,108 @@ function renderSingleChoiceQuiz(props, quiz) {
   footer.appendChild(submitBtn);
   footer.appendChild(sheetHost);
 
-  el.append(header, title, list, footer);
+  if (instruction) {
+    el.append(header, title, instruction, list, footer);
+  } else {
+    el.append(header, title, list, footer);
+  }
 
   header.querySelector('[data-action="close"]')?.addEventListener('click', requestExit);
 
   function setPhase(next) {
     phase = next;
     el.dataset.phase = next;
+    submitBtn.classList.toggle('is-loading', next === 'grading');
+  }
+
+  function selectingPhaseName() {
+    return isMulti ? 'selecting' : 'selected';
   }
 
   function canChangeSelection() {
-    return phase === 'idle' || phase === 'selected';
+    return phase === 'idle' || phase === 'selected' || phase === 'selecting';
   }
 
-  function selectChoice(choiceId) {
+  function syncSubmitEnabled() {
+    const locked = phase === 'grading' || phase === 'correct' || phase === 'incorrect';
+    submitBtn.disabled = locked || selectedIds.size === 0;
+  }
+
+  /**
+   * @param {string} choiceId
+   */
+  function onCardTap(choiceId) {
     if (!canChangeSelection()) return;
-    selectedId = choiceId;
-    setPhase('selected');
+
+    if (isMulti) {
+      if (selectedIds.has(choiceId)) selectedIds.delete(choiceId);
+      else selectedIds.add(choiceId);
+    } else {
+      selectedIds.clear();
+      selectedIds.add(choiceId);
+    }
+
+    setPhase(selectedIds.size === 0 ? 'idle' : selectingPhaseName());
     syncCards();
-    submitBtn.disabled = false;
+    syncSubmitEnabled();
   }
 
   function syncCards() {
-    const correctId = quiz.correctChoiceIds[0];
+    const correctSet = new Set(quiz.correctChoiceIds);
     cardButtons.forEach((btn, id) => {
       btn.classList.remove('is-default', 'is-selected', 'is-correct', 'is-incorrect');
-      const pressed = selectedId === id && (phase === 'selected' || phase === 'grading');
-      btn.setAttribute('aria-pressed', pressed || (phase === 'correct' && id === correctId) || (phase === 'incorrect' && id === selectedId) ? 'true' : 'false');
+      const isSelected = selectedIds.has(id);
 
       if (phase === 'correct') {
-        if (id === correctId) btn.classList.add('is-correct');
+        if (correctSet.has(id)) btn.classList.add('is-correct');
         else btn.classList.add('is-default');
         btn.disabled = true;
+        btn.setAttribute('aria-pressed', correctSet.has(id) ? 'true' : 'false');
         return;
       }
 
       if (phase === 'incorrect') {
-        if (id === selectedId) btn.classList.add('is-incorrect');
+        if (isSelected) btn.classList.add('is-incorrect');
         else btn.classList.add('is-default');
         btn.disabled = true;
+        btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
         return;
       }
 
       if (phase === 'grading') {
-        if (id === selectedId) btn.classList.add('is-selected');
+        if (isSelected) btn.classList.add('is-selected');
         else btn.classList.add('is-default');
         btn.disabled = true;
+        btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
         return;
       }
 
       btn.disabled = false;
-      if (selectedId === id) btn.classList.add('is-selected');
-      else btn.classList.add('is-default');
+      btn.classList.add(isSelected ? 'is-selected' : 'is-default');
+      btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
     });
   }
 
   function resetToIdle() {
-    selectedId = null;
+    selectedIds.clear();
     setPhase('idle');
     sheetHost.replaceChildren();
     submitBtn.hidden = false;
-    submitBtn.disabled = true;
     submitBtn.textContent = '확인';
     syncCards();
+    syncSubmitEnabled();
   }
 
   function submit() {
-    if (phase !== 'selected' || !selectedId || submitBtn.disabled) return;
+    const ready = phase === 'selected' || phase === 'selecting';
+    if (!ready || selectedIds.size === 0 || submitBtn.disabled) return;
 
     setPhase('grading');
     submitBtn.disabled = true;
     syncCards();
 
-    const isCorrect = quiz.correctChoiceIds.includes(selectedId);
+    const isCorrect = isExactAnswerSet(selectedIds, quiz.correctChoiceIds);
 
-    // Microtask keeps grading phase briefly for double-submit guard.
     queueMicrotask(() => {
       if (isCorrect) {
         setPhase('correct');
@@ -253,5 +314,63 @@ function renderSingleChoiceQuiz(props, quiz) {
   }
 
   syncCards();
+  syncSubmitEnabled();
   return el;
+}
+
+/**
+ * @param {HTMLButtonElement} btn
+ * @param {{ id: string, label: string, image?: string, alt?: string }} choice
+ */
+function fillAnswerCardContent(btn, choice) {
+  btn.replaceChildren();
+  const imageValue = typeof choice.image === 'string' ? choice.image.trim() : '';
+  const wantsMediaSlot = Object.prototype.hasOwnProperty.call(choice, 'image');
+
+  if (imageValue) {
+    btn.classList.add('has-image');
+    const img = document.createElement('img');
+    img.className = 'answer-card__image';
+    img.alt = choice.alt || choice.label;
+    img.decoding = 'async';
+
+    const label = document.createElement('span');
+    label.className = 'answer-card__label';
+    label.textContent = choice.label;
+
+    img.addEventListener('error', () => {
+      img.replaceWith(createNamePlaceholder(choice));
+    });
+
+    btn.append(img, label);
+    img.src = imageValue;
+    return;
+  }
+
+  if (wantsMediaSlot) {
+    btn.classList.add('has-image');
+    const label = document.createElement('span');
+    label.className = 'answer-card__label';
+    label.textContent = choice.label;
+    btn.append(createNamePlaceholder(choice), label);
+    return;
+  }
+
+  btn.classList.remove('has-image');
+  const label = document.createElement('span');
+  label.className = 'answer-card__label';
+  label.textContent = choice.label;
+  btn.append(label);
+}
+
+/**
+ * @param {{ label: string, alt?: string }} choice
+ */
+function createNamePlaceholder(choice) {
+  const placeholder = document.createElement('span');
+  placeholder.className = 'answer-card__placeholder';
+  placeholder.setAttribute('role', 'img');
+  placeholder.setAttribute('aria-label', choice.alt || choice.label);
+  placeholder.textContent = choice.label.slice(0, 1);
+  return placeholder;
 }

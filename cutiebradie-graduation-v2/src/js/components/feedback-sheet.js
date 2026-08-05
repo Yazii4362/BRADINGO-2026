@@ -15,16 +15,25 @@ export function createFeedbackSheet(props) {
   el.setAttribute('aria-live', 'polite');
   el.setAttribute('aria-atomic', 'true');
 
-  el.innerHTML = `
-    <div class="feedback-sheet__content">
-      <p class="feedback-sheet__title">${props.title}</p>
-      <p class="feedback-sheet__body">${props.body}</p>
-    </div>
-    <button type="button" class="btn ${props.variant === 'correct' ? 'btn--primary' : 'btn--danger'} feedback-sheet__action">
-      ${props.actionLabel}
-    </button>
-  `;
+  const content = document.createElement('div');
+  content.className = 'feedback-sheet__content';
 
-  el.querySelector('.feedback-sheet__action')?.addEventListener('click', props.onAction);
+  const title = document.createElement('p');
+  title.className = 'feedback-sheet__title';
+  title.textContent = props.title;
+
+  const body = document.createElement('p');
+  body.className = 'feedback-sheet__body';
+  body.textContent = props.body;
+
+  content.append(title, body);
+
+  const action = document.createElement('button');
+  action.type = 'button';
+  action.className = `btn ${props.variant === 'correct' ? 'btn--primary' : 'btn--danger'} feedback-sheet__action`;
+  action.textContent = props.actionLabel;
+  action.addEventListener('click', props.onAction);
+
+  el.append(content, action);
   return el;
 }

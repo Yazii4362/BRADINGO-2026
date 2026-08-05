@@ -66,12 +66,19 @@ async function playUnlockHighlight(target) {
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) {
-    window.setTimeout(() => target.classList.remove('is-unlock-highlight'), 600);
+    window.setTimeout(() => {
+      if (target.isConnected) target.classList.remove('is-unlock-highlight');
+    }, 600);
     return;
   }
 
+  /** @type {{ killTweensOf: (t: HTMLElement) => void, fromTo: Function } | null} */
+  let gsap = null;
   try {
-    const { default: gsap } = await import('https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm');
+    const mod = await import('https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm');
+    gsap = mod.default;
+    if (!target.isConnected || !gsap) return;
+    gsap.killTweensOf(target);
     await gsap.fromTo(
       target,
       { scale: 0.94, boxShadow: '0 0 0 0 rgba(88, 204, 2, 0)' },
@@ -86,9 +93,9 @@ async function playUnlockHighlight(target) {
       }
     );
   } catch {
-    // CDN unavailable — CSS class still provides a brief highlight.
     await new Promise((resolve) => window.setTimeout(resolve, 700));
   } finally {
-    target.classList.remove('is-unlock-highlight');
+    if (gsap && target.isConnected) gsap.killTweensOf(target);
+    if (target.isConnected) target.classList.remove('is-unlock-highlight');
   }
 }
