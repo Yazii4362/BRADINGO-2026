@@ -1,0 +1,22 @@
+/**
+ * CB / Map / Node Ring — active-node outer halo (Duolingo-style).
+ * Source: assets/images/map-node-ring.svg
+ */
+
+export const MAP_NODE_RING_SVG = `
+<svg class="cb-map-node-ring__svg" width="98" height="93" viewBox="0 0 98 93" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path d="M49 0C61.9956 0 74.459 4.88382 83.6482 13.5771C92.8375 22.2703 98 34.0609 98 46.355C98 58.6491 92.8375 70.4397 83.6482 79.1329C74.459 87.8262 61.9956 92.71 49 92.71C36.0044 92.71 23.541 87.8262 14.3518 79.1329C5.16249 70.4397 0 58.6491 0 46.355C0 34.0609 5.16249 22.2703 14.3518 13.5771C23.541 4.88382 36.0044 0 49 0ZM49 7.4168C38.0837 7.4168 27.6145 11.5192 19.8955 18.8215C12.1765 26.1239 7.84 36.0279 7.84 46.355C7.84 56.6821 12.1765 66.5861 19.8955 73.8885C27.6145 81.1908 38.0837 85.2932 49 85.2932C59.9163 85.2932 70.3855 81.1908 78.1045 73.8885C85.8235 66.5861 90.16 56.6821 90.16 46.355C90.16 36.0279 85.8235 26.1239 78.1045 18.8215C70.3855 11.5192 59.9163 7.4168 49 7.4168Z" fill="currentColor"/>
+</svg>
+`;
+
+/**
+ * Active-node ring wrapper element.
+ * @returns {HTMLElement}
+ */
+export function createMapNodeRing() {
+  const el = document.createElement('span');
+  el.className = 'cb-map-node-ring';
+  el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = MAP_NODE_RING_SVG;
+  return el;
+}

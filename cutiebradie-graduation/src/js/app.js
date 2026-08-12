@@ -6,6 +6,7 @@ import {
   saveProgress,
 } from './state.js';
 import { createLockTooltip } from './components/lock-tooltip.js';
+import { openNodeStartSheet } from './components/node-start-sheet.js';
 import { renderIntro } from './screens/intro.js';
 import { renderMap } from './screens/map.js';
 import {
@@ -117,22 +118,41 @@ function handleNodeTap(nodeId, status, anchor) {
   if (!node) return;
 
   if (status === 'locked') {
-    lockTooltip.show('아직 잠겨 있어요. 이전 노드를 먼저 완료해 주세요.', anchor);
+    lockTooltip.show('아직 잠겨 있어요. 이전 여정을 먼저 완료해 주세요.', anchor);
     return;
   }
 
   const mode = status === 'completed' ? 'replay' : 'play';
 
+  // Active node: show chapter start sheet first; CTA enters the chapter.
+  if (status === 'active') {
+    openNodeStartSheet({
+      title: node.title,
+      actionLabel: '시작하기',
+      onStart: () => enterNode(node, mode),
+    });
+    return;
+  }
+
+  // Completed node: replay immediately.
+  enterNode(node, mode);
+}
+
+/**
+ * @param {{ id: string, screen: string }} node
+ * @param {'play' | 'replay'} mode
+ */
+function enterNode(node, mode) {
   if (node.screen === 'quiz') {
-    navigate('quiz', { nodeId, mode });
+    navigate('quiz', { nodeId: node.id, mode });
     return;
   }
   if (node.screen === 'memory') {
-    navigate('memory', { nodeId, mode });
+    navigate('memory', { nodeId: node.id, mode });
     return;
   }
   if (node.screen === 'ending') {
-    navigate('ending', { nodeId, mode });
+    navigate('ending', { nodeId: node.id, mode });
   }
 }
 
@@ -185,76 +205,54 @@ function render() {
   cleanupCurrentScreen();
   root.replaceChildren();
 
-  if (route.screen === 'intro') {
-    root.appendChild(
-      renderIntro({
-        onStart: () => goToMap(),
-      })
-    );
-    return;
-  }
+  /** @type {HTMLElement | null} */
+  let screenEl = null;
 
-  if (route.screen === 'map') {
+  if (route.screen === 'intro') {
+    screenEl = renderIntro({
+      onStart: () => goToMap(),
+    });
+  } else if (route.screen === 'map') {
     progress = loadProgress();
     const highlight = mapHighlightNodeId;
-    root.appendChild(
-      renderMap({
-        nodeStatus: progress.nodeStatus,
-        highlightNodeId: highlight,
-        onNodeTap: handleNodeTap,
-        onHighlightPlayed: () => {
-          mapHighlightNodeId = null;
-        },
-      })
-    );
-    return;
-  }
-
-  const node = route.nodeId ? getNodeById(route.nodeId) : null;
-  if (!node || !route.mode) {
-    route = { screen: 'map', nodeId: null, mode: null };
-    progress = loadProgress();
-    root.appendChild(
-      renderMap({
+    screenEl = renderMap({
+      nodeStatus: progress.nodeStatus,
+      highlightNodeId: highlight,
+      onNodeTap: handleNodeTap,
+      onHighlightPlayed: () => {
+        mapHighlightNodeId = null;
+      },
+    });
+  } else {
+    const node = route.nodeId ? getNodeById(route.nodeId) : null;
+    if (!node || !route.mode) {
+      route = { screen: 'map', nodeId: null, mode: null };
+      progress = loadProgress();
+      screenEl = renderMap({
         nodeStatus: progress.nodeStatus,
         highlightNodeId: null,
         onNodeTap: handleNodeTap,
-      })
-    );
-    return;
-  }
-
-  if (route.screen === 'quiz') {
-    root.appendChild(
-      renderQuiz({
+      });
+    } else if (route.screen === 'quiz') {
+      screenEl = renderQuiz({
         nodeId: node.id,
         title: node.title,
         mode: route.mode,
         choiceType: node.type === 'multi' ? 'multi' : 'single',
         onLeaveToMap: () => goToMap(),
         onCorrectContinue: handleNodeComplete,
-      })
-    );
-    return;
-  }
-
-  if (route.screen === 'memory') {
-    root.appendChild(
-      renderMemory({
+      });
+    } else if (route.screen === 'memory') {
+      screenEl = renderMemory({
         nodeId: node.id,
         title: node.title,
         mode: route.mode,
         onBackToMap: () => goToMap(),
         onComplete: handleNodeComplete,
-      })
-    );
-    return;
-  }
-
-  if (route.screen === 'ending') {
-    progress = loadProgress();
-    root.appendChild(
-      renderEnding({
+      });
+    } else if (route.screen === 'ending') {
+      progress = loadProgress();
+      screenEl = renderEnding({
         nodeId: node.id,
         title: node.title,
         mode: route.mode,
@@ -262,8 +260,13 @@ function render() {
         onReviewMap: () => goToMap(),
         onEndingRendered: handleEndingRendered,
         onResetConfirmed: handleResetConfirmed,
-      })
-    );
+      });
+    }
+  }
+
+  if (screenEl) {
+    screenEl.classList.add('screen--enter');
+    root.appendChild(screenEl);
   }
 }
 

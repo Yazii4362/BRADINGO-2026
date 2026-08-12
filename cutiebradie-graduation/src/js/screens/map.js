@@ -1,5 +1,7 @@
-import { COURSE_NODES } from '../data/course.js';
-import { createMapNodeButton } from '../components/map-node.js';
+import { BRAND, COURSE_NODES } from '../data/course.js';
+import { createAppHeader } from '../components/app-header.js';
+import { createCharacterBubbleController } from '../components/character-bubble.js';
+import { createMapNodeButton, getMapNodeAnchorRect } from '../components/map-node.js';
 
 /**
  * @param {{
@@ -14,38 +16,77 @@ export function renderMap(props) {
   el.className = 'screen screen--map';
   el.dataset.screen = 'map';
 
-  const list = document.createElement('ul');
-  list.className = 'map-list';
+  el.appendChild(createAppHeader({ streak: 3095, gems: 2026 }));
 
-  COURSE_NODES.forEach((node) => {
+  const lastNodeReached =
+    props.nodeStatus.n5 === 'active' || props.nodeStatus.n5 === 'completed';
+  const profileSrc = lastNodeReached
+    ? './assets/images/profile-end.webp'
+    : './assets/images/profile.webp';
+
+  const characterBubble = createCharacterBubbleController();
+
+  const cover = document.createElement('button');
+  cover.type = 'button';
+  cover.className = 'cb-map-cover';
+  cover.setAttribute('aria-label', `${BRAND.courseTitle} — 병건이에게 인사하기`);
+  cover.innerHTML = `
+    <div class="cb-map-cover__profile">
+      <img
+        class="cb-map-cover__profile-img"
+        src="${profileSrc}"
+        alt="병건이 프로필"
+        width="52"
+        height="52"
+        decoding="async"
+      />
+    </div>
+    <div class="cb-map-cover__copy">
+      <p class="cb-map-cover__period">${BRAND.coursePeriod}</p>
+      <h1 class="cb-map-cover__title">${BRAND.courseTitle}</h1>
+    </div>
+  `;
+
+  const profile = cover.querySelector('.cb-map-cover__profile');
+  cover.addEventListener('click', () => {
+    if (profile instanceof HTMLElement) characterBubble.show(profile);
+  });
+
+  el.appendChild(cover);
+
+  const progress = document.createElement('p');
+  progress.className = 'map-progress';
+  progress.textContent = buildProgressLabel(props.nodeStatus);
+  el.appendChild(progress);
+
+  const path = document.createElement('div');
+  path.className = 'map-path';
+
+  COURSE_NODES.forEach((node, index) => {
     const status = props.nodeStatus[node.id] ?? 'locked';
-    const item = document.createElement('li');
-    const button = createMapNodeButton(
+    const nodeWrap = createMapNodeButton(
       {
         id: node.id,
         title: node.title,
-        typeLabel: node.typeLabel,
         status,
+        pathIndex: index,
       },
       (event) => {
         const target = event.currentTarget;
         if (!(target instanceof HTMLElement)) return;
-        props.onNodeTap(node.id, status, target.getBoundingClientRect());
+        const item = target.closest('.map-path__item');
+        const anchor = item instanceof HTMLElement ? getMapNodeAnchorRect(item) : target.getBoundingClientRect();
+        props.onNodeTap(node.id, status, anchor);
       }
     );
-    item.appendChild(button);
-    list.appendChild(item);
+    nodeWrap.dataset.nodeId = node.id;
+    path.appendChild(nodeWrap);
   });
 
-  el.innerHTML = `
-    <p class="screen__eyebrow">S02 · Course Map</p>
-    <h1 class="screen__title">코스 맵</h1>
-    <p class="screen__body">유일한 허브. 노드를 탭해 진행하세요.</p>
-  `;
-  el.appendChild(list);
+  el.appendChild(path);
 
   if (props.highlightNodeId) {
-    const target = el.querySelector(`[data-node-id="${props.highlightNodeId}"]`);
+    const target = el.querySelector(`.map-path__item[data-node-id="${props.highlightNodeId}"] .cb-map-node`);
     if (target instanceof HTMLElement) {
       playUnlockHighlight(target).finally(() => {
         props.onHighlightPlayed?.();
@@ -59,16 +100,29 @@ export function renderMap(props) {
 }
 
 /**
+ * @param {Record<string, 'locked' | 'active' | 'completed'>} nodeStatus
+ */
+function buildProgressLabel(nodeStatus) {
+  const total = COURSE_NODES.length;
+  const activeIndex = COURSE_NODES.findIndex((node) => nodeStatus[node.id] === 'active');
+
+  if (activeIndex === -1) {
+    return `${total} / ${total} 섹션 완료`;
+  }
+  return `${activeIndex + 1} / ${total} 섹션 진행 중`;
+}
+
+/**
  * @param {HTMLElement} target
  */
 async function playUnlockHighlight(target) {
-  target.classList.add('is-unlock-highlight');
+  target.classList.add('cb-map-node--unlocking');
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) {
     window.setTimeout(() => {
-      if (target.isConnected) target.classList.remove('is-unlock-highlight');
-    }, 600);
+      if (target.isConnected) target.classList.remove('cb-map-node--unlocking');
+    }, 450);
     return;
   }
 
@@ -81,21 +135,18 @@ async function playUnlockHighlight(target) {
     gsap.killTweensOf(target);
     await gsap.fromTo(
       target,
-      { scale: 0.94, boxShadow: '0 0 0 0 rgba(88, 204, 2, 0)' },
+      { scale: 0.88 },
       {
         scale: 1,
-        boxShadow: '0 0 0 6px rgba(88, 204, 2, 0.28)',
         duration: 0.45,
-        ease: 'back.out(1.6)',
-        yoyo: true,
-        repeat: 1,
-        clearProps: 'transform,boxShadow',
+        ease: 'back.out(2)',
+        clearProps: 'transform',
       }
     );
   } catch {
-    await new Promise((resolve) => window.setTimeout(resolve, 700));
+    await new Promise((resolve) => window.setTimeout(resolve, 450));
   } finally {
     if (gsap && target.isConnected) gsap.killTweensOf(target);
-    if (target.isConnected) target.classList.remove('is-unlock-highlight');
+    if (target.isConnected) target.classList.remove('cb-map-node--unlocking');
   }
 }

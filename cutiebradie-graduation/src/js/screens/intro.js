@@ -1,3 +1,5 @@
+import { BRAND } from '../data/course.js';
+
 /**
  * @param {{ onStart: () => void }} props
  */
@@ -6,12 +8,12 @@ export function renderIntro(props) {
   el.className = 'screen screen--intro';
   el.dataset.screen = 'intro';
   el.innerHTML = `
-    <p class="screen__eyebrow">S01 · Intro</p>
-    <h1 class="screen__title">병건링고</h1>
-    <p class="screen__body">졸업 축하 코스에 오신 걸 환영해요. (placeholder)</p>
-    <div class="placeholder-box">언어 선택 없음 · 하단 내비 없음 · 시작 시 코스 맵으로 이동</div>
-    <div class="btn-row">
-      <button type="button" class="btn btn--primary" data-action="start">시작하기</button>
+    <h1 class="screen__title intro-wordmark">${BRAND.wordmark}</h1>
+    <p class="screen__body intro-lead">
+      병건이의 <strong>${BRAND.courseName}</strong>,<br>마지막 코스가 열렸어요. 🎓
+    </p>
+    <div class="cb-button-row">
+      <button type="button" class="cb-button cb-button--primary cb-button--fill" data-action="start">여정 시작하기</button>
     </div>
   `;
   el.querySelector('[data-action="start"]')?.addEventListener('click', props.onStart);

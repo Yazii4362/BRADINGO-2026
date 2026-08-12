@@ -1,9 +1,10 @@
 /**
  * Minimal lock tooltip — shown near a locked map node.
+ * CB / Map / Lock Tooltip
  */
 export function createLockTooltip() {
   const el = document.createElement('div');
-  el.className = 'lock-tooltip';
+  el.className = 'cb-lock-tooltip';
   el.setAttribute('role', 'status');
   el.hidden = true;
   document.body.appendChild(el);
@@ -28,13 +29,13 @@ export function createLockTooltip() {
     el.style.width = `${tipWidth}px`;
     el.style.left = `${left}px`;
     el.style.top = `${top}px`;
-    requestAnimationFrame(() => el.classList.add('is-visible'));
+    requestAnimationFrame(() => el.classList.add('cb-lock-tooltip--visible'));
 
     hideTimer = window.setTimeout(() => hide(), 1800);
   }
 
   function hide() {
-    el.classList.remove('is-visible');
+    el.classList.remove('cb-lock-tooltip--visible');
     hideTimer = window.setTimeout(() => {
       el.hidden = true;
     }, 160);

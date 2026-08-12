@@ -94,7 +94,7 @@ function renderQuizPlaceholder(props) {
 
   el.innerHTML = `
     <header class="quiz-header">
-      <button type="button" class="quiz-close" aria-label="닫기" data-action="close">X</button>
+      <button type="button" class="cb-close-btn" aria-label="닫기" data-action="close">X</button>
       <p class="screen__eyebrow">S03 · Quiz · ${props.nodeId.toUpperCase()}</p>
     </header>
     <h1 class="screen__title">${props.title}</h1>
@@ -103,8 +103,8 @@ function renderQuizPlaceholder(props) {
       · 모드: ${props.mode}
     </p>
     <div class="placeholder-box">이 노드의 문제 UI는 다음 단계에서 구현합니다.</div>
-    <div class="btn-row">
-      <button type="button" class="btn btn--ghost" data-action="back">맵으로 돌아가기</button>
+    <div class="cb-button-row">
+      <button type="button" class="cb-button cb-button--ghost" data-action="back">맵으로 돌아가기</button>
     </div>
   `;
 
@@ -140,10 +140,10 @@ function renderChoiceQuiz(props, quiz) {
   const header = document.createElement('header');
   header.className = 'quiz-header';
   header.innerHTML = `
-    <button type="button" class="quiz-close" aria-label="문제 닫기" data-action="close">X</button>
+    <button type="button" class="cb-close-btn" aria-label="문제 닫기" data-action="close">X</button>
     <div class="quiz-header__meta">
       <p class="screen__eyebrow">S03 · ${props.nodeId.toUpperCase()}</p>
-      ${props.mode === 'replay' ? '<span class="quiz-replay-badge">다시 보기</span>' : ''}
+      ${props.mode === 'replay' ? '<span class="cb-replay-badge">다시 보기</span>' : ''}
     </div>
   `;
 
@@ -178,7 +178,7 @@ function renderChoiceQuiz(props, quiz) {
   quiz.choices.forEach((choice) => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'answer-card is-default';
+    btn.className = 'cb-answer-card cb-answer-card--default';
     btn.dataset.choiceId = choice.id;
     btn.setAttribute('aria-pressed', 'false');
     fillAnswerCardContent(btn, choice);
@@ -192,21 +192,20 @@ function renderChoiceQuiz(props, quiz) {
 
   const submitBtn = document.createElement('button');
   submitBtn.type = 'button';
-  submitBtn.className = 'btn btn--primary quiz-submit';
+  submitBtn.className = 'cb-button cb-button--primary cb-button--fill quiz-submit';
   submitBtn.textContent = '확인';
   submitBtn.disabled = true;
   submitBtn.addEventListener('click', submit);
 
+  footer.appendChild(submitBtn);
+
   const sheetHost = document.createElement('div');
   sheetHost.className = 'quiz-sheet-host';
 
-  footer.appendChild(submitBtn);
-  footer.appendChild(sheetHost);
-
   if (instruction) {
-    el.append(header, title, instruction, list, footer);
+    el.append(header, title, instruction, list, footer, sheetHost);
   } else {
-    el.append(header, title, list, footer);
+    el.append(header, title, list, footer, sheetHost);
   }
 
   header.querySelector('[data-action="close"]')?.addEventListener('click', requestExit);
@@ -214,7 +213,7 @@ function renderChoiceQuiz(props, quiz) {
   function setPhase(next) {
     phase = next;
     el.dataset.phase = next;
-    submitBtn.classList.toggle('is-loading', next === 'grading');
+    submitBtn.classList.toggle('cb-button--loading', next === 'grading');
   }
 
   function selectingPhaseName() {
@@ -252,35 +251,35 @@ function renderChoiceQuiz(props, quiz) {
   function syncCards() {
     const correctSet = new Set(quiz.correctChoiceIds);
     cardButtons.forEach((btn, id) => {
-      btn.classList.remove('is-default', 'is-selected', 'is-correct', 'is-incorrect');
+      btn.classList.remove('cb-answer-card--default', 'cb-answer-card--selected', 'cb-answer-card--correct', 'cb-answer-card--incorrect');
       const isSelected = selectedIds.has(id);
 
       if (phase === 'correct') {
-        if (correctSet.has(id)) btn.classList.add('is-correct');
-        else btn.classList.add('is-default');
+        if (correctSet.has(id)) btn.classList.add('cb-answer-card--correct');
+        else btn.classList.add('cb-answer-card--default');
         btn.disabled = true;
         btn.setAttribute('aria-pressed', correctSet.has(id) ? 'true' : 'false');
         return;
       }
 
       if (phase === 'incorrect') {
-        if (isSelected) btn.classList.add('is-incorrect');
-        else btn.classList.add('is-default');
+        if (isSelected) btn.classList.add('cb-answer-card--incorrect');
+        else btn.classList.add('cb-answer-card--default');
         btn.disabled = true;
         btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
         return;
       }
 
       if (phase === 'grading') {
-        if (isSelected) btn.classList.add('is-selected');
-        else btn.classList.add('is-default');
+        if (isSelected) btn.classList.add('cb-answer-card--selected');
+        else btn.classList.add('cb-answer-card--default');
         btn.disabled = true;
         btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
         return;
       }
 
       btn.disabled = false;
-      btn.classList.add(isSelected ? 'is-selected' : 'is-default');
+      btn.classList.add(isSelected ? 'cb-answer-card--selected' : 'cb-answer-card--default');
       btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
     });
   }
@@ -289,7 +288,6 @@ function renderChoiceQuiz(props, quiz) {
     selectedIds.clear();
     setPhase('idle');
     sheetHost.replaceChildren();
-    submitBtn.hidden = false;
     submitBtn.textContent = '확인';
     syncCards();
     syncSubmitEnabled();
@@ -309,28 +307,24 @@ function renderChoiceQuiz(props, quiz) {
       if (isCorrect) {
         setPhase('correct');
         syncCards();
-        submitBtn.hidden = true;
         const fb = quiz.feedback.correct;
         sheetHost.replaceChildren(
           createFeedbackSheet({
             variant: 'correct',
             title: fb.title,
-            body: fb.body,
-            actionLabel: '계속하기',
+            actionLabel: 'CONTINUE',
             onAction: () => props.onCorrectContinue(),
           })
         );
       } else {
         setPhase('incorrect');
         syncCards();
-        submitBtn.hidden = true;
         const fb = quiz.feedback.incorrect;
         sheetHost.replaceChildren(
           createFeedbackSheet({
             variant: 'incorrect',
             title: fb.title,
-            body: fb.body,
-            actionLabel: '다시 선택하기',
+            actionLabel: 'CONTINUE',
             onAction: () => resetToIdle(),
           })
         );
@@ -357,14 +351,14 @@ function fillAnswerCardContent(btn, choice) {
   const wantsMediaSlot = Object.prototype.hasOwnProperty.call(choice, 'image');
 
   if (imageValue) {
-    btn.classList.add('has-image');
+    btn.classList.add('cb-answer-card--has-image');
     const img = document.createElement('img');
-    img.className = 'answer-card__image';
+    img.className = 'cb-answer-card__image';
     img.alt = choice.alt || choice.label;
     img.decoding = 'async';
 
     const label = document.createElement('span');
-    label.className = 'answer-card__label';
+    label.className = 'cb-answer-card__label';
     label.textContent = choice.label;
 
     img.addEventListener('error', () => {
@@ -377,17 +371,17 @@ function fillAnswerCardContent(btn, choice) {
   }
 
   if (wantsMediaSlot) {
-    btn.classList.add('has-image');
+    btn.classList.add('cb-answer-card--has-image');
     const label = document.createElement('span');
-    label.className = 'answer-card__label';
+    label.className = 'cb-answer-card__label';
     label.textContent = choice.label;
     btn.append(createNamePlaceholder(choice), label);
     return;
   }
 
-  btn.classList.remove('has-image');
+  btn.classList.remove('cb-answer-card--has-image');
   const label = document.createElement('span');
-  label.className = 'answer-card__label';
+  label.className = 'cb-answer-card__label';
   label.textContent = choice.label;
   btn.append(label);
 }
@@ -397,7 +391,7 @@ function fillAnswerCardContent(btn, choice) {
  */
 function createNamePlaceholder(choice) {
   const placeholder = document.createElement('span');
-  placeholder.className = 'answer-card__placeholder';
+  placeholder.className = 'cb-answer-card__placeholder';
   placeholder.setAttribute('role', 'img');
   placeholder.setAttribute('aria-label', choice.alt || choice.label);
   placeholder.textContent = choice.label.slice(0, 1);

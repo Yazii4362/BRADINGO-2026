@@ -1,0 +1,115 @@
+/**
+ * Motion / keyframes — Duolingo-like sheet + screen transitions.
+ */
+
+@keyframes ending-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes memory-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@keyframes screen-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes feedback-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.screen--enter {
+  animation: screen-enter var(--motion-screen) var(--ease-out) both;
+}
+
+.quiz-sheet-host:not(:empty) .cb-feedback-sheet {
+  animation: feedback-slide-up var(--motion-sheet) var(--ease-out) both;
+}
+
+/* Node start sheet open / leave (Duolingo START bubble) */
+.cb-node-start-sheet__overlay {
+  opacity: 0;
+  transition: opacity var(--motion-sheet) var(--ease-standard);
+}
+
+.cb-node-start-sheet__overlay.is-open {
+  opacity: 1;
+}
+
+.cb-node-start-sheet__overlay.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cb-node-start-sheet {
+  opacity: 0;
+  transform: translateY(16px) scale(0.92);
+  transition:
+    opacity var(--motion-sheet) var(--ease-out),
+    transform var(--motion-sheet) var(--ease-out);
+}
+
+.cb-node-start-sheet__overlay.is-open .cb-node-start-sheet {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.cb-node-start-sheet__overlay.is-leaving .cb-node-start-sheet {
+  opacity: 0;
+  transform: translateY(10px) scale(0.94);
+  transition-timing-function: var(--ease-in);
+}
+
+.cb-node-start-sheet__cta.is-pressed {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 2px 0 var(--start-cta-edge);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ending-confetti,
+  .ending-title,
+  .screen--enter,
+  .quiz-sheet-host:not(:empty) .cb-feedback-sheet {
+    animation: none;
+  }
+
+  .cb-memory-card__skeleton {
+    animation: none;
+  }
+
+  .cb-node-start-sheet__overlay,
+  .cb-node-start-sheet {
+    transition: none;
+  }
+
+  .cb-node-start-sheet {
+    opacity: 1;
+    transform: none;
+  }
+
+  .cb-node-start-sheet__overlay.is-open {
+    opacity: 1;
+  }
+}

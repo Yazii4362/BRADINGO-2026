@@ -1,36 +1,43 @@
 /**
  * Accessible confirm modal with backdrop, Escape, and basic focus handling.
+ * CB / Overlay / Confirm Modal
  * @param {{
  *   title: string,
  *   body: string,
  *   confirmLabel: string,
  *   cancelLabel: string,
+ *   confirmVariant?: 'primary' | 'danger',
  *   onConfirm: () => void,
  *   onCancel: () => void
  * }} props
  */
 export function openConfirmModal(props) {
+  const confirmClass =
+    props.confirmVariant === 'danger'
+      ? 'cb-button cb-button--danger'
+      : 'cb-button cb-button--primary';
+
   const previouslyFocused = document.activeElement instanceof HTMLElement
     ? document.activeElement
     : null;
 
   const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  overlay.className = 'cb-confirm-modal__overlay';
   overlay.setAttribute('role', 'presentation');
 
   const dialog = document.createElement('div');
-  dialog.className = 'modal';
+  dialog.className = 'cb-confirm-modal';
   dialog.setAttribute('role', 'dialog');
   dialog.setAttribute('aria-modal', 'true');
   dialog.setAttribute('aria-labelledby', 'confirm-modal-title');
   dialog.setAttribute('aria-describedby', 'confirm-modal-desc');
 
   dialog.innerHTML = `
-    <h2 id="confirm-modal-title" class="modal__title">${props.title}</h2>
-    <p id="confirm-modal-desc" class="modal__body">${props.body}</p>
-    <div class="modal__actions">
-      <button type="button" class="btn btn--ghost" data-action="cancel">${props.cancelLabel}</button>
-      <button type="button" class="btn btn--primary" data-action="confirm">${props.confirmLabel}</button>
+    <h2 id="confirm-modal-title" class="cb-confirm-modal__title">${props.title}</h2>
+    <p id="confirm-modal-desc" class="cb-confirm-modal__body">${props.body}</p>
+    <div class="cb-confirm-modal__actions">
+      <button type="button" class="cb-button cb-button--ghost cb-button--fill" data-action="cancel">${props.cancelLabel}</button>
+      <button type="button" class="${confirmClass} cb-button--fill" data-action="confirm">${props.confirmLabel}</button>
     </div>
   `;
 

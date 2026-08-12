@@ -45,8 +45,8 @@ export function renderEnding(props) {
     <div class="ending-glow" aria-hidden="true"></div>
     ${reduceMotion ? '' : '<div class="ending-confetti" aria-hidden="true"></div>'}
     <header class="ending-header">
-      <p class="ending-eyebrow">LEVEL CLEAR</p>
-      ${props.mode === 'replay' ? '<span class="quiz-replay-badge ending-replay">다시 보기</span>' : ''}
+      <p class="ending-eyebrow">${stats.wordmark}</p>
+      ${props.mode === 'replay' ? '<span class="cb-replay-badge ending-replay">다시 보기</span>' : ''}
     </header>
     <div class="ending-hero" role="img" aria-label="${stats.heroAlt}">
       ${
@@ -58,16 +58,16 @@ export function renderEnding(props) {
     <h1 class="ending-title">${stats.title}</h1>
     <p class="ending-subtitle">${stats.subtitle}</p>
     <ul class="ending-stats" aria-label="완료 기록">
-      <li><span>완료 챕터</span><strong>${completedDisplay}/${stats.totalNodes}</strong></li>
-      <li><span>스트릭</span><strong>${stats.streakDays}일</strong></li>
-      <li><span>추억 사진</span><strong>${stats.memoryCount}장</strong></li>
-      <li><span>친구 메시지</span><strong>${stats.friendMessageCount}명</strong></li>
+      <li class="cb-ending-stat"><span>완료 챕터</span><strong>${completedDisplay}/${stats.totalNodes}</strong></li>
+      <li class="cb-ending-stat"><span>스트릭</span><strong>${stats.streakDays}일</strong></li>
+      <li class="cb-ending-stat"><span>추억 사진</span><strong>${stats.memoryCount}장</strong></li>
+      <li class="cb-ending-stat"><span>친구 메시지</span><strong>${stats.friendMessageCount}명</strong></li>
     </ul>
     <p class="ending-status" role="status" aria-live="polite"></p>
     <div class="ending-actions">
-      <button type="button" class="btn btn--ghost ending-btn" data-action="review">다시 보기</button>
-      <button type="button" class="btn btn--primary ending-btn" data-action="export">이미지로 저장</button>
-      <button type="button" class="btn btn--ghost ending-btn" data-action="reset">처음부터 다시</button>
+      <button type="button" class="cb-button cb-button--primary cb-button--fill ending-btn" data-action="export">이미지로 저장</button>
+      <button type="button" class="cb-button cb-button--ghost-dark cb-button--fill ending-btn" data-action="review">다시 보기</button>
+      <button type="button" class="cb-button cb-button--danger cb-button--fill ending-btn" data-action="reset">처음부터 다시</button>
     </div>
   `;
 
@@ -81,9 +81,10 @@ export function renderEnding(props) {
   el.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
     openConfirmModal({
       title: '정말 처음부터 시작할까요?',
-      body: '완료한 여정이 모두 초기화돼요.',
+      body: '지금까지의 진행 기록이 모두 지워져요.',
       cancelLabel: '취소',
-      confirmLabel: '초기화하기',
+      confirmLabel: '처음부터 다시',
+      confirmVariant: 'danger',
       onCancel: () => {},
       onConfirm: () => props.onResetConfirmed(),
     });
@@ -99,7 +100,7 @@ export function renderEnding(props) {
     if (statusEl) statusEl.textContent = message;
     if (exportBtn instanceof HTMLButtonElement) {
       exportBtn.disabled = next === 'generating';
-      exportBtn.classList.toggle('is-loading', next === 'generating');
+      exportBtn.classList.toggle('cb-button--loading', next === 'generating');
       if (next === 'failure') {
         exportBtn.textContent = '다시 시도';
       } else if (next === 'generating') {

@@ -27,10 +27,10 @@ export function renderMemory(props) {
   const header = document.createElement('header');
   header.className = 'memory-header';
   header.innerHTML = `
-    <button type="button" class="quiz-close" aria-label="닫기" data-action="close">X</button>
+    <button type="button" class="cb-close-btn" aria-label="닫기" data-action="close">X</button>
     <div class="quiz-header__meta">
       <p class="screen__eyebrow">S04 · ${props.nodeId.toUpperCase()}</p>
-      ${props.mode === 'replay' ? '<span class="quiz-replay-badge">다시 보기</span>' : ''}
+      ${props.mode === 'replay' ? '<span class="cb-replay-badge">다시 보기</span>' : ''}
     </div>
   `;
 
@@ -55,7 +55,7 @@ export function renderMemory(props) {
 
   const completeBtn = document.createElement('button');
   completeBtn.type = 'button';
-  completeBtn.className = 'btn btn--primary memory-complete';
+  completeBtn.className = 'cb-button cb-button--primary cb-button--fill memory-complete';
   completeBtn.textContent = props.mode === 'replay' ? '맵으로 돌아가기' : '추억 감상 완료';
   if (props.mode === 'play') {
     completeBtn.disabled = true;
@@ -106,8 +106,8 @@ function renderMemoryMissing(props) {
     <p class="screen__eyebrow">S04 · Memory</p>
     <h1 class="screen__title">${props.title}</h1>
     <div class="placeholder-box">추억 데이터가 없습니다.</div>
-    <div class="btn-row">
-      <button type="button" class="btn btn--ghost" data-action="back">맵으로 돌아가기</button>
+    <div class="cb-button-row">
+      <button type="button" class="cb-button cb-button--ghost" data-action="back">맵으로 돌아가기</button>
     </div>
   `;
   el.querySelector('[data-action="back"]')?.addEventListener('click', props.onBackToMap);
@@ -122,24 +122,24 @@ function createMemoryItem(memory) {
   let mediaState = memory.image ? 'loading' : 'empty';
 
   const item = document.createElement('article');
-  item.className = 'memory-item';
+  item.className = 'cb-memory-card';
   item.dataset.memoryId = memory.id;
   item.dataset.mediaState = mediaState;
 
   const media = document.createElement('div');
-  media.className = 'memory-item__media';
+  media.className = 'cb-memory-card__media';
 
   const meta = document.createElement('div');
-  meta.className = 'memory-item__meta';
+  meta.className = 'cb-memory-card__meta';
 
   const caption = document.createElement('p');
-  caption.className = 'memory-item__caption';
+  caption.className = 'cb-memory-card__caption';
   caption.textContent = memory.caption;
 
   meta.appendChild(caption);
   if (memory.date) {
     const date = document.createElement('p');
-    date.className = 'memory-item__date';
+    date.className = 'cb-memory-card__date';
     date.textContent = memory.date;
     meta.appendChild(date);
   }
@@ -158,7 +158,7 @@ function createMemoryItem(memory) {
     if (!memory.image) {
       setMediaState('empty');
       const placeholder = document.createElement('div');
-      placeholder.className = 'memory-item__placeholder';
+      placeholder.className = 'cb-memory-card__placeholder';
       placeholder.textContent = '사진 placeholder';
       placeholder.setAttribute('role', 'img');
       placeholder.setAttribute('aria-label', memory.alt || '추억 사진 placeholder');
@@ -168,12 +168,12 @@ function createMemoryItem(memory) {
 
     setMediaState('loading');
     const skeleton = document.createElement('div');
-    skeleton.className = 'memory-item__skeleton';
+    skeleton.className = 'cb-memory-card__skeleton';
     skeleton.setAttribute('aria-hidden', 'true');
     media.appendChild(skeleton);
 
     const img = document.createElement('img');
-    img.className = 'memory-item__image';
+    img.className = 'cb-memory-card__image';
     img.alt = memory.alt || '';
     img.decoding = 'async';
     img.hidden = true;
@@ -188,12 +188,12 @@ function createMemoryItem(memory) {
       setMediaState('error');
       media.replaceChildren();
       const errorBox = document.createElement('div');
-      errorBox.className = 'memory-item__error';
+      errorBox.className = 'cb-memory-card__error';
       errorBox.innerHTML = `
-        <p class="memory-item__error-text">이미지를 불러오지 못했어요</p>
-        <button type="button" class="btn btn--ghost memory-item__retry">다시 시도</button>
+        <p class="cb-memory-card__error-text">이미지를 불러오지 못했어요</p>
+        <button type="button" class="cb-button cb-button--ghost cb-memory-card__retry">다시 시도</button>
       `;
-      errorBox.querySelector('.memory-item__retry')?.addEventListener('click', () => {
+      errorBox.querySelector('.cb-memory-card__retry')?.addEventListener('click', () => {
         renderMedia();
       });
       media.appendChild(errorBox);

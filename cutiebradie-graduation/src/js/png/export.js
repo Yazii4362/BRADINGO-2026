@@ -10,22 +10,22 @@ export const PNG_SIZE = Object.freeze({ width: 1080, height: 1920 });
 export function createExportCard(progress = null) {
   const stats = getGraduationStats(progress);
   const card = document.createElement('div');
-  card.className = 'export-card';
+  card.className = 'cb-export-card';
   card.setAttribute('aria-hidden', 'true');
   card.style.width = `${PNG_SIZE.width}px`;
   card.style.height = `${PNG_SIZE.height}px`;
 
   const hero = stats.heroImage
-    ? `<img class="export-card__hero-img" src="${stats.heroImage}" alt="${stats.heroAlt}" />`
-    : `<div class="export-card__hero-fallback" role="img" aria-label="${stats.heroAlt}">졸업 축하</div>`;
+    ? `<img class="cb-export-card__hero-img" src="${stats.heroImage}" alt="${stats.heroAlt}" />`
+    : `<div class="cb-export-card__hero-fallback" role="img" aria-label="${stats.heroAlt}">졸업 축하</div>`;
 
   card.innerHTML = `
-    <div class="export-card__inner">
-      <p class="export-card__wordmark">${stats.wordmark}</p>
-      <div class="export-card__hero">${hero}</div>
-      <h1 class="export-card__title">${stats.title}</h1>
-      <p class="export-card__subtitle">${stats.exportSubtitle}</p>
-      <ul class="export-card__stats">
+    <div class="cb-export-card__inner">
+      <p class="cb-export-card__wordmark">${stats.wordmark}</p>
+      <div class="cb-export-card__hero">${hero}</div>
+      <h1 class="cb-export-card__title">${stats.title}</h1>
+      <p class="cb-export-card__subtitle">${stats.exportSubtitle}</p>
+      <ul class="cb-export-card__stats">
         <li>완료 챕터 ${stats.completedCount}/${stats.totalNodes}</li>
         <li>스트릭 ${stats.streakDays}일</li>
         <li>추억 사진 ${stats.memoryCount}장</li>
@@ -90,7 +90,7 @@ export async function renderExportCardToPngBlob(card) {
     height: PNG_SIZE.height,
     pixelRatio: 1,
     cacheBust: false,
-    backgroundColor: '#10182b',
+    backgroundColor: '#112d51',
   });
 
   if (!blob) {
@@ -144,14 +144,14 @@ export function showPngPreview(blob) {
     ? document.activeElement
     : null;
   const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay png-preview-overlay';
+  overlay.className = 'cb-confirm-modal__overlay png-preview-overlay';
   overlay.innerHTML = `
-    <div class="modal png-preview" role="dialog" aria-modal="true" aria-labelledby="png-preview-title">
-      <h2 id="png-preview-title" class="modal__title">이미지가 준비됐어요</h2>
-      <p class="modal__body">이미지를 길게 눌러 저장해 주세요.</p>
+    <div class="cb-confirm-modal png-preview" role="dialog" aria-modal="true" aria-labelledby="png-preview-title">
+      <h2 id="png-preview-title" class="cb-confirm-modal__title">이미지가 준비됐어요</h2>
+      <p class="cb-confirm-modal__body">이미지를 길게 눌러 저장해 주세요.</p>
       <img class="png-preview__img" src="${url}" alt="졸업 축하 카드 미리보기" />
-      <div class="modal__actions">
-        <button type="button" class="btn btn--primary" data-action="close">닫기</button>
+      <div class="cb-confirm-modal__actions">
+        <button type="button" class="cb-button cb-button--primary" data-action="close">닫기</button>
       </div>
     </div>
   `;

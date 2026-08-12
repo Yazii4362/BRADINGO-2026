@@ -1,3 +1,11 @@
+/** Shared brand / course copy used across intro, map, ending, and export card. */
+export const BRAND = Object.freeze({
+  wordmark: 'BRADINGO',
+  courseName: 'UOS LIFE',
+  courseTitle: '병건이의 UOS LIFE',
+  coursePeriod: '2018.3 - 2026.8',
+});
+
 /** @typedef {'single' | 'multi' | 'content' | 'ending'} NodeType */
 
 /**
@@ -86,7 +94,7 @@ export const QUIZZES = Object.freeze({
         body: '병건이는 듀오링고 스트릭을 700일 넘게 이어왔어요.',
       }),
       incorrect: Object.freeze({
-        title: '아쉬워요!',
+        title: '오답입니다!',
         body: '병건이의 듀오링고 스트릭은 700일이에요.',
       }),
     }),
@@ -107,7 +115,7 @@ export const QUIZZES = Object.freeze({
         body: '병건이는 새벽 조깅과 아침 식사를 마친 뒤에도\n1교시 수업을 성실하게 들었어요.',
       }),
       incorrect: Object.freeze({
-        title: '아쉬워요!',
+        title: '오답입니다!',
         body: '병건이는 시카고 교환학생, 호주 워킹홀리데이,\n제주도와 강원대학교 학점교류를 모두 했어요.',
       }),
     }),
@@ -125,11 +133,11 @@ export const QUIZZES = Object.freeze({
     correctChoiceIds: Object.freeze(['dabin', 'yaji', 'yubinu', 'gaeuni']),
     feedback: Object.freeze({
       correct: Object.freeze({
-        title: '다 왔어요!',
+        title: '정답입니다!',
         body: '병건이의 졸업을 축하하려고 친구들이 모두 모였어요.',
       }),
       incorrect: Object.freeze({
-        title: '아직 누군가 빠졌어요!',
+        title: '오답입니다!',
         body: '병건이를 축하하러 온 친구 네 명을 모두 선택해 주세요.',
       }),
     }),
@@ -209,10 +217,10 @@ export function getGraduationStats(progress = null) {
     streakDays: 700,
     memoryCount: memoryContent?.memories.length ?? 0,
     friendMessageCount: multiQuiz?.correctChoiceIds.length ?? 0,
-    title: '졸업을 축하해, 병건아!',
-    subtitle: '길었던 학교생활의 마지막 레벨을 완료했어요.',
-    exportSubtitle: '마지막 레벨을 클리어한 병건이에게',
-    wordmark: '병건링고',
+    title: 'BRADUATION COMPLETE! 🎓',
+    subtitle: '병건이의 UOS LIFE가 완료되었어요.\n이제 새로운 챕터가 열렸어요.',
+    exportSubtitle: `${BRAND.courseTitle} · ${BRAND.coursePeriod}`,
+    wordmark: BRAND.wordmark,
     /** Set a local path later, e.g. ./assets/images/ending-hero.png */
     heroImage: '',
     heroAlt: '졸업 축하 일러스트',
