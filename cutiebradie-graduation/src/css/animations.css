@@ -49,20 +49,6 @@
 }
 
 /* Node start sheet open / leave (Duolingo START bubble) */
-.cb-node-start-sheet__overlay {
-  opacity: 0;
-  transition: opacity var(--motion-sheet) var(--ease-standard);
-}
-
-.cb-node-start-sheet__overlay.is-open {
-  opacity: 1;
-}
-
-.cb-node-start-sheet__overlay.is-leaving {
-  opacity: 0;
-  pointer-events: none;
-}
-
 .cb-node-start-sheet {
   opacity: 0;
   transform: translateY(16px) scale(0.92);
@@ -80,6 +66,10 @@
   opacity: 0;
   transform: translateY(10px) scale(0.94);
   transition-timing-function: var(--ease-in);
+}
+
+.cb-node-start-sheet__overlay.is-leaving {
+  pointer-events: none;
 }
 
 .cb-node-start-sheet__cta.is-pressed {
@@ -107,9 +97,5 @@
   .cb-node-start-sheet {
     opacity: 1;
     transform: none;
-  }
-
-  .cb-node-start-sheet__overlay.is-open {
-    opacity: 1;
   }
 }

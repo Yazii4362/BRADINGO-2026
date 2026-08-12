@@ -4,10 +4,10 @@
  */
 
 export const CHARACTER_LINES = Object.freeze([
-  '안녕, 나는 병건이야!',
-  '나의 졸업을 축하해줘서 고마워! 🎓',
-  "Hi, I'm Cutie Bradie!",
-  'Today I finally graduated!',
+  '안녕, 난 병건이야!',
+  '졸업 축하해줘서 고마워! 🎓',
+  "Hi, I'm Bradie!",
+  "I've finally graduated!",
 ]);
 
 /**

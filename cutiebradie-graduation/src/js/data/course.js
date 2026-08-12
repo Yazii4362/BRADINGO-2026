@@ -69,6 +69,8 @@ export const COURSE_NODES = Object.freeze([
  *   choiceType: 'single' | 'multi',
  *   question: string,
  *   instruction?: string,
+ *   badge?: string,
+ *   promptWord?: string,
  *   choices: ReadonlyArray<{ id: string, label: string, image?: string, alt?: string }>,
  *   correctChoiceIds: ReadonlyArray<string>,
  *   feedback: {
@@ -80,22 +82,24 @@ export const COURSE_NODES = Object.freeze([
 export const QUIZZES = Object.freeze({
   n1: Object.freeze({
     choiceType: 'single',
-    question: '병건이가 지금까지 이어온 듀오링고 스트릭은 며칠일까요?',
+    badge: 'NEW WORD',
+    question: 'Select the correct image',
+    promptWord: '정병건',
     choices: Object.freeze([
-      Object.freeze({ id: 'c100', label: '100일' }),
-      Object.freeze({ id: 'c365', label: '365일' }),
-      Object.freeze({ id: 'c700', label: '700일' }),
-      Object.freeze({ id: 'c1000', label: '1000일' }),
+      Object.freeze({ id: 'jeong', label: '정병건', image: '', alt: '정병건' }),
+      Object.freeze({ id: 'pong', label: '뽕꼬니', image: '', alt: '뽕꼬니' }),
+      Object.freeze({ id: 'bbang', label: '시립대건빵', image: '', alt: '시립대건빵' }),
+      Object.freeze({ id: 'bradie', label: 'Bradie', image: '', alt: 'Bradie' }),
     ]),
-    correctChoiceIds: Object.freeze(['c700']),
+    correctChoiceIds: Object.freeze(['jeong']),
     feedback: Object.freeze({
       correct: Object.freeze({
         title: '정답입니다!',
-        body: '병건이는 듀오링고 스트릭을 700일 넘게 이어왔어요.',
+        body: '병건이의 본명은 정병건이에요.',
       }),
       incorrect: Object.freeze({
         title: '오답입니다!',
-        body: '병건이의 듀오링고 스트릭은 700일이에요.',
+        body: '정답은 정병건이에요.',
       }),
     }),
   }),

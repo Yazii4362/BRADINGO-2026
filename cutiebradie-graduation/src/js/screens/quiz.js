@@ -1,6 +1,8 @@
 import { getQuizByNodeId } from '../data/course.js';
 import { createFeedbackSheet } from '../components/feedback-sheet.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
+import { createQuizProgressHeader } from '../components/quiz-progress-header.js';
+import { createQuizPrompt } from '../components/quiz-prompt.js';
 
 /** @type {{ close: () => void } | null} */
 let quizExitModal = null;
@@ -136,21 +138,19 @@ function renderChoiceQuiz(props, quiz) {
   el.dataset.mode = props.mode;
   el.dataset.choiceType = quiz.choiceType;
   el.dataset.phase = phase;
+  if (quiz.promptWord) el.dataset.layout = 'image-select';
 
-  const header = document.createElement('header');
-  header.className = 'quiz-header';
-  header.innerHTML = `
-    <button type="button" class="cb-close-btn" aria-label="문제 닫기" data-action="close">X</button>
-    <div class="quiz-header__meta">
-      <p class="screen__eyebrow">S03 · ${props.nodeId.toUpperCase()}</p>
-      ${props.mode === 'replay' ? '<span class="cb-replay-badge">다시 보기</span>' : ''}
-    </div>
-  `;
+  const header = createQuizProgressHeader({
+    progress: 0.08,
+    onClose: () => requestExit(),
+  });
 
-  const title = document.createElement('h1');
-  title.className = 'screen__title quiz-question';
-  title.id = 'quiz-question-title';
-  title.textContent = quiz.question;
+  const prompt = createQuizPrompt({
+    badge: quiz.badge,
+    instruction: quiz.question,
+    promptWord: quiz.promptWord,
+    promptId: 'quiz-question-title',
+  });
 
   /** @type {HTMLParagraphElement | null} */
   let instruction = null;
@@ -193,7 +193,7 @@ function renderChoiceQuiz(props, quiz) {
   const submitBtn = document.createElement('button');
   submitBtn.type = 'button';
   submitBtn.className = 'cb-button cb-button--primary cb-button--fill quiz-submit';
-  submitBtn.textContent = '확인';
+  submitBtn.textContent = 'CHECK';
   submitBtn.disabled = true;
   submitBtn.addEventListener('click', submit);
 
@@ -203,12 +203,10 @@ function renderChoiceQuiz(props, quiz) {
   sheetHost.className = 'quiz-sheet-host';
 
   if (instruction) {
-    el.append(header, title, instruction, list, footer, sheetHost);
+    el.append(header, prompt, instruction, list, footer, sheetHost);
   } else {
-    el.append(header, title, list, footer, sheetHost);
+    el.append(header, prompt, list, footer, sheetHost);
   }
-
-  header.querySelector('[data-action="close"]')?.addEventListener('click', requestExit);
 
   function setPhase(next) {
     phase = next;
@@ -288,7 +286,7 @@ function renderChoiceQuiz(props, quiz) {
     selectedIds.clear();
     setPhase('idle');
     sheetHost.replaceChildren();
-    submitBtn.textContent = '확인';
+    submitBtn.textContent = 'CHECK';
     syncCards();
     syncSubmitEnabled();
   }
@@ -371,11 +369,12 @@ function fillAnswerCardContent(btn, choice) {
   }
 
   if (wantsMediaSlot) {
-    btn.classList.add('cb-answer-card--has-image');
+    // Empty image path: text-only card until assets arrive (matches N1 mock).
+    btn.classList.remove('cb-answer-card--has-image');
     const label = document.createElement('span');
     label.className = 'cb-answer-card__label';
     label.textContent = choice.label;
-    btn.append(createNamePlaceholder(choice), label);
+    btn.append(label);
     return;
   }
 

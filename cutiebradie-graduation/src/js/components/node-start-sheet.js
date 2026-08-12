@@ -24,7 +24,7 @@ export function openNodeStartSheet(props) {
   const sheet = document.createElement('div');
   sheet.className = 'cb-node-start-sheet';
   sheet.setAttribute('role', 'dialog');
-  sheet.setAttribute('aria-modal', 'true');
+  sheet.setAttribute('aria-modal', 'false');
   sheet.setAttribute('aria-labelledby', 'node-start-title');
 
   sheet.innerHTML = `

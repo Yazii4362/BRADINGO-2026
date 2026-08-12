@@ -1,4 +1,5 @@
 import { getMemoryByNodeId } from '../data/course.js';
+import { createQuizProgressHeader } from '../components/quiz-progress-header.js';
 
 /**
  * N3 content screen — scrollable memories + end-gated complete CTA.
@@ -24,15 +25,10 @@ export function renderMemory(props) {
   el.dataset.nodeId = props.nodeId;
   el.dataset.mode = props.mode;
 
-  const header = document.createElement('header');
-  header.className = 'memory-header';
-  header.innerHTML = `
-    <button type="button" class="cb-close-btn" aria-label="닫기" data-action="close">X</button>
-    <div class="quiz-header__meta">
-      <p class="screen__eyebrow">S04 · ${props.nodeId.toUpperCase()}</p>
-      ${props.mode === 'replay' ? '<span class="cb-replay-badge">다시 보기</span>' : ''}
-    </div>
-  `;
+  const header = createQuizProgressHeader({
+    progress: 0.35,
+    onClose: () => props.onBackToMap(),
+  });
 
   const title = document.createElement('h1');
   title.className = 'screen__title';
@@ -71,8 +67,6 @@ export function renderMemory(props) {
 
   footer.appendChild(completeBtn);
   el.append(header, title, scroll, footer);
-
-  header.querySelector('[data-action="close"]')?.addEventListener('click', props.onBackToMap);
 
   function enableComplete() {
     if (reachedEnd) return;

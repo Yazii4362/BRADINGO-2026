@@ -153,6 +153,13 @@
   --radius-lg: 16px;
   --radius-pill: 999px;
 
+  /* Header slot — shared across map / quiz / memory (Figma quiz bar ≈ 64) */
+  --header-height: 48px;
+  --header-icon-size: 28px;
+  --header-close-size: 28px;
+  --header-progress-height: 16px;
+  --header-gap: var(--space-3);
+
   /* Motion */
   --motion-fast: 120ms;
   --motion-sheet: 240ms;
@@ -162,7 +169,7 @@
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   /* App semantic aliases */
-  --bg: var(--neutral-200);
+  --bg: var(--neutral-100);
   --surface: var(--neutral-100);
   --text: var(--neutral-1000);
   --muted: var(--neutral-800);
