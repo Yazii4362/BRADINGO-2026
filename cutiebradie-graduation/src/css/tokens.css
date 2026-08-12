@@ -142,6 +142,14 @@
 
   /* Layout */
   --app-max: 430px;
+  --app-max-tablet: 768px;
+  --app-max-landscape: 1024px;
+  --map-canvas-max: 100%;
+  --content-max: 100%;
+  --feedback-max: 100%;
+  --page-padding: 16px;
+  --page-padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  --page-gutter: 12px;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -153,12 +161,14 @@
   --radius-lg: 16px;
   --radius-pill: 999px;
 
-  /* Header slot — shared across map / quiz / memory (Figma quiz bar ≈ 64) */
+  /* Header / controls */
   --header-height: 48px;
   --header-icon-size: 28px;
   --header-close-size: 28px;
   --header-progress-height: 16px;
   --header-gap: var(--space-3);
+  --control-height: 52px;
+  --control-height-min: 44px;
 
   /* Motion */
   --motion-fast: 120ms;
@@ -228,4 +238,26 @@
   --map-callout-radius: var(--radius-sm);
   --map-callout-green: var(--feather-green-600);
   --font-map: "Nunito", "Noto Sans KR", system-ui, sans-serif;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-padding: 32px;
+    --page-gutter: 16px;
+    --page-padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    --map-canvas-max: 600px;
+    --content-max: 600px;
+    --feedback-max: 560px;
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --page-padding: 40px;
+    --page-gutter: 16px;
+    --page-padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+    --map-canvas-max: 640px;
+    --content-max: 640px;
+    --feedback-max: 600px;
+  }
 }

@@ -67,6 +67,7 @@ export const COURSE_NODES = Object.freeze([
  * `choiceType` drives single vs multi behavior in the shared quiz engine.
  * @type {Readonly<Record<string, {
  *   choiceType: 'single' | 'multi',
+ *   layout?: 'image' | 'text' | 'character',
  *   question: string,
  *   instruction?: string,
  *   badge?: string,
@@ -82,6 +83,7 @@ export const COURSE_NODES = Object.freeze([
 export const QUIZZES = Object.freeze({
   n1: Object.freeze({
     choiceType: 'single',
+    layout: 'image',
     badge: 'NEW WORD',
     question: 'Select the correct image',
     promptWord: '정병건',
@@ -105,6 +107,7 @@ export const QUIZZES = Object.freeze({
   }),
   n2: Object.freeze({
     choiceType: 'single',
+    layout: 'text',
     question: '병건이가 한 일이 아닌 것은?',
     choices: Object.freeze([
       Object.freeze({ id: 'chicago', label: '시카고 교환학생' }),
@@ -126,6 +129,7 @@ export const QUIZZES = Object.freeze({
   }),
   n4: Object.freeze({
     choiceType: 'multi',
+    layout: 'character',
     question: '누가 병건이 졸업을 축하하러 왔나요?',
     instruction: '해당하는 답을 모두 선택하세요.',
     choices: Object.freeze([

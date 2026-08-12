@@ -1,4 +1,4 @@
-import { getQuizByNodeId } from '../data/course.js';
+import { COURSE_NODES, getQuizByNodeId } from '../data/course.js';
 import { createFeedbackSheet } from '../components/feedback-sheet.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
 import { createQuizProgressHeader } from '../components/quiz-progress-header.js';
@@ -138,10 +138,15 @@ function renderChoiceQuiz(props, quiz) {
   el.dataset.mode = props.mode;
   el.dataset.choiceType = quiz.choiceType;
   el.dataset.phase = phase;
-  if (quiz.promptWord) el.dataset.layout = 'image-select';
+  const layout = quiz.layout ?? (quiz.promptWord ? 'image' : 'text');
+  el.dataset.layout = layout;
+
+  const nodeIndex = COURSE_NODES.findIndex((node) => node.id === props.nodeId);
+  const lessonProgress =
+    nodeIndex >= 0 ? (nodeIndex + 1) / COURSE_NODES.length : 0.2;
 
   const header = createQuizProgressHeader({
-    progress: 0.08,
+    progress: lessonProgress,
     onClose: () => requestExit(),
   });
 
@@ -162,7 +167,8 @@ function renderChoiceQuiz(props, quiz) {
   }
 
   const list = document.createElement('div');
-  list.className = 'answer-list answer-list--grid-2x2';
+  list.className =
+    layout === 'text' ? 'answer-list answer-list--stack' : 'answer-list answer-list--grid-2x2';
   list.setAttribute('role', 'group');
   list.setAttribute('aria-labelledby', 'quiz-question-title');
   if (instruction) {
@@ -310,6 +316,7 @@ function renderChoiceQuiz(props, quiz) {
           createFeedbackSheet({
             variant: 'correct',
             title: fb.title,
+            body: fb.body,
             actionLabel: 'CONTINUE',
             onAction: () => props.onCorrectContinue(),
           })
@@ -322,7 +329,8 @@ function renderChoiceQuiz(props, quiz) {
           createFeedbackSheet({
             variant: 'incorrect',
             title: fb.title,
-            actionLabel: 'CONTINUE',
+            body: fb.body,
+            actionLabel: '다시 선택하기',
             onAction: () => resetToIdle(),
           })
         );

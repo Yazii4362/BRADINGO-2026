@@ -1,7 +1,12 @@
 import { BRAND, COURSE_NODES } from '../data/course.js';
 import { createAppHeader } from '../components/app-header.js';
 import { createCharacterBubbleController } from '../components/character-bubble.js';
-import { createMapNodeButton, getMapNodeAnchorRect } from '../components/map-node.js';
+import {
+  createMapNodeButton,
+  createMapPathConnector,
+  getMapNodeAnchorRect,
+  PATH_SLOTS,
+} from '../components/map-node.js';
 
 /**
  * @param {{
@@ -16,7 +21,9 @@ export function renderMap(props) {
   el.className = 'screen screen--map';
   el.dataset.screen = 'map';
 
-  el.appendChild(createAppHeader({ streak: 3095, gems: 2026 }));
+  const top = document.createElement('div');
+  top.className = 'map-top';
+  top.appendChild(createAppHeader({ streak: 3095, gems: 2026 }));
 
   const lastNodeReached =
     props.nodeStatus.n5 === 'active' || props.nodeStatus.n5 === 'completed';
@@ -52,18 +59,28 @@ export function renderMap(props) {
     if (profile instanceof HTMLElement) characterBubble.show(profile);
   });
 
-  el.appendChild(cover);
+  top.appendChild(cover);
 
   const progress = document.createElement('p');
   progress.className = 'map-progress';
   progress.textContent = buildProgressLabel(props.nodeStatus);
-  el.appendChild(progress);
+  top.appendChild(progress);
+
+  const canvas = document.createElement('div');
+  canvas.className = 'map-canvas';
 
   const path = document.createElement('div');
   path.className = 'map-path';
 
   COURSE_NODES.forEach((node, index) => {
     const status = props.nodeStatus[node.id] ?? 'locked';
+    const slot = PATH_SLOTS[index] ?? PATH_SLOTS[0];
+
+    if (index > 0) {
+      const prevLane = (PATH_SLOTS[index - 1] ?? PATH_SLOTS[0]).lane;
+      path.appendChild(createMapPathConnector(prevLane, slot.lane));
+    }
+
     const nodeWrap = createMapNodeButton(
       {
         id: node.id,
@@ -75,7 +92,8 @@ export function renderMap(props) {
         const target = event.currentTarget;
         if (!(target instanceof HTMLElement)) return;
         const item = target.closest('.map-path__item');
-        const anchor = item instanceof HTMLElement ? getMapNodeAnchorRect(item) : target.getBoundingClientRect();
+        const anchor =
+          item instanceof HTMLElement ? getMapNodeAnchorRect(item) : target.getBoundingClientRect();
         props.onNodeTap(node.id, status, anchor);
       }
     );
@@ -83,10 +101,22 @@ export function renderMap(props) {
     path.appendChild(nodeWrap);
   });
 
-  el.appendChild(path);
+  canvas.appendChild(path);
+  el.append(top, canvas);
+
+  const focusId =
+    props.highlightNodeId ||
+    COURSE_NODES.find((node) => props.nodeStatus[node.id] === 'active')?.id ||
+    null;
+
+  queueMicrotask(() => {
+    if (focusId) scrollMapNodeIntoView(el, focusId);
+  });
 
   if (props.highlightNodeId) {
-    const target = el.querySelector(`.map-path__item[data-node-id="${props.highlightNodeId}"] .cb-map-node`);
+    const target = el.querySelector(
+      `.map-path__item[data-node-id="${props.highlightNodeId}"] .cb-map-node`
+    );
     if (target instanceof HTMLElement) {
       playUnlockHighlight(target).finally(() => {
         props.onHighlightPlayed?.();
@@ -97,6 +127,22 @@ export function renderMap(props) {
   }
 
   return el;
+}
+
+/**
+ * @param {HTMLElement} mapScreen
+ * @param {string} nodeId
+ */
+function scrollMapNodeIntoView(mapScreen, nodeId) {
+  const target = mapScreen.querySelector(`.map-path__item[data-node-id="${nodeId}"] .cb-map-node`);
+  if (!(target instanceof HTMLElement) || !mapScreen.isConnected) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  target.scrollIntoView({
+    block: 'center',
+    inline: 'nearest',
+    behavior: reduceMotion ? 'auto' : 'smooth',
+  });
 }
 
 /**

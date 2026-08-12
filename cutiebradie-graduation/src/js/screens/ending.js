@@ -61,13 +61,13 @@ export function renderEnding(props) {
       <li class="cb-ending-stat"><span>완료 챕터</span><strong>${completedDisplay}/${stats.totalNodes}</strong></li>
       <li class="cb-ending-stat"><span>스트릭</span><strong>${stats.streakDays}일</strong></li>
       <li class="cb-ending-stat"><span>추억 사진</span><strong>${stats.memoryCount}장</strong></li>
-      <li class="cb-ending-stat"><span>친구 메시지</span><strong>${stats.friendMessageCount}명</strong></li>
+      <li class="cb-ending-stat"><span>축하 친구</span><strong>${stats.friendMessageCount}명</strong></li>
     </ul>
     <p class="ending-status" role="status" aria-live="polite"></p>
     <div class="ending-actions">
       <button type="button" class="cb-button cb-button--primary cb-button--fill ending-btn" data-action="export">이미지로 저장</button>
       <button type="button" class="cb-button cb-button--ghost-dark cb-button--fill ending-btn" data-action="review">다시 보기</button>
-      <button type="button" class="cb-button cb-button--danger cb-button--fill ending-btn" data-action="reset">처음부터 다시</button>
+      <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">처음부터 다시</button>
     </div>
   `;
 

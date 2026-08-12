@@ -1,4 +1,4 @@
-import { getMemoryByNodeId } from '../data/course.js';
+import { COURSE_NODES, getMemoryByNodeId } from '../data/course.js';
 import { createQuizProgressHeader } from '../components/quiz-progress-header.js';
 
 /**
@@ -25,8 +25,12 @@ export function renderMemory(props) {
   el.dataset.nodeId = props.nodeId;
   el.dataset.mode = props.mode;
 
+  const nodeIndex = COURSE_NODES.findIndex((node) => node.id === props.nodeId);
+  const lessonProgress =
+    nodeIndex >= 0 ? (nodeIndex + 1) / COURSE_NODES.length : 0.6;
+
   const header = createQuizProgressHeader({
-    progress: 0.35,
+    progress: lessonProgress,
     onClose: () => props.onBackToMap(),
   });
 
@@ -49,6 +53,11 @@ export function renderMemory(props) {
   const footer = document.createElement('div');
   footer.className = 'memory-footer';
 
+  const hint = document.createElement('p');
+  hint.className = 'memory-complete-hint';
+  hint.textContent = '끝까지 보면 완료할 수 있어요';
+  hint.hidden = props.mode !== 'play';
+
   const completeBtn = document.createElement('button');
   completeBtn.type = 'button';
   completeBtn.className = 'cb-button cb-button--primary cb-button--fill memory-complete';
@@ -65,7 +74,7 @@ export function renderMemory(props) {
     props.onComplete();
   });
 
-  footer.appendChild(completeBtn);
+  footer.append(hint, completeBtn);
   el.append(header, title, scroll, footer);
 
   function enableComplete() {
@@ -73,6 +82,7 @@ export function renderMemory(props) {
     reachedEnd = true;
     if (props.mode === 'play') {
       completeBtn.disabled = false;
+      hint.hidden = true;
     }
   }
 
