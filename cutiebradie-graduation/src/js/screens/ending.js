@@ -44,30 +44,36 @@ export function renderEnding(props) {
   el.innerHTML = `
     <div class="ending-glow" aria-hidden="true"></div>
     ${reduceMotion ? '' : '<div class="ending-confetti" aria-hidden="true"></div>'}
-    <header class="ending-header">
-      <p class="ending-eyebrow">${stats.wordmark}</p>
-      ${props.mode === 'replay' ? '<span class="cb-replay-badge ending-replay">다시 보기</span>' : ''}
-    </header>
-    <div class="ending-hero" role="img" aria-label="${stats.heroAlt}">
-      ${
-        stats.heroImage
-          ? `<img class="ending-hero__img" src="${stats.heroImage}" alt="${stats.heroAlt}" />`
-          : '<div class="ending-hero__fallback">졸업 축하 일러스트</div>'
-      }
-    </div>
-    <h1 class="ending-title">${stats.title}</h1>
-    <p class="ending-subtitle">${stats.subtitle}</p>
-    <ul class="ending-stats" aria-label="완료 기록">
-      <li class="cb-ending-stat"><span>완료 챕터</span><strong>${completedDisplay}/${stats.totalNodes}</strong></li>
-      <li class="cb-ending-stat"><span>스트릭</span><strong>${stats.streakDays}일</strong></li>
-      <li class="cb-ending-stat"><span>추억 사진</span><strong>${stats.memoryCount}장</strong></li>
-      <li class="cb-ending-stat"><span>축하 친구</span><strong>${stats.friendMessageCount}명</strong></li>
-    </ul>
-    <p class="ending-status" role="status" aria-live="polite"></p>
-    <div class="ending-actions">
-      <button type="button" class="cb-button cb-button--primary cb-button--fill ending-btn" data-action="export">이미지로 저장</button>
-      <button type="button" class="cb-button cb-button--ghost-dark cb-button--fill ending-btn" data-action="review">다시 보기</button>
-      <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">처음부터 다시</button>
+    <div class="ending-body">
+      <div class="ending-pane ending-pane--hero">
+        <div class="ending-hero" role="img" aria-label="${stats.heroAlt}">
+          ${
+            stats.heroImage
+              ? `<img class="ending-hero__img" src="${stats.heroImage}" alt="${stats.heroAlt}" />`
+              : '<div class="ending-hero__fallback">졸업 축하 일러스트</div>'
+          }
+        </div>
+      </div>
+      <div class="ending-pane ending-pane--copy">
+        <header class="ending-header">
+          <p class="ending-eyebrow">${stats.wordmark}</p>
+          ${props.mode === 'replay' ? '<span class="cb-replay-badge ending-replay">다시 보기</span>' : ''}
+        </header>
+        <h1 class="ending-title">${stats.title}</h1>
+        <p class="ending-subtitle">${stats.subtitle}</p>
+        <ul class="ending-stats" aria-label="완료 기록">
+          <li class="cb-ending-stat"><span>완료 챕터</span><strong>${completedDisplay}/${stats.totalNodes}</strong></li>
+          <li class="cb-ending-stat"><span>스트릭</span><strong>${stats.streakDays}일</strong></li>
+          <li class="cb-ending-stat"><span>추억 사진</span><strong>${stats.memoryCount}장</strong></li>
+          <li class="cb-ending-stat"><span>축하 친구</span><strong>${stats.friendMessageCount}명</strong></li>
+        </ul>
+        <p class="ending-status" role="status" aria-live="polite"></p>
+        <div class="ending-actions">
+          <button type="button" class="cb-button cb-button--primary cb-button--fill ending-btn" data-action="export">이미지로 저장</button>
+          <button type="button" class="cb-button cb-button--ghost-dark cb-button--fill ending-btn" data-action="review">다시 보기</button>
+          <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">처음부터 다시</button>
+        </div>
+      </div>
     </div>
   `;
 

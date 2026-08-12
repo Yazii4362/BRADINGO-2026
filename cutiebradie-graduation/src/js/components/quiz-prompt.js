@@ -11,7 +11,7 @@ export function createQuizPrompt(props) {
   const el = document.createElement('div');
   el.className = 'cb-quiz-prompt';
 
-  const badge = props.badge ?? 'NEW WORD';
+  const badge = props.badge ?? '새 단어';
   const word = props.promptWord?.trim() || '';
 
   el.innerHTML = `

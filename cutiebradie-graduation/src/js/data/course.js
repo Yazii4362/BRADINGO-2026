@@ -84,7 +84,7 @@ export const QUIZZES = Object.freeze({
   n1: Object.freeze({
     choiceType: 'single',
     layout: 'image',
-    badge: 'NEW WORD',
+    badge: '새 단어',
     question: 'Select the correct image',
     promptWord: '정병건',
     choices: Object.freeze([

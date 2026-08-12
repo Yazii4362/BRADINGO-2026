@@ -147,6 +147,7 @@
   --map-canvas-max: 100%;
   --content-max: 100%;
   --feedback-max: 100%;
+  --quiz-text-answer-max: 26rem;
   --page-padding: 16px;
   --page-padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   --page-gutter: 12px;
@@ -184,8 +185,11 @@
   --text: var(--neutral-1000);
   --muted: var(--neutral-800);
   --border: var(--neutral-300);
-  --primary: var(--map-cover-fill);
-  --primary-shadow: var(--map-cover-edge);
+  /* Brand / primary action — UOS Blue (not success green) */
+  --brand: #004dbd;
+  --primary: var(--brand);
+  --primary-shadow: color-mix(in srgb, var(--brand) 78%, black);
+  /* Success / correct-answer emphasis (keep green; do not alias to brand) */
   --active: var(--feather-green-600);
   --active-shadow: var(--feather-green-700);
   --active-soft: var(--feather-green-100);
@@ -208,7 +212,8 @@
   --night-muted: var(--humpback-200);
   --night-accent: var(--humpback-300);
   --shadow: 0 2px 8px var(--neutral-alpha-10);
-  --overlay-scrim: color-mix(in srgb, #000 35%, transparent);
+  /* Matches shipped confirm-modal overlay (was unused at 35%). */
+  --overlay-scrim: color-mix(in srgb, #000 45%, transparent);
 
   /* Feedback sheet — Figma 96:2865 */
   --feedback-correct-bg: #d7ffb8;
@@ -228,6 +233,9 @@
 
   /* Map node — Figma exception (not BRADINGO Foundations) */
   --map-node-size: clamp(56px, 18vw, 72px);
+  /* Active path node — brighter sky blue (distinct from brand CTA) */
+  --map-node-active: var(--macaw-500);
+  --map-node-active-edge: color-mix(in srgb, var(--map-node-active) 85%, black);
   --map-node-green: var(--feather-green-600);
   --map-node-green-edge: color-mix(in srgb, var(--map-node-green) 85%, black);
   --map-node-inset: var(--neutral-200);

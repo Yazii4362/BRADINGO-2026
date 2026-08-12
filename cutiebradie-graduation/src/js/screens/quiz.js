@@ -101,8 +101,8 @@ function renderQuizPlaceholder(props) {
     </header>
     <h1 class="screen__title">${props.title}</h1>
     <p class="screen__body">
-      ${props.choiceType === 'multi' ? '복수 선택' : '단일 선택'} placeholder
-      · 모드: ${props.mode}
+      ${props.choiceType === 'multi' ? '복수 선택' : '단일 선택'} · 준비 중
+      · 모드: ${props.mode === 'replay' ? '다시 보기' : '진행'}
     </p>
     <div class="placeholder-box">이 노드의 문제 UI는 다음 단계에서 구현합니다.</div>
     <div class="cb-button-row">
@@ -199,20 +199,29 @@ function renderChoiceQuiz(props, quiz) {
   const submitBtn = document.createElement('button');
   submitBtn.type = 'button';
   submitBtn.className = 'cb-button cb-button--primary cb-button--fill quiz-submit';
-  submitBtn.textContent = 'CHECK';
+  submitBtn.textContent = '확인';
   submitBtn.disabled = true;
   submitBtn.addEventListener('click', submit);
 
   footer.appendChild(submitBtn);
 
+  const promptPane = document.createElement('div');
+  promptPane.className = 'quiz-pane quiz-pane--prompt';
+  promptPane.append(prompt);
+  if (instruction) promptPane.append(instruction);
+
+  const actionPane = document.createElement('div');
+  actionPane.className = 'quiz-pane quiz-pane--actions';
+  actionPane.append(list, footer);
+
+  const body = document.createElement('div');
+  body.className = 'quiz-body';
+  body.append(promptPane, actionPane);
+
   const sheetHost = document.createElement('div');
   sheetHost.className = 'quiz-sheet-host';
 
-  if (instruction) {
-    el.append(header, prompt, instruction, list, footer, sheetHost);
-  } else {
-    el.append(header, prompt, list, footer, sheetHost);
-  }
+  el.append(header, body, sheetHost);
 
   function setPhase(next) {
     phase = next;
@@ -292,7 +301,7 @@ function renderChoiceQuiz(props, quiz) {
     selectedIds.clear();
     setPhase('idle');
     sheetHost.replaceChildren();
-    submitBtn.textContent = 'CHECK';
+    submitBtn.textContent = '확인';
     syncCards();
     syncSubmitEnabled();
   }
@@ -317,7 +326,7 @@ function renderChoiceQuiz(props, quiz) {
             variant: 'correct',
             title: fb.title,
             body: fb.body,
-            actionLabel: 'CONTINUE',
+            actionLabel: '계속',
             onAction: () => props.onCorrectContinue(),
           })
         );

@@ -29,7 +29,7 @@ export function openNodeStartSheet(props) {
 
   sheet.innerHTML = `
     <div class="cb-node-start-sheet__notch" aria-hidden="true"></div>
-    <p class="cb-node-start-sheet__eyebrow">START</p>
+    <p class="cb-node-start-sheet__eyebrow">시작</p>
     <h2 id="node-start-title" class="cb-node-start-sheet__title">${props.title}</h2>
     <button type="button" class="cb-node-start-sheet__cta" data-action="start">
       ${props.actionLabel ?? '시작하기'}

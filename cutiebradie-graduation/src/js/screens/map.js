@@ -130,6 +130,8 @@ export function renderMap(props) {
 }
 
 /**
+ * Scroll active/unlocked node into view within the correct scroll container.
+ * Mobile: screen--map scrolls. Landscape ≥960: .map-canvas scrolls.
  * @param {HTMLElement} mapScreen
  * @param {string} nodeId
  */
@@ -138,10 +140,26 @@ function scrollMapNodeIntoView(mapScreen, nodeId) {
   if (!(target instanceof HTMLElement) || !mapScreen.isConnected) return;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const behavior = reduceMotion ? 'auto' : 'smooth';
+  const canvas = mapScreen.querySelector('.map-canvas');
+  const landscape = window.matchMedia('(min-width: 960px)').matches;
+
+  if (landscape && canvas instanceof HTMLElement) {
+    const targetRect = target.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const nextTop =
+      canvas.scrollTop +
+      (targetRect.top - canvasRect.top) -
+      canvas.clientHeight / 2 +
+      targetRect.height / 2;
+    canvas.scrollTo({ top: Math.max(0, nextTop), behavior });
+    return;
+  }
+
   target.scrollIntoView({
     block: 'center',
     inline: 'nearest',
-    behavior: reduceMotion ? 'auto' : 'smooth',
+    behavior,
   });
 }
 

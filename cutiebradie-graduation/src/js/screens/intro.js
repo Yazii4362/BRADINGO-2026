@@ -8,7 +8,16 @@ export function renderIntro(props) {
   el.className = 'screen screen--intro';
   el.dataset.screen = 'intro';
   el.innerHTML = `
-    <h1 class="screen__title intro-wordmark">${BRAND.wordmark}</h1>
+    <h1 class="intro-wordmark">
+      <img
+        class="intro-wordmark__img"
+        src="./assets/images/logo.png"
+        alt="${BRAND.wordmark}"
+        width="860"
+        height="244"
+        decoding="async"
+      />
+    </h1>
     <p class="screen__body intro-lead">
       병건이의 <strong>${BRAND.courseName}</strong>,<br>마지막 코스가 열렸어요. 🎓
     </p>

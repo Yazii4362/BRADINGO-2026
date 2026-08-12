@@ -38,6 +38,14 @@ export function renderMemory(props) {
   title.className = 'screen__title';
   title.textContent = content.title || props.title;
 
+  const intro = document.createElement('p');
+  intro.className = 'screen__body memory-intro';
+  intro.textContent = '스크롤하며 추억을 천천히 살펴보세요.';
+
+  const aside = document.createElement('aside');
+  aside.className = 'memory-aside';
+  aside.append(title, intro);
+
   const scroll = document.createElement('div');
   scroll.className = 'memory-scroll';
 
@@ -75,7 +83,16 @@ export function renderMemory(props) {
   });
 
   footer.append(hint, completeBtn);
-  el.append(header, title, scroll, footer);
+
+  const main = document.createElement('div');
+  main.className = 'memory-main';
+  main.append(scroll, footer);
+
+  const body = document.createElement('div');
+  body.className = 'memory-body';
+  body.append(aside, main);
+
+  el.append(header, body);
 
   function enableComplete() {
     if (reachedEnd) return;
@@ -163,9 +180,9 @@ function createMemoryItem(memory) {
       setMediaState('empty');
       const placeholder = document.createElement('div');
       placeholder.className = 'cb-memory-card__placeholder';
-      placeholder.textContent = '사진 placeholder';
+      placeholder.textContent = '사진 준비 중';
       placeholder.setAttribute('role', 'img');
-      placeholder.setAttribute('aria-label', memory.alt || '추억 사진 placeholder');
+      placeholder.setAttribute('aria-label', memory.alt || '추억 사진 준비 중');
       media.appendChild(placeholder);
       return;
     }
