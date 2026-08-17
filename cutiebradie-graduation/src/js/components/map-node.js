@@ -1,13 +1,41 @@
-/** 3-lane path: Center → Left → Center → Right → Center */
+/**
+ * Map path slots — Figma 390 canvas node centers:
+ * n1 193 / n2 148 / n3 117 / n4 148 / n5 207  (offset from 195)
+ */
 const PATH_SLOTS = [
-  { className: 'map-path__item--lane-center', lane: 'center' },
-  { className: 'map-path__item--lane-left', lane: 'left' },
-  { className: 'map-path__item--lane-center', lane: 'center' },
-  { className: 'map-path__item--lane-right', lane: 'right' },
-  { className: 'map-path__item--lane-center', lane: 'center' },
+  { className: 'map-path__item--slot-1', lane: 'c', offset: '0%' },
+  { className: 'map-path__item--slot-2', lane: 'l1', offset: '-12%' },
+  { className: 'map-path__item--slot-3', lane: 'l2', offset: '-20%' },
+  { className: 'map-path__item--slot-4', lane: 'l1', offset: '-12%' },
+  { className: 'map-path__item--slot-5', lane: 'c', offset: '3%' },
 ];
 
-const LOCK_ICON = `<svg class="cb-map-node__lock" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10" width="14" height="11" rx="2.5" fill="currentColor"/></svg>`;
+const NODE_ACTIVE_SRC = './assets/images/node-active.svg';
+const NODE_ACTIVE_PRESSED_SRC = './assets/images/node-active-pressed.svg';
+const NODE_LOCKED_SRC = './assets/images/node-locked.svg';
+const NODE_LOCKED_PRESSED_SRC = './assets/images/node-locked-pressed.svg';
+const NODE_ENDING_SRC = './assets/images/node-ending.svg';
+const ENDING_NODE_ID = 'n5';
+
+/**
+ * @param {HTMLImageElement} asset
+ * @param {string} defaultSrc
+ * @param {string} pressedSrc
+ * @param {HTMLButtonElement} btn
+ */
+function bindPressSwap(asset, defaultSrc, pressedSrc, btn) {
+  const setPressed = (pressed) => {
+    if (pressedSrc !== defaultSrc) {
+      asset.src = pressed ? pressedSrc : defaultSrc;
+    }
+    btn.classList.toggle('is-pressed', pressed);
+  };
+
+  btn.addEventListener('pointerdown', () => setPressed(true));
+  btn.addEventListener('pointerup', () => setPressed(false));
+  btn.addEventListener('pointercancel', () => setPressed(false));
+  btn.addEventListener('pointerleave', () => setPressed(false));
+}
 
 /**
  * CB / Map / Node — basic skill button.
@@ -26,27 +54,48 @@ export function createMapNodeButton(props, onClick) {
   const wrap = document.createElement('div');
   wrap.className = `map-path__item ${slot.className}`;
   wrap.dataset.lane = slot.lane;
+  wrap.style.setProperty('--lane-offset', slot.offset);
 
   const stack = document.createElement('div');
   stack.className = 'cb-map-node-stack';
 
+  const isEnding = props.id === ENDING_NODE_ID;
+  const isLocked = props.status === 'locked';
+
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = `cb-map-node cb-map-node--${props.status}`;
+  btn.className = `cb-map-node cb-map-node--${props.status}${isEnding ? ' cb-map-node--ending' : ''}`;
   btn.dataset.nodeId = props.id;
   btn.dataset.status = props.status;
   btn.setAttribute('aria-label', props.title);
 
-  if (props.status === 'locked') {
+  if (isLocked) {
     btn.setAttribute('aria-disabled', 'true');
-    btn.insertAdjacentHTML('beforeend', LOCK_ICON);
-  } else {
-    const glyph = document.createElement('span');
-    glyph.className = 'cb-map-node__glyph';
-    glyph.setAttribute('aria-hidden', 'true');
-    glyph.textContent = props.status === 'completed' ? '✓' : '★';
-    btn.appendChild(glyph);
   }
+
+  let defaultSrc;
+  let pressedSrc;
+  if (isEnding) {
+    defaultSrc = NODE_ENDING_SRC;
+    pressedSrc = NODE_ENDING_SRC;
+  } else if (isLocked) {
+    defaultSrc = NODE_LOCKED_SRC;
+    pressedSrc = NODE_LOCKED_PRESSED_SRC;
+  } else {
+    defaultSrc = NODE_ACTIVE_SRC;
+    pressedSrc = NODE_ACTIVE_PRESSED_SRC;
+  }
+
+  const asset = document.createElement('img');
+  asset.className = 'cb-map-node__asset';
+  asset.src = defaultSrc;
+  asset.alt = '';
+  asset.width = isEnding ? 80 : 71;
+  asset.height = isEnding ? 90 : 65;
+  asset.setAttribute('aria-hidden', 'true');
+  asset.decoding = 'async';
+  btn.appendChild(asset);
+  bindPressSwap(asset, defaultSrc, pressedSrc, btn);
 
   btn.addEventListener('click', onClick);
 
@@ -62,8 +111,8 @@ export function createMapNodeButton(props, onClick) {
 
 /**
  * Thin connector between two path lanes.
- * @param {'left' | 'center' | 'right'} fromLane
- * @param {'left' | 'center' | 'right'} toLane
+ * @param {string} fromLane
+ * @param {string} toLane
  */
 export function createMapPathConnector(fromLane, toLane) {
   const el = document.createElement('div');

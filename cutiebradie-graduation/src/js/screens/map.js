@@ -3,9 +3,7 @@ import { createAppHeader } from '../components/app-header.js';
 import { createCharacterBubbleController } from '../components/character-bubble.js';
 import {
   createMapNodeButton,
-  createMapPathConnector,
   getMapNodeAnchorRect,
-  PATH_SLOTS,
 } from '../components/map-node.js';
 
 /**
@@ -72,14 +70,18 @@ export function renderMap(props) {
   const path = document.createElement('div');
   path.className = 'map-path';
 
+  const bird = document.createElement('img');
+  bird.className = 'map-path__bird';
+  bird.src = './assets/images/map-bird.svg';
+  bird.alt = '';
+  bird.width = 205;
+  bird.height = 206;
+  bird.setAttribute('aria-hidden', 'true');
+  bird.decoding = 'async';
+  path.appendChild(bird);
+
   COURSE_NODES.forEach((node, index) => {
     const status = props.nodeStatus[node.id] ?? 'locked';
-    const slot = PATH_SLOTS[index] ?? PATH_SLOTS[0];
-
-    if (index > 0) {
-      const prevLane = (PATH_SLOTS[index - 1] ?? PATH_SLOTS[0]).lane;
-      path.appendChild(createMapPathConnector(prevLane, slot.lane));
-    }
 
     const nodeWrap = createMapNodeButton(
       {

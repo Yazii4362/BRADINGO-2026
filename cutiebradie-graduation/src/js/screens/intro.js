@@ -8,6 +8,16 @@ export function renderIntro(props) {
   el.className = 'screen screen--intro';
   el.dataset.screen = 'intro';
   el.innerHTML = `
+    <div class="intro-hero" aria-hidden="true">
+      <img
+        class="intro-hero__img"
+        src="./assets/images/intro-character.png"
+        alt=""
+        width="544"
+        height="934"
+        decoding="async"
+      />
+    </div>
     <h1 class="intro-wordmark">
       <img
         class="intro-wordmark__img"

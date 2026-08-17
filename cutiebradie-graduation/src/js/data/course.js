@@ -33,7 +33,7 @@ export const COURSE_NODES = Object.freeze([
     order: 2,
     title: '병건이의 학교생활',
     type: 'single',
-    typeLabel: '단일 선택',
+    typeLabel: '듣기 · 탭',
     screen: 'quiz',
   },
   {
@@ -64,66 +64,136 @@ export const COURSE_NODES = Object.freeze([
 
 /**
  * Quiz payloads keyed by node id.
- * `choiceType` drives single vs multi behavior in the shared quiz engine.
- * @type {Readonly<Record<string, {
- *   choiceType: 'single' | 'multi',
- *   layout?: 'image' | 'text' | 'character',
+ * A node may be a single quiz object, or `{ questions: [...] }` for multi-step lessons.
+ * `choiceType` drives single / multi / sentence behavior in the shared quiz engine.
+ * @typedef {{
+ *   choiceType: 'single' | 'multi' | 'sentence',
+ *   layout?: 'image' | 'text' | 'character' | 'listen',
  *   question: string,
  *   instruction?: string,
  *   badge?: string,
+ *   badgeVariant?: 'new-word' | 'hard',
  *   promptWord?: string,
- *   choices: ReadonlyArray<{ id: string, label: string, image?: string, alt?: string }>,
- *   correctChoiceIds: ReadonlyArray<string>,
+ *   characterImage?: string,
+ *   characterAlt?: string,
+ *   listenText?: string,
+ *   tokens?: ReadonlyArray<{ id: string, label: string }>,
+ *   bankOrder?: ReadonlyArray<string>,
+ *   correctOrder?: ReadonlyArray<string>,
+ *   choices?: ReadonlyArray<{ id: string, label: string, image?: string, alt?: string }>,
+ *   correctChoiceIds?: ReadonlyArray<string>,
  *   feedback: {
  *     correct: { title: string, body: string },
  *     incorrect: { title: string, body: string }
  *   }
- * }>>}
+ * }} QuizItem
+ * @type {Readonly<Record<string, QuizItem | { questions: ReadonlyArray<QuizItem> }>>}
  */
 export const QUIZZES = Object.freeze({
   n1: Object.freeze({
-    choiceType: 'single',
-    layout: 'image',
-    badge: '새 단어',
-    question: 'Select the correct image',
-    promptWord: '정병건',
-    choices: Object.freeze([
-      Object.freeze({ id: 'jeong', label: '정병건', image: '', alt: '정병건' }),
-      Object.freeze({ id: 'pong', label: '뽕꼬니', image: '', alt: '뽕꼬니' }),
-      Object.freeze({ id: 'bbang', label: '시립대건빵', image: '', alt: '시립대건빵' }),
-      Object.freeze({ id: 'bradie', label: 'Bradie', image: '', alt: 'Bradie' }),
+    questions: Object.freeze([
+      Object.freeze({
+        choiceType: 'single',
+        layout: 'image',
+        badge: 'NEW WORD',
+        question: '맞는 이미지를 고르세요',
+        promptWord: '정병건',
+        choices: Object.freeze([
+          Object.freeze({ id: 'jeong', label: '정병건', image: '', alt: '정병건' }),
+          Object.freeze({ id: 'pong', label: '뽕꼬니', image: '', alt: '뽕꼬니' }),
+          Object.freeze({ id: 'bbang', label: '시립대건빵', image: '', alt: '시립대건빵' }),
+          Object.freeze({ id: 'bradie', label: 'Bradie', image: '', alt: 'Bradie' }),
+        ]),
+        correctChoiceIds: Object.freeze(['jeong']),
+        feedback: Object.freeze({
+          correct: Object.freeze({
+            title: '정답입니다!',
+            body: '병건이의 본명은 정병건이에요.',
+          }),
+          incorrect: Object.freeze({
+            title: '오답입니다!',
+            body: '정답은 정병건이에요.',
+          }),
+        }),
+      }),
+      Object.freeze({
+        choiceType: 'single',
+        layout: 'image',
+        badge: 'NEW WORD',
+        question: '맞는 이미지를 고르세요',
+        promptWord: 'Bradie',
+        choices: Object.freeze([
+          Object.freeze({ id: 'jeong', label: '정병건', image: '', alt: '정병건' }),
+          Object.freeze({ id: 'pong', label: '뽕꼬니', image: '', alt: '뽕꼬니' }),
+          Object.freeze({ id: 'bbang', label: '시립대건빵', image: '', alt: '시립대건빵' }),
+          Object.freeze({ id: 'bradie', label: 'Bradie', image: '', alt: 'Bradie' }),
+        ]),
+        correctChoiceIds: Object.freeze(['bradie']),
+        feedback: Object.freeze({
+          correct: Object.freeze({
+            title: '정답입니다!',
+            body: '병건이의 영어 이름은 Bradie예요.',
+          }),
+          incorrect: Object.freeze({
+            title: '오답입니다!',
+            body: '정답은 Bradie예요.',
+          }),
+        }),
+      }),
+      Object.freeze({
+        choiceType: 'single',
+        layout: 'image',
+        badge: 'NEW WORD',
+        question: '맞는 이미지를 고르세요',
+        promptWord: '시립대건빵',
+        choices: Object.freeze([
+          Object.freeze({ id: 'jeong', label: '정병건', image: '', alt: '정병건' }),
+          Object.freeze({ id: 'pong', label: '뽕꼬니', image: '', alt: '뽕꼬니' }),
+          Object.freeze({ id: 'bbang', label: '시립대건빵', image: '', alt: '시립대건빵' }),
+          Object.freeze({ id: 'bradie', label: 'Bradie', image: '', alt: 'Bradie' }),
+        ]),
+        correctChoiceIds: Object.freeze(['bbang']),
+        feedback: Object.freeze({
+          correct: Object.freeze({
+            title: '정답입니다!',
+            body: '시립대건빵은 병건이의 대표 별명이에요.',
+          }),
+          incorrect: Object.freeze({
+            title: '오답입니다!',
+            body: '정답은 시립대건빵이에요.',
+          }),
+        }),
+      }),
     ]),
-    correctChoiceIds: Object.freeze(['jeong']),
-    feedback: Object.freeze({
-      correct: Object.freeze({
-        title: '정답입니다!',
-        body: '병건이의 본명은 정병건이에요.',
-      }),
-      incorrect: Object.freeze({
-        title: '오답입니다!',
-        body: '정답은 정병건이에요.',
-      }),
-    }),
   }),
   n2: Object.freeze({
-    choiceType: 'single',
-    layout: 'text',
-    question: '병건이가 한 일이 아닌 것은?',
-    choices: Object.freeze([
-      Object.freeze({ id: 'chicago', label: '시카고 교환학생' }),
-      Object.freeze({ id: 'australia', label: '호주 워킹홀리데이 1년' }),
-      Object.freeze({ id: 'exchange', label: '제주도와 강원대학교 학점교류' }),
-      Object.freeze({ id: 'skip', label: '매일 1교시 결석' }),
+    choiceType: 'sentence',
+    layout: 'listen',
+    badge: '어려운 문제',
+    badgeVariant: 'hard',
+    question: '들은 내용을 탭하세요',
+    characterImage: './assets/images/quiz/n2-character-full.png',
+    characterAlt: '병건이 캐릭터',
+    listenText: '병건아 졸업을 축하해',
+    tokens: Object.freeze([
+      Object.freeze({ id: 'byeong', label: '병건아' }),
+      Object.freeze({ id: 'jol', label: '졸업을' }),
+      Object.freeze({ id: 'chuk', label: '축하해' }),
+      Object.freeze({ id: 'ip', label: '입학을' }),
+      Object.freeze({ id: 'grad', label: '대학원' }),
+      Object.freeze({ id: 'an', label: '안' }),
+      Object.freeze({ id: 'cham', label: '참' }),
     ]),
-    correctChoiceIds: Object.freeze(['skip']),
+    bankOrder: Object.freeze(['ip', 'byeong', 'grad', 'jol', 'an', 'chuk', 'cham']),
+    correctOrder: Object.freeze(['byeong', 'jol', 'chuk']),
     feedback: Object.freeze({
       correct: Object.freeze({
         title: '정답입니다!',
-        body: '병건이는 새벽 조깅과 아침 식사를 마친 뒤에도\n1교시 수업을 성실하게 들었어요.',
+        body: '병건아, 졸업을 축하해!',
       }),
       incorrect: Object.freeze({
         title: '오답입니다!',
-        body: '병건이는 시카고 교환학생, 호주 워킹홀리데이,\n제주도와 강원대학교 학점교류를 모두 했어요.',
+        body: '정답은 「병건아 졸업을 축하해」예요.',
       }),
     }),
   }),
@@ -156,8 +226,23 @@ export function getNodeById(id) {
   return COURSE_NODES.find((node) => node.id === id) ?? null;
 }
 
+/**
+ * Normalize a quiz node into an ordered question list.
+ * @param {string} id
+ * @returns {ReadonlyArray<QuizItem> | null}
+ */
+export function getQuizQuestionsByNodeId(id) {
+  const quiz = QUIZZES[id];
+  if (!quiz) return null;
+  if ('questions' in quiz && Array.isArray(quiz.questions)) {
+    return quiz.questions;
+  }
+  return Object.freeze([quiz]);
+}
+
 export function getQuizByNodeId(id) {
-  return QUIZZES[id] ?? null;
+  const questions = getQuizQuestionsByNodeId(id);
+  return questions?.[0] ?? null;
 }
 
 /**
@@ -212,25 +297,56 @@ export function getMemoryByNodeId(id) {
  * @param {{ nodeStatus?: Record<string, string> } | null} [progress]
  */
 export function getGraduationStats(progress = null) {
+  const totalNodes = COURSE_NODES.length;
   const completedCount = progress?.nodeStatus
     ? COURSE_NODES.filter((node) => progress.nodeStatus[node.id] === 'completed').length
-    : COURSE_NODES.length;
+    : totalNodes;
 
-  const memoryContent = MEMORY_CONTENTS.n3;
-  const multiQuiz = QUIZZES.n4;
+  const courseValue = `${completedCount} / ${totalNodes}`;
+  const badgeValue = `${totalNodes} 개`;
+
+  /** @type {ReadonlyArray<{ id: string, label: string, value: string, valueHtml?: string, icon: string }>} */
+  const summaryRows = [
+    {
+      id: 'period',
+      label: '여정 기간',
+      value: '2018 → 2026',
+      icon: './assets/images/ending/icon-calendar.svg',
+    },
+    {
+      id: 'courses',
+      label: '완료한 코스',
+      value: courseValue,
+      icon: './assets/images/ending/icon-book.svg',
+    },
+    {
+      id: 'badges',
+      label: '획득한 배지',
+      value: badgeValue,
+      icon: './assets/images/ending/icon-star.svg',
+    },
+    {
+      id: 'memories',
+      label: '함께한 추억',
+      value: '무한대 ∞',
+      valueHtml: '무한대 <span class="ending-infinity">∞</span>',
+      icon: './assets/images/heart.svg',
+    },
+  ];
 
   return {
-    totalNodes: COURSE_NODES.length,
+    totalNodes,
     completedCount,
-    streakDays: 700,
-    memoryCount: memoryContent?.memories.length ?? 0,
-    friendMessageCount: multiQuiz?.correctChoiceIds.length ?? 0,
-    title: 'BRADUATION COMPLETE! 🎓',
+    title: 'BRADUATION COMPLETE!',
+    lead: '병건이의 UOS LIFE가 완료되었어요.',
+    tagline: '이제 새로운 챕터가 열렸어요.',
     subtitle: '병건이의 UOS LIFE가 완료되었어요.\n이제 새로운 챕터가 열렸어요.',
     exportSubtitle: `${BRAND.courseTitle} · ${BRAND.coursePeriod}`,
     wordmark: BRAND.wordmark,
-    /** Set a local path later, e.g. ./assets/images/ending-hero.png */
-    heroImage: '',
-    heroAlt: '졸업 축하 일러스트',
+    summaryTitle: '여정 요약',
+    summaryRows,
+    heroImage: './assets/images/node-ending.svg',
+    heroAlt: '졸업 보물상자',
+    ctaLabel: '새로운 챕터로 가기',
   };
 }

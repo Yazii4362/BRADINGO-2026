@@ -1,4 +1,4 @@
-import { COURSE_NODES, getNodeById } from './data/course.js';
+import { COURSE_NODES, getNodeById, getQuizByNodeId } from './data/course.js';
 import {
   completeNode,
   loadProgress,
@@ -238,7 +238,9 @@ function render() {
         nodeId: node.id,
         title: node.title,
         mode: route.mode,
-        choiceType: node.type === 'multi' ? 'multi' : 'single',
+        choiceType:
+          getQuizByNodeId(node.id)?.choiceType ??
+          (node.type === 'multi' ? 'multi' : 'single'),
         onLeaveToMap: () => goToMap(),
         onCorrectContinue: handleNodeComplete,
       });

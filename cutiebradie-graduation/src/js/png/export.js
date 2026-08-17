@@ -15,22 +15,34 @@ export function createExportCard(progress = null) {
   card.style.width = `${PNG_SIZE.width}px`;
   card.style.height = `${PNG_SIZE.height}px`;
 
-  const hero = stats.heroImage
-    ? `<img class="cb-export-card__hero-img" src="${stats.heroImage}" alt="${stats.heroAlt}" />`
-    : `<div class="cb-export-card__hero-fallback" role="img" aria-label="${stats.heroAlt}">졸업 축하</div>`;
+  const summaryHtml = stats.summaryRows
+    .map(
+      (row) => `
+        <li class="cb-export-card__stat">
+          <img class="cb-export-card__stat-icon" src="${row.icon}" alt="" width="48" height="48" />
+          <span class="cb-export-card__stat-label">${row.label}</span>
+          <strong class="cb-export-card__stat-value">${row.valueHtml ?? row.value}</strong>
+        </li>
+      `
+    )
+    .join('');
 
   card.innerHTML = `
+    <div class="cb-export-card__sky" aria-hidden="true">
+      <div class="cb-export-card__glow"></div>
+      <div class="cb-export-card__stars"></div>
+    </div>
     <div class="cb-export-card__inner">
-      <p class="cb-export-card__wordmark">${stats.wordmark}</p>
-      <div class="cb-export-card__hero">${hero}</div>
+      <div class="cb-export-card__hero">
+        <img class="cb-export-card__hero-img" src="${stats.heroImage}" alt="${stats.heroAlt}" />
+      </div>
       <h1 class="cb-export-card__title">${stats.title}</h1>
-      <p class="cb-export-card__subtitle">${stats.exportSubtitle}</p>
-      <ul class="cb-export-card__stats">
-        <li>완료 챕터 ${stats.completedCount}/${stats.totalNodes}</li>
-        <li>스트릭 ${stats.streakDays}일</li>
-        <li>추억 사진 ${stats.memoryCount}장</li>
-        <li>친구 메시지 ${stats.friendMessageCount}명</li>
-      </ul>
+      <p class="cb-export-card__lead">${stats.lead}</p>
+      <p class="cb-export-card__tagline">${stats.tagline}</p>
+      <section class="cb-export-card__summary">
+        <h2 class="cb-export-card__summary-title">— ${stats.summaryTitle} —</h2>
+        <ul class="cb-export-card__stats">${summaryHtml}</ul>
+      </section>
     </div>
   `;
 
@@ -90,7 +102,7 @@ export async function renderExportCardToPngBlob(card) {
     height: PNG_SIZE.height,
     pixelRatio: 1,
     cacheBust: false,
-    backgroundColor: '#112d51',
+    backgroundColor: '#061433',
   });
 
   if (!blob) {

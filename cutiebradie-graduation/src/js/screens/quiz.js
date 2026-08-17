@@ -1,4 +1,4 @@
-import { COURSE_NODES, getQuizByNodeId } from '../data/course.js';
+import { getQuizQuestionsByNodeId } from '../data/course.js';
 import { createFeedbackSheet } from '../components/feedback-sheet.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
 import { createQuizProgressHeader } from '../components/quiz-progress-header.js';
@@ -60,28 +60,39 @@ export function isExactAnswerSet(selectedIds, correctIds) {
 }
 
 /**
+ * Ordered sequence match for sentence-building quizzes.
+ * @param {ReadonlyArray<string>} selectedIds
+ * @param {ReadonlyArray<string>} correctIds
+ */
+export function isExactAnswerOrder(selectedIds, correctIds) {
+  if (selectedIds.length !== correctIds.length) return false;
+  return selectedIds.every((id, index) => id === correctIds[index]);
+}
+
+/**
  * @param {{
  *   nodeId: string,
  *   title: string,
  *   mode: 'play' | 'replay',
- *   choiceType: 'single' | 'multi',
+ *   choiceType: 'single' | 'multi' | 'sentence',
  *   onLeaveToMap: () => void,
  *   onCorrectContinue: () => void
  * }} props
  */
 export function renderQuiz(props) {
-  const quiz = getQuizByNodeId(props.nodeId);
+  const questions = getQuizQuestionsByNodeId(props.nodeId);
+  const first = questions?.[0];
+  const supported = first && ['single', 'multi', 'sentence'].includes(first.choiceType);
 
-  if (!quiz || (quiz.choiceType !== 'single' && quiz.choiceType !== 'multi')) {
+  if (!supported) {
     return renderQuizPlaceholder(props);
   }
 
-  // Prefer quiz data type; props.choiceType is a sanity check from the node.
-  if (props.choiceType && props.choiceType !== quiz.choiceType) {
+  if (props.choiceType && props.choiceType !== first.choiceType) {
     return renderQuizPlaceholder(props);
   }
 
-  return renderChoiceQuiz(props, quiz);
+  return renderChoiceQuiz(props, questions);
 }
 
 /**
@@ -120,99 +131,41 @@ function renderQuizPlaceholder(props) {
 }
 
 /**
- * Shared single / multi choice quiz UI.
+ * Shared single / multi choice quiz UI (supports multi-question lessons).
  * @param {Parameters<typeof renderQuiz>[0]} props
- * @param {NonNullable<ReturnType<typeof getQuizByNodeId>>} quiz
+ * @param {NonNullable<ReturnType<typeof getQuizQuestionsByNodeId>>} questions
  */
-function renderChoiceQuiz(props, quiz) {
-  const isMulti = quiz.choiceType === 'multi';
+function renderChoiceQuiz(props, questions) {
+  let questionIndex = 0;
   /** @type {'idle' | 'selected' | 'selecting' | 'grading' | 'correct' | 'incorrect'} */
   let phase = 'idle';
   /** @type {Set<string>} */
   const selectedIds = new Set();
+  /** @type {(string | null)[]} */
+  let bankSlots = [];
+  /** @type {string[]} */
+  let answerOrder = [];
+  /** @type {Map<string, number>} */
+  const tokenHomeIndex = new Map();
+  /** @type {Map<string, { id: string, label: string }>} */
+  const tokenById = new Map();
 
   const el = document.createElement('section');
   el.className = 'screen screen--quiz';
   el.dataset.screen = 'quiz';
   el.dataset.nodeId = props.nodeId;
   el.dataset.mode = props.mode;
-  el.dataset.choiceType = quiz.choiceType;
-  el.dataset.phase = phase;
-  const layout = quiz.layout ?? (quiz.promptWord ? 'image' : 'text');
-  el.dataset.layout = layout;
-
-  const nodeIndex = COURSE_NODES.findIndex((node) => node.id === props.nodeId);
-  const lessonProgress =
-    nodeIndex >= 0 ? (nodeIndex + 1) / COURSE_NODES.length : 0.2;
 
   const header = createQuizProgressHeader({
-    progress: lessonProgress,
+    progress: lessonProgress(0),
     onClose: () => requestExit(),
   });
 
-  const prompt = createQuizPrompt({
-    badge: quiz.badge,
-    instruction: quiz.question,
-    promptWord: quiz.promptWord,
-    promptId: 'quiz-question-title',
-  });
-
-  /** @type {HTMLParagraphElement | null} */
-  let instruction = null;
-  if (quiz.instruction) {
-    instruction = document.createElement('p');
-    instruction.className = 'screen__body quiz-instruction';
-    instruction.id = 'quiz-instruction';
-    instruction.textContent = quiz.instruction;
-  }
-
-  const list = document.createElement('div');
-  list.className =
-    layout === 'text' ? 'answer-list answer-list--stack' : 'answer-list answer-list--grid-2x2';
-  list.setAttribute('role', 'group');
-  list.setAttribute('aria-labelledby', 'quiz-question-title');
-  if (instruction) {
-    list.setAttribute('aria-describedby', 'quiz-instruction');
-  }
-  if (isMulti) {
-    list.setAttribute('aria-multiselectable', 'true');
-  }
-
-  /** @type {Map<string, HTMLButtonElement>} */
-  const cardButtons = new Map();
-
-  quiz.choices.forEach((choice) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'cb-answer-card cb-answer-card--default';
-    btn.dataset.choiceId = choice.id;
-    btn.setAttribute('aria-pressed', 'false');
-    fillAnswerCardContent(btn, choice);
-    btn.addEventListener('click', () => onCardTap(choice.id));
-    cardButtons.set(choice.id, btn);
-    list.appendChild(btn);
-  });
-
-  const footer = document.createElement('div');
-  footer.className = 'quiz-footer';
-
-  const submitBtn = document.createElement('button');
-  submitBtn.type = 'button';
-  submitBtn.className = 'cb-button cb-button--primary cb-button--fill quiz-submit';
-  submitBtn.textContent = '확인';
-  submitBtn.disabled = true;
-  submitBtn.addEventListener('click', submit);
-
-  footer.appendChild(submitBtn);
-
   const promptPane = document.createElement('div');
   promptPane.className = 'quiz-pane quiz-pane--prompt';
-  promptPane.append(prompt);
-  if (instruction) promptPane.append(instruction);
 
   const actionPane = document.createElement('div');
   actionPane.className = 'quiz-pane quiz-pane--actions';
-  actionPane.append(list, footer);
 
   const body = document.createElement('div');
   body.className = 'quiz-body';
@@ -223,14 +176,42 @@ function renderChoiceQuiz(props, quiz) {
 
   el.append(header, body, sheetHost);
 
+  /** @type {HTMLButtonElement | null} */
+  let submitBtn = null;
+  /** @type {Map<string, HTMLButtonElement>} */
+  let cardButtons = new Map();
+  /** @type {HTMLElement | null} */
+  let answerStripEl = null;
+  /** @type {HTMLElement | null} */
+  let bankEl = null;
+
+  function currentQuiz() {
+    return questions[questionIndex];
+  }
+
+  function isSentenceQuiz() {
+    return currentQuiz().choiceType === 'sentence';
+  }
+
+  /**
+   * @param {number} index
+   */
+  function lessonProgress(index) {
+    const total = Math.max(questions.length, 1);
+    return Math.min(1, (index + 0.12) / total);
+  }
+
   function setPhase(next) {
     phase = next;
     el.dataset.phase = next;
-    submitBtn.classList.toggle('cb-button--loading', next === 'grading');
+    if (submitBtn) {
+      submitBtn.classList.toggle('cb-button--loading', next === 'grading');
+    }
   }
 
   function selectingPhaseName() {
-    return isMulti ? 'selecting' : 'selected';
+    if (isSentenceQuiz()) return 'selected';
+    return currentQuiz().choiceType === 'multi' ? 'selecting' : 'selected';
   }
 
   function canChangeSelection() {
@@ -238,15 +219,19 @@ function renderChoiceQuiz(props, quiz) {
   }
 
   function syncSubmitEnabled() {
+    if (!submitBtn) return;
     const locked = phase === 'grading' || phase === 'correct' || phase === 'incorrect';
-    submitBtn.disabled = locked || selectedIds.size === 0;
+    const hasAnswer = isSentenceQuiz() ? answerOrder.length > 0 : selectedIds.size > 0;
+    submitBtn.disabled = locked || !hasAnswer;
   }
 
   /**
    * @param {string} choiceId
    */
   function onCardTap(choiceId) {
-    if (!canChangeSelection()) return;
+    if (!canChangeSelection() || isSentenceQuiz()) return;
+    const quiz = currentQuiz();
+    const isMulti = quiz.choiceType === 'multi';
 
     if (isMulti) {
       if (selectedIds.has(choiceId)) selectedIds.delete(choiceId);
@@ -261,10 +246,52 @@ function renderChoiceQuiz(props, quiz) {
     syncSubmitEnabled();
   }
 
+  /**
+   * @param {number} bankIndex
+   */
+  function onBankChipTap(bankIndex) {
+    if (!canChangeSelection()) return;
+    const tokenId = bankSlots[bankIndex];
+    if (!tokenId) return;
+    bankSlots[bankIndex] = null;
+    answerOrder.push(tokenId);
+    setPhase('selected');
+    syncSentenceUI();
+    syncSubmitEnabled();
+  }
+
+  /**
+   * @param {number} answerIndex
+   */
+  function onAnswerChipTap(answerIndex) {
+    if (!canChangeSelection()) return;
+    const tokenId = answerOrder[answerIndex];
+    if (!tokenId) return;
+    answerOrder.splice(answerIndex, 1);
+    const home = tokenHomeIndex.get(tokenId);
+    if (typeof home === 'number' && bankSlots[home] === null) {
+      bankSlots[home] = tokenId;
+    } else {
+      const empty = bankSlots.findIndex((slot) => slot === null);
+      if (empty >= 0) bankSlots[empty] = tokenId;
+      else bankSlots.push(tokenId);
+    }
+    setPhase(answerOrder.length === 0 ? 'idle' : 'selected');
+    syncSentenceUI();
+    syncSubmitEnabled();
+  }
+
   function syncCards() {
+    const quiz = currentQuiz();
+    if (quiz.choiceType === 'sentence' || !quiz.correctChoiceIds) return;
     const correctSet = new Set(quiz.correctChoiceIds);
     cardButtons.forEach((btn, id) => {
-      btn.classList.remove('cb-answer-card--default', 'cb-answer-card--selected', 'cb-answer-card--correct', 'cb-answer-card--incorrect');
+      btn.classList.remove(
+        'cb-answer-card--default',
+        'cb-answer-card--selected',
+        'cb-answer-card--correct',
+        'cb-answer-card--incorrect'
+      );
       const isSelected = selectedIds.has(id);
 
       if (phase === 'correct') {
@@ -297,49 +324,134 @@ function renderChoiceQuiz(props, quiz) {
     });
   }
 
+  function syncSentenceUI() {
+    if (!answerStripEl || !bankEl) return;
+    const locked = phase === 'grading' || phase === 'correct' || phase === 'incorrect';
+    const correct = currentQuiz().correctOrder ?? [];
+
+    answerStripEl.replaceChildren();
+    answerOrder.forEach((tokenId, index) => {
+      const token = tokenById.get(tokenId);
+      if (!token) return;
+      const chip = createWordChip(token.label, {
+        locked,
+        state:
+          phase === 'correct' && correct[index] === tokenId
+            ? 'correct'
+            : phase === 'incorrect'
+              ? 'incorrect'
+              : 'active',
+      });
+      if (!locked) {
+        chip.addEventListener('click', () => onAnswerChipTap(index));
+      }
+      answerStripEl?.appendChild(chip);
+    });
+
+    bankEl.replaceChildren();
+    bankSlots.forEach((tokenId, index) => {
+      if (!tokenId) {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'quiz-word-chip quiz-word-chip--slot';
+        placeholder.setAttribute('aria-hidden', 'true');
+        bankEl?.appendChild(placeholder);
+        return;
+      }
+      const token = tokenById.get(tokenId);
+      if (!token) return;
+      const chip = createWordChip(token.label, { locked, state: 'active' });
+      if (!locked) {
+        chip.addEventListener('click', () => onBankChipTap(index));
+      }
+      bankEl?.appendChild(chip);
+    });
+  }
+
   function resetToIdle() {
     selectedIds.clear();
+    if (isSentenceQuiz()) {
+      initSentenceState(currentQuiz());
+    }
     setPhase('idle');
     sheetHost.replaceChildren();
-    submitBtn.textContent = '확인';
+    if (submitBtn) submitBtn.textContent = '확인';
     syncCards();
+    syncSentenceUI();
     syncSubmitEnabled();
+  }
+
+  function goNextQuestion() {
+    questionIndex += 1;
+    if (questionIndex >= questions.length) {
+      props.onCorrectContinue();
+      return;
+    }
+    if (typeof header.setProgress === 'function') {
+      header.setProgress(lessonProgress(questionIndex));
+    }
+    mountQuestion();
+  }
+
+  /**
+   * @param {ReturnType<typeof currentQuiz>} quiz
+   */
+  function initSentenceState(quiz) {
+    tokenById.clear();
+    tokenHomeIndex.clear();
+    (quiz.tokens ?? []).forEach((token) => tokenById.set(token.id, token));
+    const order = quiz.bankOrder ?? (quiz.tokens ?? []).map((t) => t.id);
+    bankSlots = order.map((id, index) => {
+      tokenHomeIndex.set(id, index);
+      return id;
+    });
+    answerOrder = [];
   }
 
   function submit() {
     const ready = phase === 'selected' || phase === 'selecting';
-    if (!ready || selectedIds.size === 0 || submitBtn.disabled) return;
+    const hasAnswer = isSentenceQuiz() ? answerOrder.length > 0 : selectedIds.size > 0;
+    if (!ready || !hasAnswer || !submitBtn || submitBtn.disabled) return;
 
+    const quiz = currentQuiz();
     setPhase('grading');
     submitBtn.disabled = true;
     syncCards();
+    syncSentenceUI();
 
-    const isCorrect = isExactAnswerSet(selectedIds, quiz.correctChoiceIds);
+    const isCorrect = isSentenceQuiz()
+      ? isExactAnswerOrder(answerOrder, quiz.correctOrder ?? [])
+      : isExactAnswerSet(selectedIds, quiz.correctChoiceIds ?? []);
 
     queueMicrotask(() => {
       if (isCorrect) {
         setPhase('correct');
         syncCards();
+        syncSentenceUI();
         const fb = quiz.feedback.correct;
+        const isLast = questionIndex >= questions.length - 1;
         sheetHost.replaceChildren(
           createFeedbackSheet({
             variant: 'correct',
             title: fb.title,
             body: fb.body,
             actionLabel: '계속',
-            onAction: () => props.onCorrectContinue(),
+            onAction: () => {
+              if (isLast) props.onCorrectContinue();
+              else goNextQuestion();
+            },
           })
         );
       } else {
         setPhase('incorrect');
         syncCards();
+        syncSentenceUI();
         const fb = quiz.feedback.incorrect;
         sheetHost.replaceChildren(
           createFeedbackSheet({
             variant: 'incorrect',
             title: fb.title,
             body: fb.body,
-            actionLabel: '다시 선택하기',
+            actionLabel: isSentenceQuiz() ? '다시 시도하기' : '다시 선택하기',
             onAction: () => resetToIdle(),
           })
         );
@@ -347,13 +459,184 @@ function renderChoiceQuiz(props, quiz) {
     });
   }
 
+  function mountQuestion() {
+    const quiz = currentQuiz();
+    const layout = quiz.layout ?? (quiz.promptWord ? 'image' : 'text');
+
+    el.dataset.choiceType = quiz.choiceType;
+    el.dataset.layout = layout;
+    selectedIds.clear();
+    answerStripEl = null;
+    bankEl = null;
+    setPhase('idle');
+    sheetHost.replaceChildren();
+
+    const prompt = createQuizPrompt({
+      badge: quiz.badge,
+      badgeVariant: quiz.badgeVariant,
+      instruction: quiz.question,
+      promptWord: quiz.promptWord,
+      promptId: 'quiz-question-title',
+    });
+
+    promptPane.replaceChildren(prompt);
+
+    if (quiz.instruction) {
+      const instruction = document.createElement('p');
+      instruction.className = 'screen__body quiz-instruction';
+      instruction.id = 'quiz-instruction';
+      instruction.textContent = quiz.instruction;
+      promptPane.append(instruction);
+    }
+
+    if (quiz.choiceType === 'sentence') {
+      mountSentenceQuestion(quiz);
+      return;
+    }
+
+    const isMulti = quiz.choiceType === 'multi';
+    const list = document.createElement('div');
+    list.className =
+      layout === 'text' ? 'answer-list answer-list--stack' : 'answer-list answer-list--grid-2x2';
+    list.setAttribute('role', 'group');
+    list.setAttribute('aria-labelledby', 'quiz-question-title');
+    if (quiz.instruction) {
+      list.setAttribute('aria-describedby', 'quiz-instruction');
+    }
+    if (isMulti) {
+      list.setAttribute('aria-multiselectable', 'true');
+    }
+
+    cardButtons = new Map();
+    (quiz.choices ?? []).forEach((choice) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cb-answer-card cb-answer-card--default';
+      btn.dataset.choiceId = choice.id;
+      btn.setAttribute('aria-pressed', 'false');
+      fillAnswerCardContent(btn, choice);
+      btn.addEventListener('click', () => onCardTap(choice.id));
+      cardButtons.set(choice.id, btn);
+      list.appendChild(btn);
+    });
+
+    const footer = document.createElement('div');
+    footer.className = 'quiz-footer';
+
+    submitBtn = document.createElement('button');
+    submitBtn.type = 'button';
+    submitBtn.className = 'cb-button cb-button--primary cb-button--fill quiz-submit';
+    submitBtn.textContent = '확인';
+    submitBtn.disabled = true;
+    submitBtn.addEventListener('click', submit);
+    footer.appendChild(submitBtn);
+
+    actionPane.replaceChildren(list, footer);
+    syncCards();
+    syncSubmitEnabled();
+  }
+
+  /**
+   * @param {ReturnType<typeof currentQuiz>} quiz
+   */
+  function mountSentenceQuestion(quiz) {
+    initSentenceState(quiz);
+
+    const stage = document.createElement('div');
+    stage.className = 'quiz-listen-stage';
+
+    if (quiz.characterImage) {
+      const figure = document.createElement('div');
+      figure.className = 'quiz-listen-stage__character';
+      const img = document.createElement('img');
+      img.src = quiz.characterImage;
+      img.alt = quiz.characterAlt || '';
+      img.decoding = 'async';
+      figure.appendChild(img);
+      stage.appendChild(figure);
+    }
+
+    const bubble = document.createElement('div');
+    bubble.className = 'quiz-listen-bubble';
+    const speakBtn = document.createElement('button');
+    speakBtn.type = 'button';
+    speakBtn.className = 'quiz-listen-bubble__speak';
+    speakBtn.setAttribute('aria-label', '들은 내용 재생');
+    speakBtn.innerHTML =
+      '<img src="./assets/images/quiz/icon-speaker.svg" alt="" width="29" height="22" />';
+    speakBtn.addEventListener('click', () => speakText(quiz.listenText ?? ''));
+    bubble.append(speakBtn);
+    stage.appendChild(bubble);
+
+    promptPane.appendChild(stage);
+
+    const builder = document.createElement('div');
+    builder.className = 'quiz-sentence-builder';
+
+    answerStripEl = document.createElement('div');
+    answerStripEl.className = 'quiz-answer-strip';
+    answerStripEl.setAttribute('role', 'list');
+    answerStripEl.setAttribute('aria-label', '선택한 단어');
+
+    bankEl = document.createElement('div');
+    bankEl.className = 'quiz-word-bank';
+    bankEl.setAttribute('role', 'group');
+    bankEl.setAttribute('aria-labelledby', 'quiz-question-title');
+
+    const footer = document.createElement('div');
+    footer.className = 'quiz-footer';
+
+    submitBtn = document.createElement('button');
+    submitBtn.type = 'button';
+    submitBtn.className = 'cb-button cb-button--primary cb-button--fill quiz-submit';
+    submitBtn.textContent = '확인';
+    submitBtn.disabled = true;
+    submitBtn.addEventListener('click', submit);
+    footer.appendChild(submitBtn);
+
+    builder.append(answerStripEl, bankEl);
+    actionPane.replaceChildren(builder, footer);
+
+    syncSentenceUI();
+    syncSubmitEnabled();
+
+    queueMicrotask(() => speakText(quiz.listenText ?? ''));
+  }
+
   function requestExit() {
     openQuizExitModal(() => props.onLeaveToMap());
   }
 
-  syncCards();
-  syncSubmitEnabled();
+  mountQuestion();
   return el;
+}
+
+/**
+ * @param {string} text
+ */
+function speakText(text) {
+  const value = text.trim();
+  if (!value || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(value);
+  utter.lang = /[가-힣]/.test(value) ? 'ko-KR' : 'en-US';
+  window.speechSynthesis.speak(utter);
+}
+
+/**
+ * @param {string} label
+ * @param {{ locked?: boolean, state?: 'active' | 'correct' | 'incorrect' }} options
+ */
+function createWordChip(label, options = {}) {
+  const chip = document.createElement('button');
+  chip.type = 'button';
+  chip.className = 'quiz-word-chip';
+  chip.textContent = label;
+  chip.setAttribute('role', 'listitem');
+  if (options.state === 'correct') chip.classList.add('quiz-word-chip--correct');
+  if (options.state === 'incorrect') chip.classList.add('quiz-word-chip--incorrect');
+  if (options.locked) chip.disabled = true;
+  return chip;
 }
 
 /**
@@ -386,7 +669,6 @@ function fillAnswerCardContent(btn, choice) {
   }
 
   if (wantsMediaSlot) {
-    // Empty image path: text-only card until assets arrive (matches N1 mock).
     btn.classList.remove('cb-answer-card--has-image');
     const label = document.createElement('span');
     label.className = 'cb-answer-card__label';

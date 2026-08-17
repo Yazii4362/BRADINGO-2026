@@ -231,18 +231,17 @@
   --map-cover-radius: 14px;
   --map-cover-height: 78px;
 
-  /* Map node — Figma exception (not BRADINGO Foundations) */
-  --map-node-size: clamp(56px, 18vw, 72px);
-  /* Active path node — brighter sky blue (distinct from brand CTA) */
-  --map-node-active: var(--macaw-500);
-  --map-node-active-edge: color-mix(in srgb, var(--map-node-active) 85%, black);
+  /* Map node — Figma 71×65 ellipses */
+  --map-node-size: clamp(56px, 18vw, 71px);
+  --map-node-active: #00b3fa;
+  --map-node-active-edge: #0098d4;
   --map-node-green: var(--feather-green-600);
   --map-node-green-edge: color-mix(in srgb, var(--map-node-green) 85%, black);
   --map-node-inset: var(--neutral-200);
-  --map-node-locked-fill: var(--neutral-300);
-  --map-node-locked-edge: color-mix(in srgb, var(--neutral-500) 70%, black);
-  --map-node-completed-fill: var(--macaw-500);
-  --map-node-completed-edge: var(--macaw-700);
+  --map-node-locked-fill: #e5e5e5;
+  --map-node-locked-edge: #b7b7b7;
+  --map-node-completed-fill: #00b3fa;
+  --map-node-completed-edge: #0098d4;
   --map-callout-radius: var(--radius-sm);
   --map-callout-green: var(--feather-green-600);
   --font-map: "Nunito", "Noto Sans KR", system-ui, sans-serif;

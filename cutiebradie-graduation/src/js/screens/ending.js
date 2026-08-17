@@ -28,6 +28,13 @@ export function renderEnding(props) {
       ? stats.totalNodes
       : stats.completedCount;
 
+  const summaryRows = stats.summaryRows.map((row) => {
+    if (row.id === 'courses') {
+      return { ...row, value: `${completedDisplay} / ${stats.totalNodes}` };
+    }
+    return row;
+  });
+
   /** @type {'idle' | 'generating' | 'success' | 'failure' | 'cancelled'} */
   let exportStatus = 'idle';
   let markedComplete = false;
@@ -41,38 +48,50 @@ export function renderEnding(props) {
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  const summaryHtml = summaryRows
+    .map((row) => {
+      const valueHtml = row.valueHtml ?? row.value;
+      return `
+        <li class="cb-ending-stat">
+          <img class="cb-ending-stat__icon" src="${row.icon}" alt="" width="28" height="28" />
+          <span class="cb-ending-stat__label">${row.label}</span>
+          <strong class="cb-ending-stat__value">${valueHtml}</strong>
+        </li>
+      `;
+    })
+    .join('');
+
   el.innerHTML = `
-    <div class="ending-glow" aria-hidden="true"></div>
-    ${reduceMotion ? '' : '<div class="ending-confetti" aria-hidden="true"></div>'}
+    <div class="ending-sky" aria-hidden="true">
+      <div class="ending-glow"></div>
+      <div class="ending-rays"></div>
+      <div class="ending-stars"></div>
+      ${reduceMotion ? '' : '<div class="ending-confetti"></div>'}
+    </div>
     <div class="ending-body">
-      <div class="ending-pane ending-pane--hero">
-        <div class="ending-hero" role="img" aria-label="${stats.heroAlt}">
-          ${
-            stats.heroImage
-              ? `<img class="ending-hero__img" src="${stats.heroImage}" alt="${stats.heroAlt}" />`
-              : '<div class="ending-hero__fallback">졸업 축하 일러스트</div>'
-          }
-        </div>
+      <div class="ending-hero" role="img" aria-label="${stats.heroAlt}">
+        <img class="ending-hero__img" src="${stats.heroImage}" alt="${stats.heroAlt}" />
       </div>
-      <div class="ending-pane ending-pane--copy">
-        <header class="ending-header">
-          <p class="ending-eyebrow">${stats.wordmark}</p>
-          ${props.mode === 'replay' ? '<span class="cb-replay-badge ending-replay">다시 보기</span>' : ''}
-        </header>
-        <h1 class="ending-title">${stats.title}</h1>
-        <p class="ending-subtitle">${stats.subtitle}</p>
-        <ul class="ending-stats" aria-label="완료 기록">
-          <li class="cb-ending-stat"><span>완료 챕터</span><strong>${completedDisplay}/${stats.totalNodes}</strong></li>
-          <li class="cb-ending-stat"><span>스트릭</span><strong>${stats.streakDays}일</strong></li>
-          <li class="cb-ending-stat"><span>추억 사진</span><strong>${stats.memoryCount}장</strong></li>
-          <li class="cb-ending-stat"><span>축하 친구</span><strong>${stats.friendMessageCount}명</strong></li>
-        </ul>
-        <p class="ending-status" role="status" aria-live="polite"></p>
-        <div class="ending-actions">
-          <button type="button" class="cb-button cb-button--primary cb-button--fill ending-btn" data-action="export">이미지로 저장</button>
-          <button type="button" class="cb-button cb-button--ghost-dark cb-button--fill ending-btn" data-action="review">다시 보기</button>
-          <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">처음부터 다시</button>
-        </div>
+      ${props.mode === 'replay' ? '<span class="cb-replay-badge ending-replay">다시 보기</span>' : ''}
+      <h1 class="ending-title">${stats.title}</h1>
+      <p class="ending-lead">${stats.lead}</p>
+      <p class="ending-tagline">${stats.tagline}</p>
+      <section class="ending-summary" aria-label="${stats.summaryTitle}">
+        <h2 class="ending-summary__title">— ${stats.summaryTitle} —</h2>
+        <ul class="ending-stats">${summaryHtml}</ul>
+      </section>
+      <p class="ending-status" role="status" aria-live="polite"></p>
+      <div class="ending-actions">
+        <button type="button" class="ending-cta" data-action="review">
+          <span class="ending-cta__label">${stats.ctaLabel}</span>
+          <span class="ending-cta__arrow" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+        <button type="button" class="cb-button cb-button--ghost-dark cb-button--fill ending-btn" data-action="export">이미지로 저장</button>
+        <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">처음부터 다시</button>
       </div>
     </div>
   `;
