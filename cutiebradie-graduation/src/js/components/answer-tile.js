@@ -1,6 +1,5 @@
 /**
- * Shared selection tile — Figma 170×219 card (white / #EBEBEB edge / bottom ledge).
- * Used by language select and quiz answer grids.
+ * Shared selection card — tall tile (lang) or horizontal row (quiz).
  *
  * @param {{
  *   id: string,
@@ -11,6 +10,7 @@
  *   role?: string,
  *   ariaSelected?: boolean,
  *   ariaPressed?: boolean,
+ *   variant?: 'tile' | 'row',
  *   className?: string
  * }} props
  * @returns {HTMLButtonElement}
@@ -18,7 +18,8 @@
 export function createAnswerTile(props) {
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = `cb-answer-card cb-answer-card--tile${props.selected ? ' is-selected cb-answer-card--selected' : ''}${
+  const variant = props.variant === 'row' ? 'row' : 'tile';
+  btn.className = `cb-answer-card cb-answer-card--${variant}${props.selected ? ' is-selected cb-answer-card--selected' : ''}${
     props.className ? ` ${props.className}` : ''
   }`;
   btn.dataset.choiceId = props.id;

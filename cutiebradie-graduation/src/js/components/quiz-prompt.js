@@ -12,21 +12,26 @@ export function createQuizPrompt(props) {
   const el = document.createElement('div');
   el.className = 'cb-quiz-prompt';
 
-  const badge = props.badge ?? 'NEW WORD';
-  const variant = props.badgeVariant ?? (badge === '어려운 문제' ? 'hard' : 'new-word');
+  const badge = props.badge?.trim() || '';
+  const variant =
+    props.badgeVariant ?? (badge === '어려운 문제' ? 'hard' : badge ? 'new-word' : '');
   const word = props.promptWord?.trim() || '';
   const iconSrc =
     variant === 'hard'
       ? './assets/images/quiz/icon-hard.svg'
       : './assets/images/quiz/icon-new-word.svg';
 
-  el.dataset.badgeVariant = variant;
+  if (variant) el.dataset.badgeVariant = variant;
 
   el.innerHTML = `
-    <div class="cb-quiz-prompt__badge">
-      <img class="cb-quiz-prompt__badge-icon" src="${iconSrc}" alt="" width="24" height="24" />
-      <span class="cb-quiz-prompt__badge-text">${badge}</span>
-    </div>
+    ${
+      badge
+        ? `<div class="cb-quiz-prompt__badge">
+            <img class="cb-quiz-prompt__badge-icon" src="${iconSrc}" alt="" width="24" height="24" />
+            <span class="cb-quiz-prompt__badge-text">${badge}</span>
+          </div>`
+        : ''
+    }
     <h1 class="cb-quiz-prompt__title" id="${props.promptId ?? 'quiz-question-title'}">${props.instruction}</h1>
     ${
       word

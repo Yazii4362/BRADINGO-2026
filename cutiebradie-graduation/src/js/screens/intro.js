@@ -10,6 +10,16 @@ export function renderIntro(props) {
   el.className = 'screen screen--intro';
   el.dataset.screen = 'intro';
   el.innerHTML = `
+    <h1 class="intro-wordmark">
+      <img
+        class="intro-wordmark__img"
+        src="./assets/images/intro/logo.png"
+        alt="${BRAND.wordmark}"
+        width="860"
+        height="244"
+        decoding="async"
+      />
+    </h1>
     <div class="intro-hero" aria-hidden="true">
       <button type="button" class="intro-egg" data-action="egg" aria-label="${t('intro.eggAria')}">
         <img
@@ -22,16 +32,6 @@ export function renderIntro(props) {
         />
       </button>
     </div>
-    <h1 class="intro-wordmark">
-      <img
-        class="intro-wordmark__img"
-        src="./assets/images/intro/logo.png"
-        alt="${BRAND.wordmark}"
-        width="860"
-        height="244"
-        decoding="async"
-      />
-    </h1>
     <p class="screen__body intro-lead">
       ${t('intro.lead', { course: BRAND.courseName })}
     </p>

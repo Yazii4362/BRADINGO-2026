@@ -515,6 +515,7 @@ function renderChoiceQuiz(props, questions) {
         label: choice.label,
         image: choice.image,
         alt: choice.alt,
+        variant: layout === 'text' ? 'row' : 'tile',
         ariaPressed: false,
       });
       btn.addEventListener('click', () => onCardTap(choice.id));
@@ -572,13 +573,17 @@ function renderChoiceQuiz(props, questions) {
       <img class="quiz-listen-bubble__speaker" src="./assets/images/quiz/icon-speaker.svg" alt="" width="40" height="36" decoding="async" />
       <img class="quiz-listen-bubble__wave" src="./assets/images/quiz/icon-waveform.svg" alt="" width="136" height="68" decoding="async" />
     `;
-    speakBtn.addEventListener('click', () => speakText(quiz.listenText ?? ''));
+    speakBtn.addEventListener('click', () =>
+      speakText(quiz.listenText ?? '', { rate: quiz.listenRate ?? 1 })
+    );
 
     const slowBtn = document.createElement('button');
     slowBtn.type = 'button';
     slowBtn.className = 'quiz-listen-bubble__slow';
     slowBtn.textContent = '느린 속도로 재생';
-    slowBtn.addEventListener('click', () => speakText(quiz.listenText ?? '', { rate: 0.65 }));
+    slowBtn.addEventListener('click', () =>
+      speakText(quiz.listenText ?? '', { rate: Math.min(quiz.listenRate ?? 0.65, 0.65) })
+    );
 
     bubble.appendChild(speakBtn);
     bubbleWrap.append(bubble, slowBtn);
@@ -616,7 +621,7 @@ function renderChoiceQuiz(props, questions) {
     syncSentenceUI();
     syncSubmitEnabled();
 
-    queueMicrotask(() => speakText(quiz.listenText ?? ''));
+    queueMicrotask(() => speakText(quiz.listenText ?? '', { rate: quiz.listenRate ?? 1 }));
   }
 
   function requestExit() {

@@ -5,18 +5,31 @@
 export const DEVELOPER = Object.freeze({
   handle: 'yazii',
   displayName: '야지',
+  igHandle: '@yazii_home',
   githubUrl: 'https://github.com/Yazii4362',
   githubLabel: 'github.com/Yazii4362',
   email: 'image4362@gmail.com',
   /** Placeholder — replace with real coffee-chat booking URL */
   coffeeChatUrl: 'mailto:image4362@gmail.com?subject=yazii%20%EC%BB%A4%ED%94%BC%EC%B1%97%20%EC%9A%94%EC%B2%AD',
   coffeeChatLabel: '커피챗 요청하기',
-  /** Placeholder — replace with real Instagram URL */
-  instagramUrl: 'https://instagram.com/',
+  instagramUrl: 'https://instagram.com/yazii_home',
   instagramLabel: 'Instagram',
+  portraitSrc: './assets/images/creator/yazii-portrait.webp',
   duolingoInviteUrl: 'https://invite.duolingo.com/BDHTZTB5CWWKTR26THJHW7DZIA',
   duolingoInviteLabel: '듀오링고 친구 맺기',
 });
+
+const ICONS = {
+  coffee: `<svg class="cb-coffee-coupon__icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 6h13a1 1 0 0 1 1 1v1h1.5A2.5 2.5 0 0 1 22 10.5 2.5 2.5 0 0 1 19.5 13H18v1a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V7a1 1 0 0 1 1-1Zm14 5h1.5a.5.5 0 0 0 0-1H18v1ZM6.5 3.2c.2-.4.7-.5 1-.3.4.2.5.7.3 1L7 5.2c-.2.4-.7.5-1 .3-.4-.2-.5-.7-.3-1l.8-1.3Zm3.2-.4c.3-.4.8-.4 1.1-.1.3.3.4.8.1 1.1l-1 1.2c-.3.3-.8.4-1.1.1-.3-.3-.4-.8-.1-1.1l1-1.2Zm3.3.1c.3-.3.8-.4 1.1-.1.3.3.4.8.1 1.1l-1.2 1.1c-.3.3-.8.3-1.1 0-.3-.3-.3-.8 0-1.1l1.1-1Z"/></svg>`,
+  instagram: `<svg class="cb-coffee-coupon__icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="igGrad" x1="0" y1="24" x2="24" y2="0"><stop stop-color="#feda75"/><stop offset=".3" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#962fbf"/></linearGradient></defs><rect x="3" y="3" width="18" height="18" rx="5" fill="url(#igGrad)"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.2" fill="#fff"/></svg>`,
+  github: `<svg class="cb-coffee-coupon__icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#24292f" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.61.07-.61 1 .07 1.52 1.03 1.52 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.8c.85 0 1.7.11 2.5.33 1.9-1.29 2.74-1.02 2.74-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .26.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>`,
+  email: `<svg class="cb-coffee-coupon__icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="#7B68EE" stroke-width="1.8"/><path d="M4.2 7.2 12 12.4l7.8-5.2" fill="none" stroke="#7B68EE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  chevron: `<svg class="cb-coffee-coupon__chevron" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M7.5 4.5 13 10l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  close: `<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5.5 5.5 14.5 14.5M14.5 5.5 5.5 14.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  info: `<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="9" fill="#7B68EE"/><path d="M10 8.2V14M10 5.8v.4" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg>`,
+  sparkle: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#F5C84C" d="M12 1.2 13.8 9 21.5 12 13.8 15 12 22.8 10.2 15 2.5 12 10.2 9Z"/></svg>`,
+  heart: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#FF5A7A" d="M12 20.4S3.6 14.7 3.6 9.6A4.5 4.5 0 0 1 12 7.1a4.5 4.5 0 0 1 8.4 2.5c0 5.1-8.4 10.8-8.4 10.8Z"/></svg>`,
+};
 
 /**
  * @param {{
@@ -54,6 +67,25 @@ export function openCoffeeCoupon() {
   openCreatorSupport({ variant: 'easter' });
 }
 
+function createPortraitFrame(extraClass = '') {
+  return `
+    <div class="creator-frame ${extraClass}">
+      <div class="creator-frame__sparkle creator-frame__sparkle--tl" aria-hidden="true">${ICONS.sparkle}</div>
+      <div class="creator-frame__sparkle creator-frame__sparkle--tr" aria-hidden="true">${ICONS.sparkle}</div>
+      <div class="creator-frame__sparkle creator-frame__sparkle--br" aria-hidden="true">${ICONS.sparkle}</div>
+      <div class="creator-frame__heart" aria-hidden="true">${ICONS.heart}</div>
+      <img
+        class="creator-frame__img"
+        src="${DEVELOPER.portraitSrc}"
+        alt="${DEVELOPER.displayName} ${DEVELOPER.igHandle}"
+        width="360"
+        height="360"
+        decoding="async"
+      />
+    </div>
+  `;
+}
+
 /**
  * @param {{ variant?: 'default' | 'easter' }} [options]
  */
@@ -76,72 +108,69 @@ export function openCreatorSupport(options = {}) {
 
   const eyebrow =
     variant === 'easter' ? 'EASTER EGG UNLOCKED' : 'SUPPORT THE CREATOR';
-  const title =
-    variant === 'easter' ? '☕ yazii 커피챗 쿠폰' : '만든 사람 응원하기';
   const body =
     variant === 'easter'
       ? `이 초대장을 만든 개발자 <strong>${DEVELOPER.handle}</strong>에게<br />커피챗을 요청할 수 있어요.`
-      : `이 초대장을 만든 <strong>${DEVELOPER.displayName}</strong> (${DEVELOPER.handle})를<br />커피챗·인스타·듀오링고로 응원해 주세요.`;
+      : `이 초대장을 만든 <strong>${DEVELOPER.displayName}</strong> (${DEVELOPER.handle})를<br />커피챗·인스타로 응원해 주세요.`;
 
   dialog.innerHTML = `
-    <div class="cb-coffee-coupon__ticket">
+    <div class="cb-coffee-coupon__sheet">
+      <button type="button" class="cb-coffee-coupon__close" data-action="close" aria-label="닫기">
+        ${ICONS.close}
+      </button>
       <p class="cb-coffee-coupon__eyebrow">${eyebrow}</p>
-      <h2 id="creator-support-title" class="cb-coffee-coupon__title">${title}</h2>
+      <h2 id="creator-support-title" class="cb-coffee-coupon__title">
+        만든 사람 <span>응원하기</span>
+      </h2>
       <p class="cb-coffee-coupon__body">${body}</p>
-      <div class="cb-coffee-coupon__perks">
+      ${createPortraitFrame('creator-frame--modal')}
+      <div class="cb-coffee-coupon__links">
         <a
           class="cb-coffee-coupon__link"
           href="${DEVELOPER.coffeeChatUrl}"
           target="_blank"
           rel="noopener noreferrer"
+          title="${DEVELOPER.coffeeChatLabel}"
+          aria-label="${DEVELOPER.coffeeChatLabel}"
         >
-          <span class="cb-coffee-coupon__link-label">Coffee chat</span>
-          <span class="cb-coffee-coupon__link-value">${DEVELOPER.coffeeChatLabel}</span>
-        </a>
-        <a
-          class="cb-coffee-coupon__link"
-          href="${DEVELOPER.duolingoInviteUrl}"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span class="cb-coffee-coupon__link-label">Duolingo</span>
-          <span class="cb-coffee-coupon__link-value">${DEVELOPER.duolingoInviteLabel}</span>
+          <span class="cb-coffee-coupon__link-icon">${ICONS.coffee}</span>
         </a>
         <a
           class="cb-coffee-coupon__link"
           href="${DEVELOPER.instagramUrl}"
           target="_blank"
           rel="noopener noreferrer"
+          title="${DEVELOPER.instagramLabel}"
+          aria-label="${DEVELOPER.instagramLabel}"
         >
-          <span class="cb-coffee-coupon__link-label">Instagram</span>
-          <span class="cb-coffee-coupon__link-value">${DEVELOPER.instagramLabel}</span>
+          <span class="cb-coffee-coupon__link-icon">${ICONS.instagram}</span>
         </a>
         <a
           class="cb-coffee-coupon__link"
           href="${DEVELOPER.githubUrl}"
           target="_blank"
           rel="noopener noreferrer"
+          title="${DEVELOPER.githubLabel}"
+          aria-label="GitHub ${DEVELOPER.githubLabel}"
         >
-          <span class="cb-coffee-coupon__link-label">GitHub</span>
-          <span class="cb-coffee-coupon__link-value">${DEVELOPER.githubLabel}</span>
+          <span class="cb-coffee-coupon__link-icon">${ICONS.github}</span>
         </a>
         <a
           class="cb-coffee-coupon__link"
           href="mailto:${DEVELOPER.email}?subject=${encodeURIComponent('yazii 응원 / 커피챗')}"
+          title="${DEVELOPER.email}"
+          aria-label="이메일 ${DEVELOPER.email}"
         >
-          <span class="cb-coffee-coupon__link-label">Email</span>
-          <span class="cb-coffee-coupon__link-value">${DEVELOPER.email}</span>
+          <span class="cb-coffee-coupon__link-icon">${ICONS.email}</span>
         </a>
       </div>
-      <p class="cb-coffee-coupon__note">
-        개인 졸업 축하 프로젝트 · Duolingo와 무관합니다.<br />
-        진행 기록은 이 기기(localStorage)에만 저장됩니다.
-      </p>
-    </div>
-    <div class="cb-coffee-coupon__actions">
-      <button type="button" class="cb-button cb-button--primary cb-button--fill" data-action="close">
-        닫기
-      </button>
+      <div class="cb-coffee-coupon__note">
+        <span class="cb-coffee-coupon__note-icon">${ICONS.info}</span>
+        <p>
+          개인 졸업 축하 프로젝트 · Duolingo와 무관합니다.
+          진행 기록은 이 기기(localStorage)에만 저장됩니다.
+        </p>
+      </div>
     </div>
   `;
 
@@ -175,8 +204,7 @@ export function openCreatorSupport(options = {}) {
 }
 
 /**
- * Duolingo-style promo card for map.
- * Placed under the course cover on tablet/PC; docked at map bottom on mobile.
+ * Map AD promo — quiet card under map cover (opens creator coupon modal).
  */
 export function createCreatorPromoCard() {
   const card = document.createElement('aside');
@@ -185,8 +213,22 @@ export function createCreatorPromoCard() {
 
   card.innerHTML = `
     <div class="creator-promo__badge" aria-hidden="true">AD</div>
-    <p class="creator-promo__title">만든 사람 응원하기</p>
-    <p class="creator-promo__body">이 초대장을 만든 ${DEVELOPER.displayName}를 응원해 주세요</p>
+    <div class="creator-promo__row">
+      <div class="creator-promo__copy">
+        <p class="creator-promo__title">만든 사람 응원하기</p>
+        <p class="creator-promo__body">열심히 개발한 야지님을 응원해주세요!</p>
+      </div>
+      <div class="creator-promo__art" aria-hidden="true">
+        <svg class="creator-promo__cup" viewBox="0 0 64 64" focusable="false">
+          <ellipse cx="28" cy="54" rx="16" ry="3.2" fill="#d7d7d7" opacity=".55"/>
+          <path d="M14 24h28a3 3 0 0 1 3 3v11c0 8.3-6.7 15-15 15h-4c-8.3 0-15-6.7-15-15V27a3 3 0 0 1 3-3Z" fill="#fff"/>
+          <path d="M14 24h28a3 3 0 0 1 3 3v2.2H11V27a3 3 0 0 1 3-3Z" fill="#efeafc"/>
+          <path d="M17.5 30.5h21c.8 0 1.4.7 1.3 1.5l-1.4 10.2A7 7 0 0 1 31.5 48h-7a7 7 0 0 1-6.9-5.8L16.2 32c-.1-.8.5-1.5 1.3-1.5Z" fill="#6f5ed4"/>
+          <path d="M45 30h4.5A6.5 6.5 0 0 1 56 36.5 6.5 6.5 0 0 1 49.5 43H45" fill="none" stroke="#c3c3c3" stroke-width="3.2" stroke-linecap="round"/>
+          <path d="M22 14c0 3 1.4 4.5 1.4 7.2M28.5 12.5c0 3.4 1.6 5 1.6 8.2M35 14.2c0 2.8 1.3 4.2 1.3 6.8" fill="none" stroke="#afafaf" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
     <button type="button" class="creator-promo__cta">응원하러 가기</button>
   `;
 

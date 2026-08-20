@@ -486,9 +486,9 @@
 .cb-streak-tooltip__mascot {
   position: relative;
   z-index: 1;
-  width: 5.1rem;
-  margin-top: -0.35rem;
-  margin-right: -0.2rem;
+  width: 4.25rem;
+  margin-top: -0.15rem;
+  margin-right: -0.1rem;
   line-height: 0;
   flex-shrink: 0;
 }
@@ -613,6 +613,12 @@
   width: var(--header-icon-size);
   height: var(--header-icon-size);
   object-fit: contain;
+}
+
+.cb-app-header__icon--plane svg {
+  width: 1.375rem;
+  height: 1.375rem;
+  overflow: visible;
 }
 
 .cb-app-header__value {
@@ -1080,9 +1086,9 @@
 .cb-quiz-prompt {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-2);
-  text-align: center;
+  text-align: left;
 }
 
 .cb-quiz-prompt__badge {
@@ -1119,14 +1125,14 @@
   letter-spacing: -0.02em;
   line-height: 1.25;
   color: var(--text);
-  text-align: center;
+  text-align: left;
   word-break: keep-all;
 }
 
 .cb-quiz-prompt__word-row {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--space-3);
   margin-top: var(--space-1);
 }
@@ -1172,7 +1178,6 @@
 .cb-answer-card {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.75rem;
   width: 100%;
   min-height: var(--control-height);
@@ -1180,7 +1185,7 @@
   border-radius: 12px;
   border: 2px solid #ebebeb;
   background: #fff;
-  text-align: center;
+  text-align: left;
   font-size: 0.9375rem;
   font-weight: 700;
   color: #4b4b4b;
@@ -1200,7 +1205,58 @@
   box-shadow: 0 1px 0 #ebebeb;
 }
 
-/* Figma tile: 170×219 white card */
+/* Horizontal row — quiz answers (matches prior lang-option rows) */
+.cb-answer-card--row {
+  justify-content: flex-start;
+  gap: 1rem;
+  min-height: 3.375rem;
+  padding: 0.5rem 1rem 0.5rem 0.875rem;
+  font-size: 1.0625rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.cb-answer-card--row .cb-answer-card__media {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: auto;
+  min-height: 0;
+}
+
+.cb-answer-card--row .cb-answer-card__image,
+.cb-answer-card--row .cb-answer-card__placeholder {
+  width: 3rem;
+  height: 3rem;
+  margin: 0;
+  border-radius: 8px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: #fff;
+}
+
+.cb-answer-card--row .cb-answer-card__label {
+  flex: 1 1 auto;
+  margin-top: 0;
+  padding: 0;
+  text-align: left;
+  font-size: 1.0625rem;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.cb-answer-card--row.cb-answer-card--media-only {
+  justify-content: flex-start;
+}
+
+.cb-answer-card--row.cb-answer-card--media-only .cb-answer-card__image,
+.cb-answer-card--row.cb-answer-card--media-only .cb-answer-card__placeholder {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+/* Tall tile — language select 2×2 */
 .cb-answer-card--tile,
 .answer-list--grid-2x2 .cb-answer-card {
   flex-direction: column;
@@ -1241,31 +1297,35 @@
 }
 
 .cb-answer-card__label {
-  flex: 0 0 auto;
+  flex: 1;
   min-width: 0;
-  margin-top: 0.35rem;
-  padding: 0 0.15rem;
+  margin-top: 0;
+  padding: 0;
   font-size: 0.9375rem;
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.02em;
   color: #4b4b4b;
-  text-align: center;
+  text-align: left;
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
 
-.answer-list--grid-2x2 .cb-answer-card__label {
+.answer-list--grid-2x2 .cb-answer-card__label,
+.cb-answer-card--tile .cb-answer-card__label {
   flex: 0 0 auto;
+  margin-top: 0.35rem;
+  padding: 0 0.15rem;
   font-size: 0.9375rem;
   line-height: 1.25;
+  text-align: center;
 }
 
 .cb-answer-card__image {
   width: 48px;
   height: 48px;
   flex-shrink: 0;
-  border-radius: 999999px;
+  border-radius: 8px;
   object-fit: cover;
   background: var(--neutral-200);
 }
@@ -1282,11 +1342,14 @@
   background: transparent;
 }
 
+/* Quiz tiles: square images (not circular) */
 .screen--quiz[data-layout='image'] .answer-list--grid-2x2 .cb-answer-card__image,
-.screen--quiz[data-layout='character'] .answer-list--grid-2x2 .cb-answer-card__image {
+.screen--quiz[data-layout='character'] .answer-list--grid-2x2 .cb-answer-card__image,
+.screen--quiz[data-layout='image'] .cb-answer-card--tile .cb-answer-card__image,
+.screen--quiz[data-layout='character'] .cb-answer-card--tile .cb-answer-card__image {
   width: min(100%, 6.25rem);
   aspect-ratio: 1;
-  border-radius: 999999px;
+  border-radius: 8px;
   object-fit: cover;
   background: #fff;
 }
@@ -1302,7 +1365,7 @@
   width: 48px;
   height: 48px;
   flex-shrink: 0;
-  border-radius: 999999px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
   background: var(--active-soft);
@@ -1317,7 +1380,7 @@
   aspect-ratio: 1;
   height: auto;
   margin-inline: auto;
-  border-radius: 999999px;
+  border-radius: 8px;
   font-size: 1.5rem;
 }
 
@@ -1515,109 +1578,278 @@
   z-index: 55;
   display: grid;
   place-items: center;
-  padding: clamp(1rem, 4vw, 1.25rem);
-  background: var(--overlay-scrim);
+  padding: clamp(0.75rem, 3vw, 1.25rem);
+  background: color-mix(in srgb, #2a1f4d 55%, transparent);
+  backdrop-filter: blur(4px);
 }
 
 .cb-coffee-coupon {
-  width: min(100%, 22rem);
-  max-height: calc(100vh - 32px);
-  max-height: calc(100dvh - 32px);
+  --creator-purple: #8b7ae8;
+  --creator-purple-deep: #6f5ed4;
+  --creator-frame-gold: #f5c84c;
+  width: min(100%, 22.5rem);
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  border-radius: 1.5rem;
+  background: var(--creator-purple);
+  box-shadow: 0 18px 48px rgba(42, 31, 77, 0.35);
 }
 
-.cb-coffee-coupon__ticket {
+.cb-coffee-coupon__sheet {
   position: relative;
-  padding: 1.35rem 1.25rem 1.2rem;
-  border-radius: 1.15rem;
-  background:
-    linear-gradient(180deg, #fffdf6 0%, #fff7e8 100%);
-  border: 2px dashed #e8c27a;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 1.2rem 1.1rem 1.15rem;
   text-align: center;
+}
+
+.cb-coffee-coupon__close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, #fff 28%, transparent);
+  color: #3d2f78;
+  cursor: pointer;
+}
+
+.cb-coffee-coupon__close svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.cb-coffee-coupon__close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .cb-coffee-coupon__eyebrow {
-  margin: 0;
+  margin: 0.15rem 0 0;
   font-size: 0.6875rem;
   font-weight: 800;
-  letter-spacing: 0.12em;
-  color: #c4892d;
+  letter-spacing: 0.14em;
+  color: color-mix(in srgb, #fff 78%, var(--creator-purple-deep));
 }
 
 .cb-coffee-coupon__title {
-  margin: 0.55rem 0 0;
-  font-size: 1.25rem;
+  margin: 0.45rem 0 0;
+  font-size: 1.35rem;
   font-weight: 900;
-  letter-spacing: -0.02em;
-  color: #3b2a14;
-}
-
-.cb-coffee-coupon__body {
-  margin: 0.7rem 0 0;
-  font-size: 0.875rem;
-  font-weight: 700;
-  line-height: 1.45;
-  color: #6b5535;
+  letter-spacing: -0.03em;
+  color: #fff;
   word-break: keep-all;
 }
 
-.cb-coffee-coupon__perks {
-  margin-top: 1rem;
-  display: grid;
-  gap: 0.55rem;
+.cb-coffee-coupon__title span {
+  color: #efe7ff;
+  text-shadow: 0 0 0.4rem color-mix(in srgb, #fff 35%, transparent);
+}
+
+.cb-coffee-coupon__body {
+  margin: 0.55rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: color-mix(in srgb, #fff 88%, var(--creator-purple-deep));
+  word-break: keep-all;
+}
+
+.cb-coffee-coupon__body strong {
+  color: #fff;
+  font-weight: 900;
+}
+
+.cb-coffee-coupon__links {
+  margin-top: 0.95rem;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .cb-coffee-coupon__link {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.15rem;
-  padding: 0.7rem 0.85rem;
-  border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(196, 137, 45, 0.28);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.65rem;
+  height: 2.65rem;
+  padding: 0;
+  border-radius: 0.75rem;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, #fff 55%, #d7d0f5);
   text-decoration: none;
-  color: inherit;
-  text-align: left;
+  color: #2a2440;
+  box-shadow: 0 1px 0 color-mix(in srgb, #2a2440 6%, transparent);
 }
 
-.cb-coffee-coupon__link-label {
-  font-size: 0.6875rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: #c4892d;
+.cb-coffee-coupon__link:active {
+  transform: translateY(1px);
 }
 
-.cb-coffee-coupon__link-value {
-  font-size: 0.875rem;
-  font-weight: 800;
-  color: #3b2a14;
-  word-break: break-all;
+.cb-coffee-coupon__link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.cb-coffee-coupon__link-icon {
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  color: #7b68ee;
+}
+
+.cb-coffee-coupon__icon-svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: block;
 }
 
 .cb-coffee-coupon__note {
-  margin: 0.9rem 0 0;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #9a7a45;
-}
-
-.cb-coffee-coupon__actions {
+  display: grid;
+  grid-template-columns: 1.15rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: start;
   margin-top: 0.85rem;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  padding: 0.7rem 0.75rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, #fff 18%, transparent);
+  text-align: left;
 }
 
-.cb-coffee-coupon__status {
-  margin: 0.55rem 0 0;
-  min-height: 1.1rem;
-  text-align: center;
-  font-size: 0.8125rem;
+.cb-coffee-coupon__note-icon {
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.05rem;
+}
+
+.cb-coffee-coupon__note-icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.cb-coffee-coupon__note p {
+  margin: 0;
+  font-size: 0.6875rem;
   font-weight: 700;
-  color: #fff;
+  line-height: 1.4;
+  color: color-mix(in srgb, #fff 82%, var(--creator-purple-deep));
+  word-break: keep-all;
+}
+
+/* Framed portrait art (frame baked into asset) */
+.creator-frame {
+  position: relative;
+  width: min(100%, 15rem);
+  margin: 1rem auto 0;
+  padding: 0;
+  background: transparent;
+  filter: drop-shadow(0 8px 18px color-mix(in srgb, #2a1f4d 28%, transparent));
+}
+
+.creator-frame__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.creator-frame__sparkle {
+  position: absolute;
+  z-index: 4;
+  width: 1.35rem;
+  height: 1.35rem;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12));
+  animation: creator-sparkle 2.4s ease-in-out infinite;
+}
+
+.creator-frame__sparkle svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.creator-frame__sparkle--tl {
+  top: 0.85rem;
+  left: -0.55rem;
+}
+
+.creator-frame__sparkle--tr {
+  top: 1.6rem;
+  right: -0.65rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  animation-delay: 0.4s;
+}
+
+.creator-frame__sparkle--br {
+  bottom: 1.8rem;
+  right: -0.45rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  animation-delay: 0.9s;
+}
+
+.creator-frame__heart {
+  position: absolute;
+  z-index: 4;
+  top: 42%;
+  left: -0.85rem;
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 3px 8px rgba(42, 31, 77, 0.18);
+  pointer-events: none;
+  animation: creator-heart-bob 2.8s ease-in-out infinite;
+}
+
+.creator-frame__heart svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.creator-frame--modal {
+  margin-top: 1.05rem;
+  margin-bottom: 0.35rem;
+}
+
+@keyframes creator-sparkle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.15) rotate(12deg);
+    opacity: 1;
+  }
+}
+
+@keyframes creator-heart-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.2rem);
+  }
 }
 
 .cb-ending-stat {

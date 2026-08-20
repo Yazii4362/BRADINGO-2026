@@ -23,6 +23,7 @@ function formatLetterHtml(text) {
 
 /**
  * Friends letters — GNB tab, or path node (n4) with complete CTA.
+ * Profile strip stays on top; messages are a stacked card deck below.
  * @param {{
  *   mode?: 'play' | 'replay',
  *   onBackToMap?: () => void,
@@ -81,93 +82,197 @@ export function renderFriends(props = {}) {
     avatars.appendChild(btn);
   });
 
-  const scroll = document.createElement('div');
-  scroll.className = 'friends-scroll';
+  const profile = document.createElement('article');
+  profile.className = 'friends-detail friends-detail--profile-only';
+  profile.setAttribute('aria-live', 'polite');
 
-  const detail = document.createElement('article');
-  detail.className = 'friends-detail';
-  detail.setAttribute('aria-live', 'polite');
+  const deck = document.createElement('div');
+  deck.className = 'friends-deck';
 
-  const list = document.createElement('div');
-  list.className = 'friends-list';
-  list.setAttribute('role', 'list');
+  const stage = document.createElement('div');
+  stage.className = 'friends-deck__stage';
+  stage.setAttribute('role', 'region');
+  stage.setAttribute('aria-roledescription', 'carousel');
+  stage.setAttribute('aria-label', '졸업 축하 편지');
 
-  /** @type {Map<string, typeof friends>} */
-  const groups = new Map();
-  friends.forEach((friend) => {
-    const key = friend.group || '편지';
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key)?.push(friend);
+  /** @type {Map<string, HTMLElement>} */
+  const cards = new Map();
+
+  friends.forEach((friend, index) => {
+    const card = document.createElement('article');
+    card.className = 'friends-letter-card';
+    card.dataset.friendId = friend.id;
+    card.setAttribute('aria-hidden', friend.id === activeId ? 'false' : 'true');
+    card.innerHTML = `
+      <header class="friends-letter-card__head">
+        <span class="friends-letter-card__avatar" aria-hidden="true">${renderAvatarFace(friend)}</span>
+        <div class="friends-letter-card__meta">
+          <p class="friends-letter-card__name">${escapeHtml(friend.name)}</p>
+          <p class="friends-letter-card__when">${escapeHtml(friend.group)}</p>
+        </div>
+        <span class="friends-letter-card__index">${index + 1}/${friends.length}</span>
+      </header>
+      <div class="friends-letter-card__body">
+        <p class="friends-letter-card__text">${formatLetterHtml(friend.letter)}</p>
+      </div>
+    `;
+    cards.set(friend.id, card);
+    stage.appendChild(card);
   });
 
-  groups.forEach((groupFriends, groupLabel) => {
-    const section = document.createElement('section');
-    section.className = 'friends-group';
+  const controls = document.createElement('div');
+  controls.className = 'friends-deck__controls';
 
-    const heading = document.createElement('h2');
-    heading.className = 'friends-group__label';
-    heading.textContent = groupLabel;
-    section.appendChild(heading);
+  const prevBtn = document.createElement('button');
+  prevBtn.type = 'button';
+  prevBtn.className = 'friends-deck__nav';
+  prevBtn.setAttribute('aria-label', '이전 편지');
+  prevBtn.innerHTML =
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-    groupFriends.forEach((friend) => {
-      const card = document.createElement('button');
-      card.type = 'button';
-      card.className = 'friends-card';
-      card.dataset.friendId = friend.id;
-      card.setAttribute('role', 'listitem');
-      card.setAttribute('aria-pressed', friend.id === activeId ? 'true' : 'false');
-      card.innerHTML = `
-        <span class="friends-card__avatar" aria-hidden="true">${renderAvatarFace(friend)}</span>
-        <span class="friends-card__body">
-          <span class="friends-card__top">
-            <span class="friends-card__name">${escapeHtml(friend.name)}</span>
-            <span class="friends-card__when">${escapeHtml(friend.group)}</span>
-          </span>
-          <span class="friends-card__preview">${escapeHtml(friend.preview)}</span>
-        </span>
-      `;
-      card.addEventListener('click', () => selectFriend(friend.id));
-      section.appendChild(card);
-    });
+  const nextBtn = document.createElement('button');
+  nextBtn.type = 'button';
+  nextBtn.className = 'friends-deck__nav';
+  nextBtn.setAttribute('aria-label', '다음 편지');
+  nextBtn.innerHTML =
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-    list.appendChild(section);
+  const dots = document.createElement('div');
+  dots.className = 'friends-deck__dots';
+  dots.setAttribute('role', 'tablist');
+  dots.setAttribute('aria-label', '편지 선택');
+
+  friends.forEach((friend, index) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'friends-deck__dot';
+    dot.dataset.friendId = friend.id;
+    dot.setAttribute('aria-label', `${friend.name} 편지`);
+    dot.setAttribute('aria-selected', friend.id === activeId ? 'true' : 'false');
+    dot.addEventListener('click', () => selectFriend(friend.id));
+    dots.appendChild(dot);
   });
 
-  scroll.append(detail, list);
+  prevBtn.addEventListener('click', () => stepFriend(-1));
+  nextBtn.addEventListener('click', () => stepFriend(1));
+  controls.append(prevBtn, dots, nextBtn);
+  deck.append(stage, controls);
+
+  let pointerStartX = 0;
+  let pointerDeltaX = 0;
+  let pointerActive = false;
+
+  stage.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest('a, button')) return;
+      pointerActive = true;
+      pointerStartX = event.clientX;
+      pointerDeltaX = 0;
+      stage.setPointerCapture(event.pointerId);
+    },
+    { passive: true }
+  );
+
+  stage.addEventListener(
+    'pointermove',
+    (event) => {
+      if (!pointerActive) return;
+      pointerDeltaX = event.clientX - pointerStartX;
+    },
+    { passive: true }
+  );
+
+  stage.addEventListener('pointerup', (event) => {
+    if (!pointerActive) return;
+    pointerActive = false;
+    try {
+      stage.releasePointerCapture(event.pointerId);
+    } catch {
+      /* ignore */
+    }
+    if (Math.abs(pointerDeltaX) < 48) return;
+    stepFriend(pointerDeltaX < 0 ? 1 : -1);
+  });
+
+  stage.addEventListener('pointercancel', () => {
+    pointerActive = false;
+  });
 
   const body = document.createElement('div');
   body.className = 'friends-body';
-  body.append(avatars, scroll);
+  body.append(avatars, profile, deck);
 
   el.append(header, body);
 
+  function activeIndex() {
+    return Math.max(
+      0,
+      friends.findIndex((friend) => friend.id === activeId)
+    );
+  }
+
+  /**
+   * @param {number} delta
+   */
+  function stepFriend(delta) {
+    if (!friends.length) return;
+    const next = (activeIndex() + delta + friends.length) % friends.length;
+    selectFriend(friends[next].id);
+  }
+
+  /**
+   * @param {string} friendId
+   */
   function selectFriend(friendId) {
     const friend = friends.find((item) => item.id === friendId);
     if (!friend) return;
     activeId = friendId;
-    renderDetail(friend);
+    renderProfile(friend);
     syncSelection();
   }
 
   function syncSelection() {
+    const index = activeIndex();
+
     avatars.querySelectorAll('.friends-avatar').forEach((node) => {
       if (!(node instanceof HTMLElement)) return;
       const selected = node.dataset.friendId === activeId;
       node.classList.toggle('is-active', selected);
       node.setAttribute('aria-selected', selected ? 'true' : 'false');
     });
-    list.querySelectorAll('.friends-card').forEach((node) => {
+
+    dots.querySelectorAll('.friends-deck__dot').forEach((node) => {
       if (!(node instanceof HTMLElement)) return;
       const selected = node.dataset.friendId === activeId;
       node.classList.toggle('is-active', selected);
-      node.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      node.setAttribute('aria-selected', selected ? 'true' : 'false');
     });
+
+    friends.forEach((friend, friendIndex) => {
+      const card = cards.get(friend.id);
+      if (!card) return;
+      const offset = friendIndex - index;
+      const abs = Math.abs(offset);
+      const isFront = offset === 0;
+      card.classList.toggle('is-front', isFront);
+      card.classList.toggle('is-behind', !isFront);
+      card.setAttribute('aria-hidden', isFront ? 'false' : 'true');
+      card.style.setProperty('--deck-offset', String(offset));
+      card.style.setProperty('--deck-abs', String(abs));
+      card.style.zIndex = String(friends.length - abs);
+      card.style.pointerEvents = isFront ? 'auto' : 'none';
+    });
+
+    prevBtn.disabled = friends.length < 2;
+    nextBtn.disabled = friends.length < 2;
   }
 
   /**
    * @param {(typeof friends)[number]} friend
    */
-  function renderDetail(friend) {
+  function renderProfile(friend) {
     const isCreator = friend.id === 'yaji';
     const avatarHtml = friend.image
       ? `<img class="friends-detail__photo" src="${escapeHtml(friend.image)}" alt="${escapeHtml(friend.alt || friend.name)}" />`
@@ -178,7 +283,7 @@ export function renderFriends(props = {}) {
       ? ' type="button" class="friends-detail__face friends-detail__face--creator" data-action="creator-support" aria-label="만든 사람 응원하기"'
       : ' class="friends-detail__face"';
 
-    detail.innerHTML = `
+    profile.innerHTML = `
       <div class="friends-detail__profile">
         <${faceTag}${faceAttrs}>${avatarHtml}</${faceTag}>
         <div class="friends-detail__meta">
@@ -200,13 +305,9 @@ export function renderFriends(props = {}) {
           }
         </div>
       </div>
-      <div class="friends-detail__letter">
-        <p class="friends-detail__letter-label">편지</p>
-        <p class="friends-detail__letter-body">${formatLetterHtml(friend.letter)}</p>
-      </div>
     `;
 
-    detail.querySelectorAll('[data-action="creator-support"]').forEach((node) => {
+    profile.querySelectorAll('[data-action="creator-support"]').forEach((node) => {
       node.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -217,7 +318,7 @@ export function renderFriends(props = {}) {
 
   const first = friends.find((item) => item.id === activeId) ?? friends[0];
   if (first) {
-    renderDetail(first);
+    renderProfile(first);
     syncSelection();
   }
 
