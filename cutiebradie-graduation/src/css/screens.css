@@ -1173,6 +1173,31 @@
   color: var(--muted);
 }
 
+.memory-album-header,
+.memory-filters,
+.memory-grid,
+.memory-footer {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+}
+
+.memory-footer .cb-button--primary {
+  width: min(100%, var(--action-max));
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .memory-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .memory-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 
 /* —— Language select (after intro) —— */
 .screen--lang {
