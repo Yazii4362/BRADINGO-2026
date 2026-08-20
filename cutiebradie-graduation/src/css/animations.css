@@ -112,7 +112,6 @@
 }
 
 /* —— Staggered enter (children) —— */
-.screen--enter .intro-wordmark,
 .screen--enter .intro-lead,
 .screen--enter .cb-button-row,
 .screen--enter .lang-hero,
@@ -130,9 +129,8 @@
   animation: soft-rise 520ms var(--ease-out) both;
 }
 
-.screen--enter .intro-wordmark { animation-delay: 60ms; }
-.screen--enter .intro-lead { animation-delay: 140ms; }
-.screen--enter .cb-button-row { animation-delay: 220ms; }
+.screen--enter .intro-lead { animation-delay: 80ms; }
+.screen--enter .cb-button-row { animation-delay: 160ms; }
 
 .screen--enter .lang-hero { animation-delay: 40ms; }
 .screen--enter .lang-divider { animation-delay: 100ms; }
@@ -302,7 +300,6 @@
   .ending-title,
   .screen--enter,
   .quiz-sheet-host:not(:empty) .cb-feedback-sheet,
-  .screen--enter .intro-wordmark,
   .screen--enter .intro-lead,
   .screen--enter .cb-button-row,
   .screen--enter .lang-hero,

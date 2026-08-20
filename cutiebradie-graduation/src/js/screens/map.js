@@ -5,9 +5,7 @@ import { createCharacterBubbleController } from '../components/character-bubble.
 import { createCreatorPromoCard } from '../components/coffee-coupon.js';
 import {
   createMapNodeButton,
-  createMapPathConnector,
   getMapNodeAnchorRect,
-  PATH_SLOTS,
 } from '../components/map-node.js';
 import { importFromCdns } from '../lib/cdn-import.js';
 
@@ -83,12 +81,6 @@ export function renderMap(props) {
   COURSE_NODES.forEach((node, index) => {
     const status = props.nodeStatus[node.id] ?? 'locked';
     const localized = localizeNode(node);
-    const slot = PATH_SLOTS[index] ?? PATH_SLOTS[0];
-
-    if (index > 0) {
-      const prev = PATH_SLOTS[index - 1] ?? PATH_SLOTS[0];
-      path.appendChild(createMapPathConnector(prev.offset, slot.offset));
-    }
 
     const nodeWrap = createMapNodeButton(
       {
