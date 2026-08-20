@@ -146,6 +146,7 @@
   --app-max-landscape: 1024px;
   --map-canvas-max: 100%;
   --content-max: 100%;
+  --action-max: 100%;
   --feedback-max: 100%;
   --quiz-text-answer-max: 26rem;
   --page-padding: 16px;
@@ -258,6 +259,7 @@
     --page-padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
     --map-canvas-max: 600px;
     --content-max: 600px;
+    --action-max: 22rem;
     --feedback-max: 560px;
   }
 }
