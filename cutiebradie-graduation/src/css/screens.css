@@ -1203,6 +1203,7 @@
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
+  max-width: 20rem;
   margin-top: 0.85rem;
   padding: 0.85rem 1rem 0.95rem;
   border: 2px solid #e7e5e5;
@@ -1264,10 +1265,32 @@
 .lang-footer {
   flex: 0 0 auto;
   margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .lang-footer .cb-button {
-  width: 100%;
+  width: min(100%, var(--action-max));
+}
+
+.screen--lang > .lang-hero,
+.screen--lang > .lang-divider,
+.screen--lang > .lang-list,
+.screen--lang > .lang-footer {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+}
+
+.screen--lang .cb-answer-card--tile .cb-answer-card__image,
+.screen--lang .answer-list--grid-2x2 .cb-answer-card__image {
+  width: min(78%, 6.25rem);
+}
+
+@media (min-width: 768px) {
+  .lang-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* —— Path chapter (n2 content gate) —— */
