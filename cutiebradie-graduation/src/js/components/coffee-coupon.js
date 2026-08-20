@@ -20,7 +20,18 @@ export const DEVELOPER = Object.freeze({
 });
 
 const ICONS = {
-  coffee: `<svg class="cb-coffee-coupon__icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 6h13a1 1 0 0 1 1 1v1h1.5A2.5 2.5 0 0 1 22 10.5 2.5 2.5 0 0 1 19.5 13H18v1a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V7a1 1 0 0 1 1-1Zm14 5h1.5a.5.5 0 0 0 0-1H18v1ZM6.5 3.2c.2-.4.7-.5 1-.3.4.2.5.7.3 1L7 5.2c-.2.4-.7.5-1 .3-.4-.2-.5-.7-.3-1l.8-1.3Zm3.2-.4c.3-.4.8-.4 1.1-.1.3.3.4.8.1 1.1l-1 1.2c-.3.3-.8.4-1.1.1-.3-.3-.4-.8-.1-1.1l1-1.2Zm3.3.1c.3-.3.8-.4 1.1-.1.3.3.4.8.1 1.1l-1.2 1.1c-.3.3-.8.3-1.1 0-.3-.3-.3-.8 0-1.1l1.1-1Z"/></svg>`,
+  coffee: `<svg class="cb-coffee-coupon__icon-svg" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <path fill="none" stroke="#b8b8b8" stroke-width="2.2" stroke-linecap="round" d="M22.5 21c-1.2-3.2.8-5.4-.2-8.4"/>
+    <path fill="none" stroke="#c4c4c4" stroke-width="2.2" stroke-linecap="round" d="M31.5 19.5c-1.4-3.6 1-6.2-.2-9.8"/>
+    <path fill="none" stroke="#b8b8b8" stroke-width="2.2" stroke-linecap="round" d="M40.5 21c-1.2-3.2.8-5.4-.2-8.4"/>
+    <path fill="#ebebeb" d="M12 25h30a2.5 2.5 0 0 1 2.5 2.5V29H9.5v-1.5A2.5 2.5 0 0 1 12 25Z"/>
+    <path fill="none" stroke="#d0d0d0" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round" d="M12.5 28.5h29c.9 0 1.6.8 1.5 1.7l-1.3 15.8A8.2 8.2 0 0 1 33.5 54h-9a8.2 8.2 0 0 1-8.2-7.9l-1.3-15.9c-.1-.9.6-1.7 1.5-1.7Z"/>
+    <path fill="none" stroke="#d0d0d0" stroke-width="3.6" stroke-linecap="round" d="M44 32.5h3.6a6.2 6.2 0 0 1 0 12.4H43.5"/>
+    <path fill="none" stroke="#d0d0d0" stroke-width="3.4" stroke-linecap="round" d="M19 56.5h20"/>
+    <path fill="#a8642a" d="M16.2 32h21.6c.7 0 1.2.6 1.1 1.2l-1.2 13.2A5.8 5.8 0 0 1 32 52h-6a5.8 5.8 0 0 1-5.7-5.6l-1.2-13.2c-.1-.6.4-1.2 1.1-1.2Z"/>
+    <path fill="#c07a3a" opacity=".4" d="M16.2 32h5.4l-1 18.5h-2.2a4.6 4.6 0 0 1-4.5-4.2L12.8 33.2c-.1-.7.4-1.2 1.1-1.2Z"/>
+    <path fill="#7a4518" d="M34.8 38.2c1.7-.2 3.1 1.4 2.6 3.1-.4 1.2-1.3 1.9-2 2.8-.4.5-1.3.4-1.7-.2-.6-1-1.2-2-1.3-3.2-.1-1.4 1-2.4 2.4-2.5Z"/>
+  </svg>`,
   instagram: `<svg class="cb-coffee-coupon__icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="igGrad" x1="0" y1="24" x2="24" y2="0"><stop stop-color="#feda75"/><stop offset=".3" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#962fbf"/></linearGradient></defs><rect x="3" y="3" width="18" height="18" rx="5" fill="url(#igGrad)"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.2" fill="#fff"/></svg>`,
   github: `<svg class="cb-coffee-coupon__icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#24292f" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.61.07-.61 1 .07 1.52 1.03 1.52 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.8c.85 0 1.7.11 2.5.33 1.9-1.29 2.74-1.02 2.74-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .26.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>`,
   email: `<svg class="cb-coffee-coupon__icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="#7B68EE" stroke-width="1.8"/><path d="M4.2 7.2 12 12.4l7.8-5.2" fill="none" stroke="#7B68EE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -219,14 +230,7 @@ export function createCreatorPromoCard() {
         <p class="creator-promo__body">열심히 개발한 야지님을 응원해주세요!</p>
       </div>
       <div class="creator-promo__art" aria-hidden="true">
-        <svg class="creator-promo__cup" viewBox="0 0 64 64" focusable="false">
-          <ellipse cx="28" cy="54" rx="16" ry="3.2" fill="#d7d7d7" opacity=".55"/>
-          <path d="M14 24h28a3 3 0 0 1 3 3v11c0 8.3-6.7 15-15 15h-4c-8.3 0-15-6.7-15-15V27a3 3 0 0 1 3-3Z" fill="#fff"/>
-          <path d="M14 24h28a3 3 0 0 1 3 3v2.2H11V27a3 3 0 0 1 3-3Z" fill="#efeafc"/>
-          <path d="M17.5 30.5h21c.8 0 1.4.7 1.3 1.5l-1.4 10.2A7 7 0 0 1 31.5 48h-7a7 7 0 0 1-6.9-5.8L16.2 32c-.1-.8.5-1.5 1.3-1.5Z" fill="#6f5ed4"/>
-          <path d="M45 30h4.5A6.5 6.5 0 0 1 56 36.5 6.5 6.5 0 0 1 49.5 43H45" fill="none" stroke="#c3c3c3" stroke-width="3.2" stroke-linecap="round"/>
-          <path d="M22 14c0 3 1.4 4.5 1.4 7.2M28.5 12.5c0 3.4 1.6 5 1.6 8.2M35 14.2c0 2.8 1.3 4.2 1.3 6.8" fill="none" stroke="#afafaf" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+        ${ICONS.coffee.replace('cb-coffee-coupon__icon-svg', 'creator-promo__cup')}
       </div>
     </div>
     <button type="button" class="creator-promo__cta">응원하러 가기</button>

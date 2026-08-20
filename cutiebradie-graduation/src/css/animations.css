@@ -1,5 +1,5 @@
 /**
- * Motion / keyframes — Duolingo-like sheet + screen transitions.
+ * Motion / keyframes — subtle presence + interaction.
  */
 
 @keyframes ending-fade-up {
@@ -40,12 +40,232 @@
   }
 }
 
+@keyframes soft-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-float {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-6px);
+  }
+}
+
+@keyframes soft-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@keyframes soft-glow {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.06);
+  }
+}
+
+@keyframes confetti-drift {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(-8px) rotate(8deg);
+    opacity: 0.9;
+  }
+}
+
 .screen--enter {
   animation: screen-enter var(--motion-screen) var(--ease-out) both;
 }
 
 .quiz-sheet-host:not(:empty) .cb-feedback-sheet {
   animation: feedback-slide-up var(--motion-sheet) var(--ease-out) both;
+}
+
+/* —— Staggered enter (children) —— */
+.screen--enter .intro-wordmark,
+.screen--enter .intro-lead,
+.screen--enter .cb-button-row,
+.screen--enter .lang-hero,
+.screen--enter .lang-divider,
+.screen--enter .lang-list,
+.screen--enter .lang-footer,
+.screen--enter .map-top,
+.screen--enter .map-canvas,
+.screen--enter .creator-promo,
+.screen--enter .cb-map-cover,
+.screen--enter .friends-detail,
+.screen--enter .friends-deck,
+.screen--enter .quiz-body > *,
+.screen--enter .chapter-body > * {
+  animation: soft-rise 520ms var(--ease-out) both;
+}
+
+.screen--enter .intro-wordmark { animation-delay: 60ms; }
+.screen--enter .intro-lead { animation-delay: 140ms; }
+.screen--enter .cb-button-row { animation-delay: 220ms; }
+
+.screen--enter .lang-hero { animation-delay: 40ms; }
+.screen--enter .lang-divider { animation-delay: 100ms; }
+.screen--enter .lang-list { animation-delay: 160ms; }
+.screen--enter .lang-footer { animation-delay: 240ms; }
+
+.screen--enter .map-top { animation-delay: 40ms; }
+.screen--enter .cb-map-cover { animation-delay: 80ms; }
+.screen--enter .map-canvas { animation-delay: 140ms; }
+.screen--enter .creator-promo { animation-delay: 220ms; }
+
+.screen--enter .friends-detail { animation-delay: 80ms; }
+.screen--enter .friends-deck { animation-delay: 160ms; }
+
+/* —— Ambient —— */
+.intro-bg {
+  animation: soft-float 7.5s ease-in-out infinite;
+}
+
+.lang-hero__duo {
+  animation: soft-bob 4.8s ease-in-out infinite;
+}
+
+.cb-map-node--active .cb-map-node__asset {
+  animation: soft-pulse 2.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.map-path__bird {
+  animation: soft-bob 5.2s ease-in-out infinite;
+}
+
+.creator-promo__cup {
+  animation: soft-bob 3.6s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+/* —— Interactions —— */
+@media (hover: hover) and (pointer: fine) {
+  .cb-button--primary:hover:not(:disabled):not([disabled]) {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+  }
+
+  .cb-button--ghost:hover:not(:disabled):not([disabled]),
+  .cb-button--ghost-dark:hover:not(:disabled):not([disabled]) {
+    transform: translateY(-1px);
+  }
+
+  .cb-answer-card:hover:not(:disabled):not([disabled]) {
+    transform: translateY(-2px);
+  }
+
+  .cb-map-cover:hover {
+    transform: translateY(-1px);
+  }
+
+  .creator-promo__cta:hover {
+    transform: translateY(-1px);
+  }
+
+  .cb-gnb__tab:hover {
+    transform: translateY(-1px);
+  }
+
+  .friends-avatar:hover {
+    transform: scale(1.06);
+  }
+}
+
+.cb-button--primary:active:not(:disabled):not([disabled]) {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 2px 0 var(--primary-shadow);
+}
+
+.cb-answer-card {
+  transition:
+    transform var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    background-color var(--motion-fast) ease;
+}
+
+.cb-answer-card:active:not(:disabled):not([disabled]) {
+  transform: scale(0.98);
+}
+
+.cb-map-cover {
+  transition: transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) ease;
+}
+
+.cb-gnb__tab {
+  transition: transform var(--motion-fast) var(--ease-standard), color var(--motion-fast) ease;
+}
+
+.cb-gnb__tab:active {
+  transform: scale(0.96);
+}
+
+.friends-avatar {
+  transition: transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) ease;
+}
+
+.friends-avatar:active {
+  transform: scale(0.94);
+}
+
+.creator-promo__cta {
+  transition:
+    transform var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) ease,
+    color var(--motion-fast) ease;
+}
+
+.cb-coffee-coupon__link {
+  transition: transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) ease;
+}
+
+.cb-coffee-coupon__link:hover {
+  transform: translateY(-1px);
+}
+
+.cb-coffee-coupon__sheet {
+  animation: soft-rise 420ms var(--ease-out) both;
+}
+
+.cb-coffee-coupon__overlay {
+  animation: overlay-fade 220ms ease both;
+}
+
+@keyframes overlay-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Node start sheet open / leave (Duolingo START bubble) */
@@ -81,8 +301,32 @@
   .ending-confetti,
   .ending-title,
   .screen--enter,
-  .quiz-sheet-host:not(:empty) .cb-feedback-sheet {
-    animation: none;
+  .quiz-sheet-host:not(:empty) .cb-feedback-sheet,
+  .screen--enter .intro-wordmark,
+  .screen--enter .intro-lead,
+  .screen--enter .cb-button-row,
+  .screen--enter .lang-hero,
+  .screen--enter .lang-divider,
+  .screen--enter .lang-list,
+  .screen--enter .lang-footer,
+  .screen--enter .map-top,
+  .screen--enter .map-canvas,
+  .screen--enter .creator-promo,
+  .screen--enter .cb-map-cover,
+  .screen--enter .friends-detail,
+  .screen--enter .friends-deck,
+  .screen--enter .quiz-body > *,
+  .screen--enter .chapter-body > *,
+  .intro-bg,
+  .lang-hero__duo,
+  .cb-map-node--active .cb-map-node__asset,
+  .map-path__bird,
+  .creator-promo__cup,
+  .cb-coffee-coupon__sheet,
+  .cb-coffee-coupon__overlay,
+  .creator-frame__sparkle,
+  .creator-frame__heart {
+    animation: none !important;
   }
 
   .cb-memory-card__skeleton {
@@ -90,12 +334,24 @@
   }
 
   .cb-node-start-sheet__overlay,
-  .cb-node-start-sheet {
-    transition: none;
+  .cb-node-start-sheet,
+  .cb-button,
+  .cb-answer-card,
+  .cb-map-cover,
+  .cb-map-node,
+  .cb-gnb__tab,
+  .friends-avatar,
+  .creator-promo__cta,
+  .cb-coffee-coupon__link {
+    transition: none !important;
   }
 
   .cb-node-start-sheet {
     opacity: 1;
     transform: none;
+  }
+
+  .intro-bg {
+    transform: translateX(-50%);
   }
 }

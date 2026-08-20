@@ -288,16 +288,6 @@ export function renderFriends(props = {}) {
         <${faceTag}${faceAttrs}>${avatarHtml}</${faceTag}>
         <div class="friends-detail__meta">
           <h2 class="friends-detail__name">${escapeHtml(friend.name)}</h2>
-          <dl class="friends-detail__contacts">
-            <div class="friends-detail__row">
-              <dt>연락처</dt>
-              <dd><a href="tel:${escapeHtml(friend.phone)}">${escapeHtml(friend.phone)}</a></dd>
-            </div>
-            <div class="friends-detail__row">
-              <dt>이메일</dt>
-              <dd><a href="mailto:${escapeHtml(friend.email)}">${escapeHtml(friend.email)}</a></dd>
-            </div>
-          </dl>
           ${
             isCreator
               ? `<button type="button" class="friends-detail__support" data-action="creator-support">만든 사람 응원하기</button>`
