@@ -22,26 +22,46 @@ function formatLetterHtml(text) {
 }
 
 /**
- * Friends letters tab (GNB) — profile row + contact/letter detail.
+ * Friends letters — GNB tab, or path node (n4) with complete CTA.
+ * @param {{
+ *   mode?: 'play' | 'replay',
+ *   onBackToMap?: () => void,
+ *   onComplete?: () => void
+ * }} [props]
  */
-export function renderFriends() {
+export function renderFriends(props = {}) {
   const content = getFriendsFeed();
   const friends = content.friends;
   /** @type {string} */
   let activeId = friends[0]?.id ?? '';
+  const isPathChapter = typeof props.onComplete === 'function';
 
   const el = document.createElement('section');
-  el.className = 'screen screen--friends';
+  el.className = `screen screen--friends${isPathChapter ? ' screen--friends-path' : ''}`;
   el.dataset.screen = 'friends';
 
   const header = document.createElement('header');
-  header.className = 'friends-header friends-header--tab';
+  header.className = `friends-header${isPathChapter ? '' : ' friends-header--tab'}`;
   header.innerHTML = `
+    ${
+      isPathChapter
+        ? `<button type="button" class="friends-back" aria-label="맵으로 돌아가기">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>`
+        : ''
+    }
     <div class="friends-header__copy">
       <h1 class="friends-header__title">${escapeHtml(content.title)}</h1>
       <p class="friends-header__subtitle">${escapeHtml(content.subtitle)}</p>
     </div>
   `;
+  if (isPathChapter) {
+    header.querySelector('.friends-back')?.addEventListener('click', () => {
+      props.onBackToMap?.();
+    });
+  }
 
   const avatars = document.createElement('div');
   avatars.className = 'friends-avatars';
@@ -199,6 +219,19 @@ export function renderFriends() {
   if (first) {
     renderDetail(first);
     syncSelection();
+  }
+
+  if (isPathChapter) {
+    const footer = document.createElement('footer');
+    footer.className = 'friends-path-footer';
+    const completeBtn = document.createElement('button');
+    completeBtn.type = 'button';
+    completeBtn.className = 'cb-button cb-button--primary cb-button--fill';
+    completeBtn.textContent =
+      props.mode === 'replay' ? '맵으로 돌아가기' : '편지 읽기 완료';
+    completeBtn.addEventListener('click', () => props.onComplete?.());
+    footer.appendChild(completeBtn);
+    el.appendChild(footer);
   }
 
   return el;

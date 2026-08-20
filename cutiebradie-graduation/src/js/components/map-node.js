@@ -1,12 +1,13 @@
 /**
- * Map path slots — 4 course nodes (friends moved to GNB).
- * n1 / n2 / n3 / n5 ending
+ * Map path slots — Figma 390 canvas node centers:
+ * n1 193 / n2 148 / n3 117 / n4 148 / n5 207  (offset from 195)
  */
 const PATH_SLOTS = [
   { className: 'map-path__item--slot-1', lane: 'c', offset: '0%' },
   { className: 'map-path__item--slot-2', lane: 'l1', offset: '-12%' },
   { className: 'map-path__item--slot-3', lane: 'l2', offset: '-20%' },
-  { className: 'map-path__item--slot-4', lane: 'c', offset: '3%' },
+  { className: 'map-path__item--slot-4', lane: 'l1', offset: '-12%' },
+  { className: 'map-path__item--slot-5', lane: 'c', offset: '3%' },
 ];
 
 const NODE_ACTIVE_SRC = './assets/images/node-active.svg';

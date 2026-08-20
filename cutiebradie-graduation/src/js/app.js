@@ -19,11 +19,12 @@ import {
 } from './screens/quiz.js';
 import { renderMemory } from './screens/memory.js';
 import { renderFriends } from './screens/friends.js';
+import { renderChapter } from './screens/chapter.js';
 import { renderEnding } from './screens/ending.js';
 
 applyDocumentLocale();
 
-/** @typedef {'intro' | 'lang' | 'map' | 'quiz' | 'memory' | 'friends' | 'ending'} ScreenId */
+/** @typedef {'intro' | 'lang' | 'map' | 'quiz' | 'chapter' | 'memory' | 'friends' | 'ending'} ScreenId */
 
 const root = document.getElementById('screen-root');
 const appShell = document.getElementById('app');
@@ -108,7 +109,7 @@ function syncRouteWithProgress() {
     route.screen === 'map' ||
     route.screen === 'intro' ||
     route.screen === 'lang' ||
-    route.screen === 'friends'
+    (route.screen === 'friends' && !route.nodeId)
   ) {
     return;
   }
@@ -167,8 +168,16 @@ function enterNode(node, mode) {
     navigate('quiz', { nodeId: node.id, mode });
     return;
   }
+  if (node.screen === 'chapter') {
+    navigate('chapter', { nodeId: node.id, mode });
+    return;
+  }
   if (node.screen === 'memory') {
     navigate('memory', { nodeId: node.id, mode });
+    return;
+  }
+  if (node.screen === 'friends') {
+    navigate('friends', { nodeId: node.id, mode });
     return;
   }
   if (node.screen === 'ending') {
@@ -282,8 +291,16 @@ function render() {
     });
     gnbActive = 'map';
   } else if (route.screen === 'friends') {
-    screenEl = renderFriends();
-    gnbActive = 'friends';
+    if (route.nodeId && route.mode) {
+      screenEl = renderFriends({
+        mode: route.mode,
+        onBackToMap: () => goToMap(),
+        onComplete: handleNodeComplete,
+      });
+    } else {
+      screenEl = renderFriends();
+      gnbActive = 'friends';
+    }
   } else {
     const node = route.nodeId ? getNodeById(route.nodeId) : null;
     if (!node || !route.mode) {
@@ -306,6 +323,15 @@ function render() {
           (node.type === 'multi' ? 'multi' : 'single'),
         onLeaveToMap: () => goToMap(),
         onCorrectContinue: handleNodeComplete,
+      });
+    } else if (route.screen === 'chapter') {
+      const localized = localizeNode(node);
+      screenEl = renderChapter({
+        nodeId: node.id,
+        title: localized.title,
+        mode: route.mode,
+        onBackToMap: () => goToMap(),
+        onComplete: handleNodeComplete,
       });
     } else if (route.screen === 'memory') {
       const localized = localizeNode(node);

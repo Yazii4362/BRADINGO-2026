@@ -10,14 +10,15 @@ export const BRAND = Object.freeze({
 
 /**
  * Course nodes (intro is NOT a node).
- * Friends letters live in the bottom GNB tab — not on the path.
+ * All quizzes live on n1. Path stays 5 nodes (n1→n5) at original map slots.
+ * Friends letters: n4 path chapter + GNB tab.
  * @type {ReadonlyArray<{
  *   id: string,
  *   order: number,
  *   title: string,
  *   type: NodeType,
  *   typeLabel: string,
- *   screen: 'quiz' | 'memory' | 'ending'
+ *   screen: 'quiz' | 'chapter' | 'memory' | 'friends' | 'ending'
  * }>}
  */
 export const COURSE_NODES = Object.freeze([
@@ -26,16 +27,16 @@ export const COURSE_NODES = Object.freeze([
     order: 1,
     title: '시작',
     type: 'single',
-    typeLabel: '단일 선택',
+    typeLabel: '퀴즈',
     screen: 'quiz',
   },
   {
     id: 'n2',
     order: 2,
     title: '병건이의 학교생활',
-    type: 'single',
-    typeLabel: '듣기 · 탭',
-    screen: 'quiz',
+    type: 'content',
+    typeLabel: '콘텐츠',
+    screen: 'chapter',
   },
   {
     id: 'n3',
@@ -46,8 +47,16 @@ export const COURSE_NODES = Object.freeze([
     screen: 'memory',
   },
   {
-    id: 'n5',
+    id: 'n4',
     order: 4,
+    title: '졸업축하 메시지',
+    type: 'content',
+    typeLabel: '콘텐츠',
+    screen: 'friends',
+  },
+  {
+    id: 'n5',
+    order: 5,
     title: '엔딩',
     type: 'ending',
     typeLabel: '엔딩 · PNG',
@@ -217,40 +226,97 @@ export const QUIZZES = Object.freeze({
           }),
         }),
       }),
-    ]),
-  }),
-  n2: Object.freeze({
-    choiceType: 'sentence',
-    layout: 'listen',
-    badge: '어려운 문제',
-    badgeVariant: 'hard',
-    question: '들은 내용을 탭하세요',
-    characterImage: './assets/images/quiz/n2-character-full.png',
-    characterAlt: '병건이 캐릭터',
-    listenText: '병건아 졸업을 축하해',
-    tokens: Object.freeze([
-      Object.freeze({ id: 'byeong', label: '병건아' }),
-      Object.freeze({ id: 'jol', label: '졸업을' }),
-      Object.freeze({ id: 'chuk', label: '축하해' }),
-      Object.freeze({ id: 'ip', label: '입학을' }),
-      Object.freeze({ id: 'grad', label: '대학원' }),
-      Object.freeze({ id: 'an', label: '안' }),
-      Object.freeze({ id: 'cham', label: '참' }),
-    ]),
-    bankOrder: Object.freeze(['ip', 'byeong', 'grad', 'jol', 'an', 'chuk', 'cham']),
-    correctOrder: Object.freeze(['byeong', 'jol', 'chuk']),
-    feedback: Object.freeze({
-      correct: Object.freeze({
-        title: '정답입니다!',
-        body: '병건아, 졸업을 축하해!',
+      Object.freeze({
+        choiceType: 'sentence',
+        layout: 'listen',
+        badge: '어려운 문제',
+        badgeVariant: 'hard',
+        question: '들은 내용을 탭하세요',
+        characterImage: './assets/images/quiz/n2-character-full.png',
+        characterAlt: '병건이 캐릭터',
+        listenText: '병건아 졸업을 축하해',
+        tokens: Object.freeze([
+          Object.freeze({ id: 'byeong', label: '병건아' }),
+          Object.freeze({ id: 'jol', label: '졸업을' }),
+          Object.freeze({ id: 'chuk', label: '축하해' }),
+          Object.freeze({ id: 'ip', label: '입학을' }),
+          Object.freeze({ id: 'grad', label: '대학원' }),
+          Object.freeze({ id: 'an', label: '안' }),
+          Object.freeze({ id: 'cham', label: '참' }),
+        ]),
+        bankOrder: Object.freeze(['ip', 'byeong', 'grad', 'jol', 'an', 'chuk', 'cham']),
+        correctOrder: Object.freeze(['byeong', 'jol', 'chuk']),
+        feedback: Object.freeze({
+          correct: Object.freeze({
+            title: '정답입니다!',
+            body: '병건아, 졸업을 축하해!',
+          }),
+          incorrect: Object.freeze({
+            title: '오답입니다!',
+            body: '정답은 「병건아 졸업을 축하해」예요.',
+          }),
+        }),
       }),
-      incorrect: Object.freeze({
-        title: '오답입니다!',
-        body: '정답은 「병건아 졸업을 축하해」예요.',
+      Object.freeze({
+        choiceType: 'multi',
+        layout: 'character',
+        question: '누가 병건이 졸업을 축하하러 왔나요?',
+        instruction: '해당하는 답을 모두 선택하세요.',
+        choices: Object.freeze([
+          Object.freeze({
+            id: 'dabin',
+            label: '이다빈',
+            image: './assets/images/friends/dabin.png',
+            alt: '이다빈',
+          }),
+          Object.freeze({
+            id: 'yaji',
+            label: '야지',
+            image: './assets/images/friends/yaji.png',
+            alt: '야지',
+          }),
+          Object.freeze({
+            id: 'yubinu',
+            label: '유비누',
+            image: './assets/images/friends/yubinu.png',
+            alt: '유비누',
+          }),
+          Object.freeze({
+            id: 'gaeuni',
+            label: '가으니',
+            image: './assets/images/friends/gaeuni.png',
+            alt: '가으니',
+          }),
+        ]),
+        correctChoiceIds: Object.freeze(['dabin', 'yaji', 'yubinu', 'gaeuni']),
+        feedback: Object.freeze({
+          correct: Object.freeze({
+            title: '정답입니다!',
+            body: '병건이의 졸업을 축하하려고 친구들이 모두 모였어요.',
+          }),
+          incorrect: Object.freeze({
+            title: '오답입니다!',
+            body: '병건이를 축하하러 온 친구 네 명을 모두 선택해 주세요.',
+          }),
+        }),
       }),
-    }),
+    ]),
   }),
 });
+
+/**
+ * Lightweight chapter copy for non-quiz / non-memory path nodes.
+ * @type {Readonly<Record<string, { body: string }>>}
+ */
+export const CHAPTER_CONTENTS = Object.freeze({
+  n2: Object.freeze({
+    body: '캠퍼스에서 보낸 날들을 떠올리며 다음 스테이지로 넘어가 보세요.',
+  }),
+});
+
+export function getChapterByNodeId(id) {
+  return CHAPTER_CONTENTS[id] ?? null;
+}
 
 export function getNodeById(id) {
   return COURSE_NODES.find((node) => node.id === id) ?? null;

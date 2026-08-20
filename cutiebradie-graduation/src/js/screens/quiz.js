@@ -3,6 +3,7 @@ import { createFeedbackSheet } from '../components/feedback-sheet.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
 import { createQuizProgressHeader } from '../components/quiz-progress-header.js';
 import { createQuizPrompt } from '../components/quiz-prompt.js';
+import { createAnswerTile } from '../components/answer-tile.js';
 
 /** @type {{ close: () => void } | null} */
 let quizExitModal = null;
@@ -509,13 +510,13 @@ function renderChoiceQuiz(props, questions) {
 
     cardButtons = new Map();
     (quiz.choices ?? []).forEach((choice) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'cb-answer-card cb-answer-card--default';
-      btn.dataset.choiceId = choice.id;
-      btn.setAttribute('aria-pressed', 'false');
-      btn.setAttribute('aria-label', choice.alt || choice.label || choice.id);
-      fillAnswerCardContent(btn, choice);
+      const btn = createAnswerTile({
+        id: choice.id,
+        label: choice.label,
+        image: choice.image,
+        alt: choice.alt,
+        ariaPressed: false,
+      });
       btn.addEventListener('click', () => onCardTap(choice.id));
       cardButtons.set(choice.id, btn);
       list.appendChild(btn);
@@ -654,68 +655,4 @@ function createWordChip(label, options = {}) {
   if (options.state === 'incorrect') chip.classList.add('quiz-word-chip--incorrect');
   if (options.locked) chip.disabled = true;
   return chip;
-}
-
-/**
- * @param {HTMLButtonElement} btn
- * @param {{ id: string, label: string, image?: string, alt?: string }} choice
- */
-function fillAnswerCardContent(btn, choice) {
-  btn.replaceChildren();
-  const imageValue = typeof choice.image === 'string' ? choice.image.trim() : '';
-  const wantsMediaSlot = Object.prototype.hasOwnProperty.call(choice, 'image');
-
-  if (imageValue) {
-    btn.classList.add('cb-answer-card--has-image');
-    const img = document.createElement('img');
-    img.className = 'cb-answer-card__image';
-    img.alt = choice.alt || choice.label || '';
-    img.decoding = 'async';
-
-    img.addEventListener('error', () => {
-      img.replaceWith(createNamePlaceholder(choice));
-    });
-
-    btn.append(img);
-    if (choice.label) {
-      const label = document.createElement('span');
-      label.className = 'cb-answer-card__label';
-      label.textContent = choice.label;
-      btn.append(label);
-    }
-    img.src = imageValue;
-    return;
-  }
-
-  if (wantsMediaSlot) {
-    btn.classList.remove('cb-answer-card--has-image');
-    if (choice.label) {
-      const label = document.createElement('span');
-      label.className = 'cb-answer-card__label';
-      label.textContent = choice.label;
-      btn.append(label);
-    }
-    return;
-  }
-
-  btn.classList.remove('cb-answer-card--has-image');
-  if (choice.label) {
-    const label = document.createElement('span');
-    label.className = 'cb-answer-card__label';
-    label.textContent = choice.label;
-    btn.append(label);
-  }
-}
-
-/**
- * @param {{ label: string, alt?: string }} choice
- */
-function createNamePlaceholder(choice) {
-  const placeholder = document.createElement('span');
-  placeholder.className = 'cb-answer-card__placeholder';
-  placeholder.setAttribute('role', 'img');
-  placeholder.setAttribute('aria-label', choice.alt || choice.label || choice.id);
-  const initial = (choice.label || choice.alt || choice.id || '?').slice(0, 1);
-  placeholder.textContent = initial;
-  return placeholder;
 }
