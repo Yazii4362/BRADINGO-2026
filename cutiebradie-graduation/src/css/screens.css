@@ -151,6 +151,8 @@
 .screen--intro .intro-lead,
 .screen--intro .cb-button-row {
   flex: 0 0 auto;
+  width: min(100%, var(--action-max));
+  margin-inline: auto;
 }
 
 .intro-lead {
