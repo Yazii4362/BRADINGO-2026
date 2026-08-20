@@ -104,7 +104,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'jeong',
             label: '',
-            image: './assets/images/profile.webp',
+            image: './assets/images/map/profile.webp',
             alt: '정병건',
           }),
           Object.freeze({
@@ -116,7 +116,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'bbang',
             label: '',
-            image: './assets/images/profile.webp',
+            image: './assets/images/map/profile.webp',
             alt: '시립대건빵',
           }),
           Object.freeze({
@@ -148,7 +148,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'jeong',
             label: '',
-            image: './assets/images/profile.webp',
+            image: './assets/images/map/profile.webp',
             alt: '정병건',
           }),
           Object.freeze({
@@ -160,7 +160,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'bbang',
             label: '',
-            image: './assets/images/profile.webp',
+            image: './assets/images/map/profile.webp',
             alt: '시립대건빵',
           }),
           Object.freeze({
@@ -192,7 +192,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'jeong',
             label: '',
-            image: './assets/images/profile.webp',
+            image: './assets/images/map/profile.webp',
             alt: '정병건',
           }),
           Object.freeze({
@@ -204,7 +204,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'bbang',
             label: '',
-            image: './assets/images/profile.webp',
+            image: './assets/images/map/profile.webp',
             alt: '시립대건빵',
           }),
           Object.freeze({
@@ -547,7 +547,7 @@ export function getGraduationStats(progress = null) {
       label: '함께한 추억',
       value: '무한대 ∞',
       valueHtml: '무한대 <span class="ending-infinity">∞</span>',
-      icon: './assets/images/heart.svg',
+      icon: './assets/images/icons/heart.svg',
     },
   ];
 
@@ -562,7 +562,7 @@ export function getGraduationStats(progress = null) {
     wordmark: BRAND.wordmark,
     summaryTitle: '여정 요약',
     summaryRows,
-    heroImage: './assets/images/ending-hero.webp',
+    heroImage: './assets/images/ending/hero.webp',
     heroAlt: '졸업가운을 입고 기뻐하는 병건이',
   };
 }

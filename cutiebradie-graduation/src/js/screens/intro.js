@@ -14,7 +14,7 @@ export function renderIntro(props) {
       <button type="button" class="intro-egg" data-action="egg" aria-label="${t('intro.eggAria')}">
         <img
           class="intro-hero__img"
-          src="./assets/images/intro-character.png"
+          src="./assets/images/intro/character.png"
           alt=""
           width="544"
           height="934"
@@ -25,7 +25,7 @@ export function renderIntro(props) {
     <h1 class="intro-wordmark">
       <img
         class="intro-wordmark__img"
-        src="./assets/images/logo.png"
+        src="./assets/images/intro/logo.png"
         alt="${BRAND.wordmark}"
         width="860"
         height="244"
