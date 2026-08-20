@@ -1392,10 +1392,13 @@
 .chapter-footer {
   flex-shrink: 0;
   padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .chapter-footer .cb-button {
-  width: 100%;
+  width: min(100%, var(--action-max));
 }
 
 /* —— Friends path chapter footer —— */
