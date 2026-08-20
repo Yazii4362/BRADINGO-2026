@@ -101,7 +101,7 @@ export const QUIZZES = Object.freeze({
         choiceType: 'single',
         layout: 'image',
         badge: 'NEW WORD',
-        question: '맞는 이미지를 고르세요',
+        question: '틀린 것을 고르시오',
         promptWord: '정병건',
         choices: Object.freeze([
           Object.freeze({
@@ -129,15 +129,15 @@ export const QUIZZES = Object.freeze({
             alt: 'Bradie',
           }),
         ]),
-        correctChoiceIds: Object.freeze(['jeong']),
+        correctChoiceIds: Object.freeze(['pong']),
         feedback: Object.freeze({
           correct: Object.freeze({
             title: '정답입니다!',
-            body: '병건이의 본명은 정병건이에요.',
+            body: '노란색 이미지는 정병건이 아니에요.',
           }),
           incorrect: Object.freeze({
             title: '오답입니다!',
-            body: '정답은 정병건이에요.',
+            body: '틀린 것은 노란색 이미지예요.',
           }),
         }),
       }),
@@ -437,6 +437,14 @@ export const MEMORY_CONTENTS = Object.freeze({
         image: './assets/images/memory/14-meme-is-this.webp',
         alt: '이거 밈이에요? 합성 짤',
         caption: '이거 밈이에요?',
+        date: '',
+        category: 'meme',
+      }),
+      Object.freeze({
+        id: 'memory-15',
+        image: './assets/images/memory/15-meme-bag.webp',
+        alt: '졸업가운 입고 가방에 친구들을 담은 원근법 사진',
+        caption: '가방 속 친구들',
         date: '',
         category: 'meme',
       }),
