@@ -104,7 +104,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'jeong',
             label: '',
-            image: './assets/images/map/profile.webp',
+            image: './assets/images/profile.webp',
             alt: '정병건',
           }),
           Object.freeze({
@@ -116,7 +116,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'bbang',
             label: '',
-            image: './assets/images/map/profile.webp',
+            image: './assets/images/profile.webp',
             alt: '시립대건빵',
           }),
           Object.freeze({
@@ -148,7 +148,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'jeong',
             label: '',
-            image: './assets/images/map/profile.webp',
+            image: './assets/images/profile.webp',
             alt: '정병건',
           }),
           Object.freeze({
@@ -160,7 +160,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'bbang',
             label: '',
-            image: './assets/images/map/profile.webp',
+            image: './assets/images/profile.webp',
             alt: '시립대건빵',
           }),
           Object.freeze({
@@ -192,7 +192,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'jeong',
             label: '',
-            image: './assets/images/map/profile.webp',
+            image: './assets/images/profile.webp',
             alt: '정병건',
           }),
           Object.freeze({
@@ -204,7 +204,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'bbang',
             label: '',
-            image: './assets/images/map/profile.webp',
+            image: './assets/images/profile.webp',
             alt: '시립대건빵',
           }),
           Object.freeze({

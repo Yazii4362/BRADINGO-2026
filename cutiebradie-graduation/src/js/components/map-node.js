@@ -10,12 +10,12 @@ const PATH_SLOTS = [
   { className: 'map-path__item--slot-5', lane: 'c', offset: '3%' },
 ];
 
-const NODE_ACTIVE_SRC = './assets/images/map/node-active.svg';
-const NODE_ACTIVE_PRESSED_SRC = './assets/images/map/node-active-pressed.svg';
-const NODE_LOCKED_SRC = './assets/images/map/node-locked.svg';
-const NODE_LOCKED_PRESSED_SRC = './assets/images/map/node-locked-pressed.svg';
-const NODE_ENDING_LOCKED_SRC = './assets/images/map/node-ending.svg';
-const NODE_ENDING_ACTIVE_SRC = './assets/images/map/node-ending-active.png';
+const NODE_ACTIVE_SRC = './assets/images/node-active.svg';
+const NODE_ACTIVE_PRESSED_SRC = './assets/images/node-active-pressed.svg';
+const NODE_LOCKED_SRC = './assets/images/node-locked.svg';
+const NODE_LOCKED_PRESSED_SRC = './assets/images/node-locked-pressed.svg';
+const NODE_ENDING_LOCKED_SRC = './assets/images/node-ending.svg';
+const NODE_ENDING_ACTIVE_SRC = './assets/images/node-ending-active.png';
 const ENDING_NODE_ID = 'n5';
 
 /**

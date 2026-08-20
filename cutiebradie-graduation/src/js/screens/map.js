@@ -28,8 +28,8 @@ export function renderMap(props) {
   const lastNodeReached =
     props.nodeStatus.n5 === 'active' || props.nodeStatus.n5 === 'completed';
   const profileSrc = lastNodeReached
-    ? './assets/images/map/profile-end.webp'
-    : './assets/images/map/profile.webp';
+    ? './assets/images/profile-end.webp'
+    : './assets/images/profile.webp';
 
   const characterBubble = createCharacterBubbleController();
 
@@ -69,7 +69,7 @@ export function renderMap(props) {
 
   const bird = document.createElement('img');
   bird.className = 'map-path__bird';
-  bird.src = './assets/images/map/bird.webp';
+  bird.src = './assets/images/map-bird.webp';
   bird.alt = '';
   bird.width = 512;
   bird.height = 512;
