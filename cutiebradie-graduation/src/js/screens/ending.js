@@ -1,5 +1,6 @@
 import { getGraduationStats } from '../data/course.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
+import { createTapUnlock, openCoffeeCoupon } from '../components/coffee-coupon.js';
 import { EXPORT_FILE_NAME } from '../constants.js';
 import {
   createExportCard,
@@ -16,7 +17,6 @@ import {
  *   title: string,
  *   mode: 'play' | 'replay',
  *   progress: { nodeStatus: Record<string, string>, endingViewed?: boolean },
- *   onReviewMap: () => void,
  *   onEndingRendered: () => void,
  *   onResetConfirmed: () => void
  * }} props
@@ -62,18 +62,15 @@ export function renderEnding(props) {
     .join('');
 
   el.innerHTML = `
-    <div class="ending-sky" aria-hidden="true">
-      <div class="ending-glow"></div>
-      <div class="ending-rays"></div>
-      <div class="ending-stars"></div>
+    <div class="ending-bg" aria-hidden="true">
+      <img class="ending-bg__img" src="${stats.heroImage}" alt="" decoding="async" />
+      <div class="ending-bg__veil"></div>
       ${reduceMotion ? '' : '<div class="ending-confetti"></div>'}
     </div>
     <div class="ending-body">
-      <div class="ending-hero" role="img" aria-label="${stats.heroAlt}">
-        <img class="ending-hero__img" src="${stats.heroImage}" alt="${stats.heroAlt}" />
-      </div>
-      ${props.mode === 'replay' ? '<span class="cb-replay-badge ending-replay">다시 보기</span>' : ''}
-      <h1 class="ending-title">${stats.title}</h1>
+      <button type="button" class="ending-title ending-egg" data-action="egg" aria-label="숨겨진 쿠폰">
+        ${stats.title}
+      </button>
       <p class="ending-lead">${stats.lead}</p>
       <p class="ending-tagline">${stats.tagline}</p>
       <section class="ending-summary" aria-label="${stats.summaryTitle}">
@@ -82,15 +79,9 @@ export function renderEnding(props) {
       </section>
       <p class="ending-status" role="status" aria-live="polite"></p>
       <div class="ending-actions">
-        <button type="button" class="ending-cta" data-action="review">
-          <span class="ending-cta__label">${stats.ctaLabel}</span>
-          <span class="ending-cta__arrow" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
+        <button type="button" class="ending-save-btn" data-action="export" aria-label="이미지로 저장">
+          <img class="ending-save-btn__icon" src="./assets/images/ending/btn-save.svg" alt="" width="50" height="48" decoding="async" />
         </button>
-        <button type="button" class="cb-button cb-button--ghost-dark cb-button--fill ending-btn" data-action="export">이미지로 저장</button>
         <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">처음부터 다시</button>
       </div>
     </div>
@@ -99,9 +90,11 @@ export function renderEnding(props) {
   const statusEl = el.querySelector('.ending-status');
   const exportBtn = el.querySelector('[data-action="export"]');
 
-  el.querySelector('[data-action="review"]')?.addEventListener('click', () => {
-    props.onReviewMap();
+  const unlockEgg = createTapUnlock({
+    taps: 5,
+    onUnlock: () => openCoffeeCoupon(),
   });
+  el.querySelector('[data-action="egg"]')?.addEventListener('click', unlockEgg);
 
   el.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
     openConfirmModal({
@@ -124,15 +117,13 @@ export function renderEnding(props) {
     el.dataset.exportStatus = next;
     if (statusEl) statusEl.textContent = message;
     if (exportBtn instanceof HTMLButtonElement) {
-      exportBtn.disabled = next === 'generating';
-      exportBtn.classList.toggle('cb-button--loading', next === 'generating');
-      if (next === 'failure') {
-        exportBtn.textContent = '다시 시도';
-      } else if (next === 'generating') {
-        exportBtn.textContent = '준비 중…';
-      } else {
-        exportBtn.textContent = '이미지로 저장';
-      }
+      const busy = next === 'generating';
+      exportBtn.disabled = busy;
+      exportBtn.classList.toggle('is-loading', busy);
+      exportBtn.setAttribute(
+        'aria-label',
+        next === 'failure' ? '다시 시도' : busy ? '이미지 준비 중' : '이미지로 저장'
+      );
     }
   }
 
@@ -140,7 +131,6 @@ export function renderEnding(props) {
     if (exportStatus === 'generating') return;
     setExportStatus('generating', '이미지를 준비하고 있어요');
 
-    // Export always shows a full-clear card (5/5), independent of mid-session counts.
     const fullClearProgress = {
       nodeStatus: Object.fromEntries(
         Object.keys(props.progress.nodeStatus).map((id) => [id, 'completed'])
@@ -180,7 +170,6 @@ export function renderEnding(props) {
     }
   }
 
-  // Mark N5 complete once content is in the DOM (play mode only via app callback).
   requestAnimationFrame(() => {
     if (markedComplete) return;
     markedComplete = true;

@@ -1,3 +1,4 @@
+import { applyDocumentLocale, isLocaleId, localizeNode, setLocale, t } from './i18n.js';
 import { COURSE_NODES, getNodeById, getQuizByNodeId } from './data/course.js';
 import {
   completeNode,
@@ -5,9 +6,10 @@ import {
   resetProgress,
   saveProgress,
 } from './state.js';
-import { createLockTooltip } from './components/lock-tooltip.js';
+import { createAppGnb } from './components/app-gnb.js';
 import { openNodeStartSheet } from './components/node-start-sheet.js';
 import { renderIntro } from './screens/intro.js';
+import { renderLangSelect } from './screens/lang-select.js';
 import { renderMap } from './screens/map.js';
 import {
   closeQuizExitModal,
@@ -16,13 +18,20 @@ import {
   renderQuiz,
 } from './screens/quiz.js';
 import { renderMemory } from './screens/memory.js';
+import { renderFriends } from './screens/friends.js';
 import { renderEnding } from './screens/ending.js';
 
-/** @typedef {'intro' | 'map' | 'quiz' | 'memory' | 'ending'} ScreenId */
+applyDocumentLocale();
+
+/** @typedef {'intro' | 'lang' | 'map' | 'quiz' | 'memory' | 'friends' | 'ending'} ScreenId */
 
 const root = document.getElementById('screen-root');
+const appShell = document.getElementById('app');
 if (!root) {
   throw new Error('#screen-root not found');
+}
+if (!appShell) {
+  throw new Error('#app not found');
 }
 
 let progress = loadProgress();
@@ -36,9 +45,6 @@ let mapHighlightNodeId = /** @type {string | null} */ (null);
 
 /** When true, quiz popstate may navigate (leave/complete) instead of exit prompt. */
 let skipQuizExitGuard = false;
-
-const lockTooltip = createLockTooltip();
-
 /**
  * @param {ScreenId} screen
  * @param {{ nodeId?: string, mode?: 'play' | 'replay' }} [options]
@@ -77,7 +83,6 @@ function leaveQuizViaHistoryBack(options = {}) {
  * @param {{ highlightNodeId?: string | null }} [options]
  */
 function goToMap(options = {}) {
-  lockTooltip.hide();
   if (options.highlightNodeId) {
     mapHighlightNodeId = options.highlightNodeId;
   }
@@ -98,7 +103,15 @@ function goToMap(options = {}) {
  */
 function syncRouteWithProgress() {
   progress = loadProgress();
-  if (!route.nodeId || route.screen === 'map' || route.screen === 'intro') return;
+  if (
+    !route.nodeId ||
+    route.screen === 'map' ||
+    route.screen === 'intro' ||
+    route.screen === 'lang' ||
+    route.screen === 'friends'
+  ) {
+    return;
+  }
 
   const status = progress.nodeStatus[route.nodeId];
   if (!status || status === 'locked') {
@@ -116,9 +129,16 @@ function syncRouteWithProgress() {
 function handleNodeTap(nodeId, status, anchor) {
   const node = getNodeById(nodeId);
   if (!node) return;
+  const localized = localizeNode(node);
 
   if (status === 'locked') {
-    lockTooltip.show('아직 잠겨 있어요. 이전 여정을 먼저 완료해 주세요.', anchor);
+    openNodeStartSheet({
+      variant: 'locked',
+      title: localized.title,
+      body: t('node.lockedBody'),
+      actionLabel: t('node.lockedAction'),
+      anchorRect: anchor,
+    });
     return;
   }
 
@@ -127,8 +147,8 @@ function handleNodeTap(nodeId, status, anchor) {
   // Active node: show chapter start sheet first; CTA enters the chapter.
   if (status === 'active') {
     openNodeStartSheet({
-      title: node.title,
-      actionLabel: '시작하기',
+      title: localized.title,
+      actionLabel: t('node.startAction'),
       onStart: () => enterNode(node, mode),
     });
     return;
@@ -194,6 +214,33 @@ function handleResetConfirmed() {
   navigate('intro', {}, { replace: true });
 }
 
+/**
+ * Pin GNB to the app shell (always visible under the screen).
+ * @param {'map' | 'friends'} active
+ */
+function mountGnb(active) {
+  clearGnb();
+  appShell.classList.add('app-shell--with-gnb');
+  appShell.appendChild(
+    createAppGnb({
+      active,
+      onHome: () => {
+        if (route.screen === 'map') return;
+        navigate('map');
+      },
+      onFriends: () => {
+        if (route.screen === 'friends') return;
+        navigate('friends');
+      },
+    })
+  );
+}
+
+function clearGnb() {
+  appShell.classList.remove('app-shell--with-gnb');
+  document.getElementById('app-gnb')?.remove();
+}
+
 function cleanupCurrentScreen() {
   const current = root.firstElementChild;
   if (current && typeof current.__cleanup === 'function') {
@@ -203,14 +250,24 @@ function cleanupCurrentScreen() {
 
 function render() {
   cleanupCurrentScreen();
+  clearGnb();
   root.replaceChildren();
 
   /** @type {HTMLElement | null} */
   let screenEl = null;
+  /** @type {'map' | 'friends' | null} */
+  let gnbActive = null;
 
   if (route.screen === 'intro') {
     screenEl = renderIntro({
-      onStart: () => goToMap(),
+      onStart: () => navigate('lang'),
+    });
+  } else if (route.screen === 'lang') {
+    screenEl = renderLangSelect({
+      onContinue: (langId) => {
+        if (isLocaleId(langId)) setLocale(langId);
+        goToMap();
+      },
     });
   } else if (route.screen === 'map') {
     progress = loadProgress();
@@ -223,6 +280,10 @@ function render() {
         mapHighlightNodeId = null;
       },
     });
+    gnbActive = 'map';
+  } else if (route.screen === 'friends') {
+    screenEl = renderFriends();
+    gnbActive = 'friends';
   } else {
     const node = route.nodeId ? getNodeById(route.nodeId) : null;
     if (!node || !route.mode) {
@@ -233,10 +294,12 @@ function render() {
         highlightNodeId: null,
         onNodeTap: handleNodeTap,
       });
+      gnbActive = 'map';
     } else if (route.screen === 'quiz') {
+      const localized = localizeNode(node);
       screenEl = renderQuiz({
         nodeId: node.id,
-        title: node.title,
+        title: localized.title,
         mode: route.mode,
         choiceType:
           getQuizByNodeId(node.id)?.choiceType ??
@@ -245,21 +308,22 @@ function render() {
         onCorrectContinue: handleNodeComplete,
       });
     } else if (route.screen === 'memory') {
+      const localized = localizeNode(node);
       screenEl = renderMemory({
         nodeId: node.id,
-        title: node.title,
+        title: localized.title,
         mode: route.mode,
         onBackToMap: () => goToMap(),
         onComplete: handleNodeComplete,
       });
     } else if (route.screen === 'ending') {
+      const localized = localizeNode(node);
       progress = loadProgress();
       screenEl = renderEnding({
         nodeId: node.id,
-        title: node.title,
+        title: localized.title,
         mode: route.mode,
         progress,
-        onReviewMap: () => goToMap(),
         onEndingRendered: handleEndingRendered,
         onResetConfirmed: handleResetConfirmed,
       });
@@ -267,9 +331,11 @@ function render() {
   }
 
   if (screenEl) {
+    if (gnbActive) screenEl.classList.add('screen--with-gnb');
     screenEl.classList.add('screen--enter');
     root.appendChild(screenEl);
   }
+  if (gnbActive) mountGnb(gnbActive);
 }
 
 /**

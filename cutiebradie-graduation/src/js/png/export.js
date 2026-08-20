@@ -28,14 +28,11 @@ export function createExportCard(progress = null) {
     .join('');
 
   card.innerHTML = `
-    <div class="cb-export-card__sky" aria-hidden="true">
-      <div class="cb-export-card__glow"></div>
-      <div class="cb-export-card__stars"></div>
+    <div class="cb-export-card__bg" aria-hidden="true">
+      <img class="cb-export-card__bg-img" src="${stats.heroImage}" alt="" />
+      <div class="cb-export-card__veil"></div>
     </div>
     <div class="cb-export-card__inner">
-      <div class="cb-export-card__hero">
-        <img class="cb-export-card__hero-img" src="${stats.heroImage}" alt="${stats.heroAlt}" />
-      </div>
       <h1 class="cb-export-card__title">${stats.title}</h1>
       <p class="cb-export-card__lead">${stats.lead}</p>
       <p class="cb-export-card__tagline">${stats.tagline}</p>

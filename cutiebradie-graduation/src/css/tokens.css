@@ -162,12 +162,13 @@
   --radius-lg: 16px;
   --radius-pill: 999px;
 
-  /* Header / controls */
-  --header-height: 48px;
-  --header-icon-size: 28px;
+  /* Header / controls — Duolingo learn HUD */
+  --header-height: 56px;
+  --header-icon-size: 25px;
   --header-close-size: 28px;
   --header-progress-height: 16px;
-  --header-gap: var(--space-3);
+  --header-gap: 12px;
+  --header-item-gap: 6px;
   --control-height: 52px;
   --control-height-min: 44px;
 
@@ -225,9 +226,9 @@
   --feedback-incorrect-cta: var(--cardinal-400);
   --feedback-incorrect-cta-edge: var(--cardinal-700);
 
-  /* Map cover — Figma 85:4804 */
-  --map-cover-fill: #5acd05;
-  --map-cover-edge: #48a502;
+  /* Map cover — same as intro CTA (UOS brand blue) */
+  --map-cover-fill: var(--primary);
+  --map-cover-edge: var(--primary-shadow);
   --map-cover-radius: 14px;
   --map-cover-height: 78px;
 
@@ -244,6 +245,9 @@
   --map-node-completed-edge: #0098d4;
   --map-callout-radius: var(--radius-sm);
   --map-callout-green: var(--feather-green-600);
+  /* Active node start sheet — match path node blue */
+  --map-sheet-fill: var(--map-node-active);
+  --map-sheet-edge: var(--map-node-active-edge);
   --font-map: "Nunito", "Noto Sans KR", system-ui, sans-serif;
 }
 

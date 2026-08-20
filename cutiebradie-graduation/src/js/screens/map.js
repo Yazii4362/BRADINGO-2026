@@ -1,6 +1,8 @@
 import { BRAND, COURSE_NODES } from '../data/course.js';
+import { localizeNode, t } from '../i18n.js';
 import { createAppHeader } from '../components/app-header.js';
 import { createCharacterBubbleController } from '../components/character-bubble.js';
+import { createCreatorPromoCard } from '../components/coffee-coupon.js';
 import {
   createMapNodeButton,
   getMapNodeAnchorRect,
@@ -21,7 +23,7 @@ export function renderMap(props) {
 
   const top = document.createElement('div');
   top.className = 'map-top';
-  top.appendChild(createAppHeader({ streak: 3095, gems: 2026 }));
+  top.appendChild(createAppHeader({ gems: 2026 }));
 
   const lastNodeReached =
     props.nodeStatus.n5 === 'active' || props.nodeStatus.n5 === 'completed';
@@ -34,13 +36,13 @@ export function renderMap(props) {
   const cover = document.createElement('button');
   cover.type = 'button';
   cover.className = 'cb-map-cover';
-  cover.setAttribute('aria-label', `${BRAND.courseTitle} — 병건이에게 인사하기`);
+  cover.setAttribute('aria-label', t('map.coverAria', { title: t('brand.courseTitle') }));
   cover.innerHTML = `
     <div class="cb-map-cover__profile">
       <img
         class="cb-map-cover__profile-img"
         src="${profileSrc}"
-        alt="병건이 프로필"
+        alt="${t('map.profileAlt')}"
         width="52"
         height="52"
         decoding="async"
@@ -48,7 +50,7 @@ export function renderMap(props) {
     </div>
     <div class="cb-map-cover__copy">
       <p class="cb-map-cover__period">${BRAND.coursePeriod}</p>
-      <h1 class="cb-map-cover__title">${BRAND.courseTitle}</h1>
+      <h1 class="cb-map-cover__title">${t('brand.courseTitle')}</h1>
     </div>
   `;
 
@@ -59,11 +61,6 @@ export function renderMap(props) {
 
   top.appendChild(cover);
 
-  const progress = document.createElement('p');
-  progress.className = 'map-progress';
-  progress.textContent = buildProgressLabel(props.nodeStatus);
-  top.appendChild(progress);
-
   const canvas = document.createElement('div');
   canvas.className = 'map-canvas';
 
@@ -72,21 +69,22 @@ export function renderMap(props) {
 
   const bird = document.createElement('img');
   bird.className = 'map-path__bird';
-  bird.src = './assets/images/map-bird.svg';
+  bird.src = './assets/images/map-bird.webp';
   bird.alt = '';
-  bird.width = 205;
-  bird.height = 206;
+  bird.width = 512;
+  bird.height = 512;
   bird.setAttribute('aria-hidden', 'true');
   bird.decoding = 'async';
   path.appendChild(bird);
 
   COURSE_NODES.forEach((node, index) => {
     const status = props.nodeStatus[node.id] ?? 'locked';
+    const localized = localizeNode(node);
 
     const nodeWrap = createMapNodeButton(
       {
         id: node.id,
-        title: node.title,
+        title: localized.title,
         status,
         pathIndex: index,
       },
@@ -104,7 +102,24 @@ export function renderMap(props) {
   });
 
   canvas.appendChild(path);
+
+  const promo = createCreatorPromoCard();
+  const promoMq = window.matchMedia('(min-width: 768px)');
+
+  /** Desktop/tablet: under 병건이의 UOS LIFE. Mobile: after map path (one scroll). */
+  const placeCreatorPromo = () => {
+    if (promoMq.matches) {
+      promo.classList.remove('creator-promo--dock');
+      top.appendChild(promo);
+    } else {
+      promo.classList.add('creator-promo--dock');
+      el.appendChild(promo);
+    }
+  };
+
   el.append(top, canvas);
+  placeCreatorPromo();
+  promoMq.addEventListener('change', placeCreatorPromo);
 
   const focusId =
     props.highlightNodeId ||
@@ -163,19 +178,6 @@ function scrollMapNodeIntoView(mapScreen, nodeId) {
     inline: 'nearest',
     behavior,
   });
-}
-
-/**
- * @param {Record<string, 'locked' | 'active' | 'completed'>} nodeStatus
- */
-function buildProgressLabel(nodeStatus) {
-  const total = COURSE_NODES.length;
-  const activeIndex = COURSE_NODES.findIndex((node) => nodeStatus[node.id] === 'active');
-
-  if (activeIndex === -1) {
-    return `${total} / ${total} 섹션 완료`;
-  }
-  return `${activeIndex + 1} / ${total} 섹션 진행 중`;
 }
 
 /**

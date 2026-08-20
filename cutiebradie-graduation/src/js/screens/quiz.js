@@ -514,6 +514,7 @@ function renderChoiceQuiz(props, questions) {
       btn.className = 'cb-answer-card cb-answer-card--default';
       btn.dataset.choiceId = choice.id;
       btn.setAttribute('aria-pressed', 'false');
+      btn.setAttribute('aria-label', choice.alt || choice.label || choice.id);
       fillAnswerCardContent(btn, choice);
       btn.addEventListener('click', () => onCardTap(choice.id));
       cardButtons.set(choice.id, btn);
@@ -556,17 +557,31 @@ function renderChoiceQuiz(props, questions) {
       stage.appendChild(figure);
     }
 
+    const bubbleWrap = document.createElement('div');
+    bubbleWrap.className = 'quiz-listen-bubble-wrap';
+
     const bubble = document.createElement('div');
     bubble.className = 'quiz-listen-bubble';
+
     const speakBtn = document.createElement('button');
     speakBtn.type = 'button';
     speakBtn.className = 'quiz-listen-bubble__speak';
     speakBtn.setAttribute('aria-label', '들은 내용 재생');
-    speakBtn.innerHTML =
-      '<img src="./assets/images/quiz/icon-speaker.svg" alt="" width="29" height="22" />';
+    speakBtn.innerHTML = `
+      <img class="quiz-listen-bubble__speaker" src="./assets/images/quiz/icon-speaker.svg" alt="" width="40" height="36" decoding="async" />
+      <img class="quiz-listen-bubble__wave" src="./assets/images/quiz/icon-waveform.svg" alt="" width="136" height="68" decoding="async" />
+    `;
     speakBtn.addEventListener('click', () => speakText(quiz.listenText ?? ''));
-    bubble.append(speakBtn);
-    stage.appendChild(bubble);
+
+    const slowBtn = document.createElement('button');
+    slowBtn.type = 'button';
+    slowBtn.className = 'quiz-listen-bubble__slow';
+    slowBtn.textContent = '느린 속도로 재생';
+    slowBtn.addEventListener('click', () => speakText(quiz.listenText ?? '', { rate: 0.65 }));
+
+    bubble.appendChild(speakBtn);
+    bubbleWrap.append(bubble, slowBtn);
+    stage.appendChild(bubbleWrap);
 
     promptPane.appendChild(stage);
 
@@ -613,13 +628,15 @@ function renderChoiceQuiz(props, questions) {
 
 /**
  * @param {string} text
+ * @param {{ rate?: number }} [options]
  */
-function speakText(text) {
+function speakText(text, options = {}) {
   const value = text.trim();
   if (!value || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(value);
   utter.lang = /[가-힣]/.test(value) ? 'ko-KR' : 'en-US';
+  utter.rate = Math.max(0.5, Math.min(1.2, options.rate ?? 1));
   window.speechSynthesis.speak(utter);
 }
 
@@ -652,36 +669,42 @@ function fillAnswerCardContent(btn, choice) {
     btn.classList.add('cb-answer-card--has-image');
     const img = document.createElement('img');
     img.className = 'cb-answer-card__image';
-    img.alt = choice.alt || choice.label;
+    img.alt = choice.alt || choice.label || '';
     img.decoding = 'async';
-
-    const label = document.createElement('span');
-    label.className = 'cb-answer-card__label';
-    label.textContent = choice.label;
 
     img.addEventListener('error', () => {
       img.replaceWith(createNamePlaceholder(choice));
     });
 
-    btn.append(img, label);
+    btn.append(img);
+    if (choice.label) {
+      const label = document.createElement('span');
+      label.className = 'cb-answer-card__label';
+      label.textContent = choice.label;
+      btn.append(label);
+    }
     img.src = imageValue;
     return;
   }
 
   if (wantsMediaSlot) {
     btn.classList.remove('cb-answer-card--has-image');
-    const label = document.createElement('span');
-    label.className = 'cb-answer-card__label';
-    label.textContent = choice.label;
-    btn.append(label);
+    if (choice.label) {
+      const label = document.createElement('span');
+      label.className = 'cb-answer-card__label';
+      label.textContent = choice.label;
+      btn.append(label);
+    }
     return;
   }
 
   btn.classList.remove('cb-answer-card--has-image');
-  const label = document.createElement('span');
-  label.className = 'cb-answer-card__label';
-  label.textContent = choice.label;
-  btn.append(label);
+  if (choice.label) {
+    const label = document.createElement('span');
+    label.className = 'cb-answer-card__label';
+    label.textContent = choice.label;
+    btn.append(label);
+  }
 }
 
 /**
@@ -691,7 +714,8 @@ function createNamePlaceholder(choice) {
   const placeholder = document.createElement('span');
   placeholder.className = 'cb-answer-card__placeholder';
   placeholder.setAttribute('role', 'img');
-  placeholder.setAttribute('aria-label', choice.alt || choice.label);
-  placeholder.textContent = choice.label.slice(0, 1);
+  placeholder.setAttribute('aria-label', choice.alt || choice.label || choice.id);
+  const initial = (choice.label || choice.alt || choice.id || '?').slice(0, 1);
+  placeholder.textContent = initial;
   return placeholder;
 }

@@ -80,7 +80,6 @@
 @media (prefers-reduced-motion: reduce) {
   .ending-confetti,
   .ending-title,
-  .ending-rays,
   .screen--enter,
   .quiz-sheet-host:not(:empty) .cb-feedback-sheet {
     animation: none;

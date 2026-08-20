@@ -10,6 +10,7 @@ export const BRAND = Object.freeze({
 
 /**
  * Course nodes (intro is NOT a node).
+ * Friends letters live in the bottom GNB tab — not on the path.
  * @type {ReadonlyArray<{
  *   id: string,
  *   order: number,
@@ -45,16 +46,8 @@ export const COURSE_NODES = Object.freeze([
     screen: 'memory',
   },
   {
-    id: 'n4',
-    order: 4,
-    title: '졸업축하 메시지',
-    type: 'multi',
-    typeLabel: '복수 선택',
-    screen: 'quiz',
-  },
-  {
     id: 'n5',
-    order: 5,
+    order: 4,
     title: '엔딩',
     type: 'ending',
     typeLabel: '엔딩 · PNG',
@@ -99,10 +92,30 @@ export const QUIZZES = Object.freeze({
         question: '맞는 이미지를 고르세요',
         promptWord: '정병건',
         choices: Object.freeze([
-          Object.freeze({ id: 'jeong', label: '정병건', image: '', alt: '정병건' }),
-          Object.freeze({ id: 'pong', label: '뽕꼬니', image: '', alt: '뽕꼬니' }),
-          Object.freeze({ id: 'bbang', label: '시립대건빵', image: '', alt: '시립대건빵' }),
-          Object.freeze({ id: 'bradie', label: 'Bradie', image: '', alt: 'Bradie' }),
+          Object.freeze({
+            id: 'jeong',
+            label: '',
+            image: './assets/images/profile.webp',
+            alt: '정병건',
+          }),
+          Object.freeze({
+            id: 'pong',
+            label: '',
+            image: './assets/images/quiz/n1-pong.png',
+            alt: '뽕꼬니',
+          }),
+          Object.freeze({
+            id: 'bbang',
+            label: '',
+            image: './assets/images/profile.webp',
+            alt: '시립대건빵',
+          }),
+          Object.freeze({
+            id: 'bradie',
+            label: '',
+            image: './assets/images/quiz/n1-bradie.png',
+            alt: 'Bradie',
+          }),
         ]),
         correctChoiceIds: Object.freeze(['jeong']),
         feedback: Object.freeze({
@@ -123,10 +136,30 @@ export const QUIZZES = Object.freeze({
         question: '맞는 이미지를 고르세요',
         promptWord: 'Bradie',
         choices: Object.freeze([
-          Object.freeze({ id: 'jeong', label: '정병건', image: '', alt: '정병건' }),
-          Object.freeze({ id: 'pong', label: '뽕꼬니', image: '', alt: '뽕꼬니' }),
-          Object.freeze({ id: 'bbang', label: '시립대건빵', image: '', alt: '시립대건빵' }),
-          Object.freeze({ id: 'bradie', label: 'Bradie', image: '', alt: 'Bradie' }),
+          Object.freeze({
+            id: 'jeong',
+            label: '',
+            image: './assets/images/profile.webp',
+            alt: '정병건',
+          }),
+          Object.freeze({
+            id: 'pong',
+            label: '',
+            image: './assets/images/quiz/n1-pong.png',
+            alt: '뽕꼬니',
+          }),
+          Object.freeze({
+            id: 'bbang',
+            label: '',
+            image: './assets/images/profile.webp',
+            alt: '시립대건빵',
+          }),
+          Object.freeze({
+            id: 'bradie',
+            label: '',
+            image: './assets/images/quiz/n1-bradie.png',
+            alt: 'Bradie',
+          }),
         ]),
         correctChoiceIds: Object.freeze(['bradie']),
         feedback: Object.freeze({
@@ -147,10 +180,30 @@ export const QUIZZES = Object.freeze({
         question: '맞는 이미지를 고르세요',
         promptWord: '시립대건빵',
         choices: Object.freeze([
-          Object.freeze({ id: 'jeong', label: '정병건', image: '', alt: '정병건' }),
-          Object.freeze({ id: 'pong', label: '뽕꼬니', image: '', alt: '뽕꼬니' }),
-          Object.freeze({ id: 'bbang', label: '시립대건빵', image: '', alt: '시립대건빵' }),
-          Object.freeze({ id: 'bradie', label: 'Bradie', image: '', alt: 'Bradie' }),
+          Object.freeze({
+            id: 'jeong',
+            label: '',
+            image: './assets/images/profile.webp',
+            alt: '정병건',
+          }),
+          Object.freeze({
+            id: 'pong',
+            label: '',
+            image: './assets/images/quiz/n1-pong.png',
+            alt: '뽕꼬니',
+          }),
+          Object.freeze({
+            id: 'bbang',
+            label: '',
+            image: './assets/images/profile.webp',
+            alt: '시립대건빵',
+          }),
+          Object.freeze({
+            id: 'bradie',
+            label: '',
+            image: './assets/images/quiz/n1-bradie.png',
+            alt: 'Bradie',
+          }),
         ]),
         correctChoiceIds: Object.freeze(['bbang']),
         feedback: Object.freeze({
@@ -197,29 +250,6 @@ export const QUIZZES = Object.freeze({
       }),
     }),
   }),
-  n4: Object.freeze({
-    choiceType: 'multi',
-    layout: 'character',
-    question: '누가 병건이 졸업을 축하하러 왔나요?',
-    instruction: '해당하는 답을 모두 선택하세요.',
-    choices: Object.freeze([
-      Object.freeze({ id: 'dabin', label: '이다빈', image: '', alt: '이다빈 캐릭터' }),
-      Object.freeze({ id: 'yaji', label: '야지', image: '', alt: '야지 캐릭터' }),
-      Object.freeze({ id: 'yubinu', label: '유비누', image: '', alt: '유비누 캐릭터' }),
-      Object.freeze({ id: 'gaeuni', label: '가으니', image: '', alt: '가으니 캐릭터' }),
-    ]),
-    correctChoiceIds: Object.freeze(['dabin', 'yaji', 'yubinu', 'gaeuni']),
-    feedback: Object.freeze({
-      correct: Object.freeze({
-        title: '정답입니다!',
-        body: '병건이의 졸업을 축하하려고 친구들이 모두 모였어요.',
-      }),
-      incorrect: Object.freeze({
-        title: '오답입니다!',
-        body: '병건이를 축하하러 온 친구 네 명을 모두 선택해 주세요.',
-      }),
-    }),
-  }),
 });
 
 export function getNodeById(id) {
@@ -250,39 +280,78 @@ export function getQuizByNodeId(id) {
  * Set `image` to a path under assets/images when real photos are ready.
  * @type {Readonly<Record<string, {
  *   title: string,
+ *   subtitle: string,
+ *   categories: ReadonlyArray<{ id: string, label: string }>,
  *   memories: ReadonlyArray<{
  *     id: string,
  *     image: string,
  *     alt: string,
  *     caption: string,
- *     date: string
+ *     date: string,
+ *     category: string
  *   }>
  * }>>}
  */
 export const MEMORY_CONTENTS = Object.freeze({
   n3: Object.freeze({
     title: '우리의 추억',
+    subtitle: '함께한 순간들이 너무 소중해 💚',
+    categories: Object.freeze([
+      Object.freeze({ id: 'all', label: '전체' }),
+      Object.freeze({ id: 'running', label: '달리기' }),
+      Object.freeze({ id: 'morning', label: '아침' }),
+      Object.freeze({ id: 'travel', label: '여행' }),
+      Object.freeze({ id: 'school', label: '학교' }),
+      Object.freeze({ id: 'diary', label: '일기' }),
+    ]),
     memories: Object.freeze([
       Object.freeze({
         id: 'memory-1',
         image: '',
-        alt: '추억 사진 1',
-        caption: '추억 문구를 입력할 자리',
-        date: '',
+        alt: '운동장에서 달리는 모습',
+        caption: '운동장 달리기',
+        date: '2019.05.12',
+        category: 'running',
       }),
       Object.freeze({
         id: 'memory-2',
         image: '',
-        alt: '추억 사진 2',
-        caption: '추억 문구를 입력할 자리',
-        date: '',
+        alt: '졸업식 날 친구들과 함께',
+        caption: '졸업식 날',
+        date: '2026.02.20',
+        category: 'school',
       }),
       Object.freeze({
         id: 'memory-3',
         image: '',
-        alt: '추억 사진 3',
-        caption: '추억 문구를 입력할 자리',
-        date: '',
+        alt: '아침 식사하는 모습',
+        caption: '아침 식사',
+        date: '2021.03.08',
+        category: 'morning',
+      }),
+      Object.freeze({
+        id: 'memory-4',
+        image: '',
+        alt: '1교시 수업 시간',
+        caption: '1교시 수업',
+        date: '2020.09.14',
+        category: 'school',
+      }),
+      Object.freeze({
+        id: 'memory-5',
+        image: '',
+        alt: '제주도 여행',
+        caption: '제주도 여행',
+        date: '2022.08.15',
+        category: 'travel',
+      }),
+      Object.freeze({
+        id: 'memory-6',
+        image: '',
+        alt: '일기장 한 페이지',
+        caption: '일기장 한 페이지',
+        date: '2018.11.02',
+        category: 'diary',
       }),
     ]),
   }),
@@ -290,6 +359,88 @@ export const MEMORY_CONTENTS = Object.freeze({
 
 export function getMemoryByNodeId(id) {
   return MEMORY_CONTENTS[id] ?? null;
+}
+
+/**
+ * Friends / congratulation letters (GNB tab — not a course node).
+ * @type {{
+ *   title: string,
+ *   subtitle: string,
+ *   friends: ReadonlyArray<{
+ *     id: string,
+ *     name: string,
+ *     initials: string,
+ *     phone: string,
+ *     email: string,
+ *     group: string,
+ *     preview: string,
+ *     letter: string,
+ *     image?: string,
+ *     alt?: string
+ *   }>
+ * }}
+ */
+export const FRIENDS_FEED = Object.freeze({
+  title: '졸업축하 메시지',
+  subtitle: '프로필을 눌러 편지를 읽어보세요',
+  friends: Object.freeze([
+    Object.freeze({
+      id: 'dabin',
+      name: '이다빈',
+      initials: '다빈',
+      phone: '010-0000-1111',
+      email: 'dabin@friends.uos',
+      group: 'Today',
+      preview: '졸업을 축하합니다 병건씨🥳🎓🎊💐',
+      letter:
+        '졸업을 축하합니다 병건씨🥳🎓🎊💐\n뭔가 자네 졸업한다고 하니깐 이상해요\n계속 학교에 있어주세요 같은 나쁜말은 하면 안되겠지\n학교에서 만나서 덕분에 재밌었던 대학생활이었습니다\n띠듀 모임이 이렇게까지 이어지다니~~상상도 못했지 뭐야\n이젠 각자 다른 삶을 살고 더더욱 다양해지겠지만 가끔 자주 이렇게 모여주세요\n오랜만에 만나도 마치 어제 만난 사람들처럼 대화할 거 생각하니 재밌네요\n초등학교보다 오래 다닌 학교를 떠나 새롭게 시작할 앞으로의 삶을 응원합니다😆 from. 다빈',
+      image: './assets/images/friends/dabin.png',
+      alt: '이다빈 프로필',
+    }),
+    Object.freeze({
+      id: 'yaji',
+      name: '야지',
+      initials: '야지',
+      phone: '010-0000-2222',
+      email: 'image4362@gmail.com',
+      group: 'Today',
+      preview: '졸업 축하해, 병건! BRADINGO로 네 여정을 남겨봤어.',
+      letter:
+        '병건, 졸업 축하해!\n\n네 UOS LIFE를 따라가다 보니 웃음이 많이 나더라. 앞으로도 네 페이스로 잘 걸어가길 바랄게.\n\n언제든 연락해. 커피 한잔하자.',
+      image: './assets/images/friends/yaji.png',
+      alt: '야지 프로필',
+    }),
+    Object.freeze({
+      id: 'yubinu',
+      name: '유비누',
+      initials: '비누',
+      phone: '010-0000-3333',
+      email: 'yubinu@friends.uos',
+      group: 'Yesterday',
+      preview: '빵건오빠 ~ 졸업을 축하해 ⁺◟( ᵒ̴̶̷̥́ ·̫ ᵒ̴̶̷̣̥̀ )',
+      letter:
+        '빵건오빠 ~ 졸업을 축하해 ⁺◟( ᵒ̴̶̷̥́ ·̫ ᵒ̴̶̷̣̥̀ )\n2023년, 트랙에서 만난 게 엊그제같은데 벌써 3년이라는 시간이 흘렀다니 !! 다같이 뛰고, 먹고, 공부하고, 놀러다니구 ㅋㅋㅋ 덕분에 너무 즐거운 대학생활을 했어 좋은 추억을 함께해줘서 고마워 ~  이거 읽을 때 쯤 졸업여행이 코앞이겠구나 !! 늘 용감히 떠나는 모습에 자극 참 많이 받아 ㅎㅎㅎ 담에 우리랑도 여행 또 가자자 ~ 즐거운 추억 많이 만들고 오길 바라고 또 여행하는 동안 안전하고 건강하길 (ง •̀ω•́)ง✧ !!\n\n- 유빈이가 -',
+      image: './assets/images/friends/yubinu.png',
+      alt: '유비누 프로필',
+    }),
+    Object.freeze({
+      id: 'gaeuni',
+      name: '가으니',
+      initials: '가은',
+      phone: '010-0000-4444',
+      email: 'gaeuni@friends.uos',
+      group: 'Yesterday',
+      preview: '병건오빠 졸업축하해~ 작년에 같이 캠퍼스를 누비며…',
+      letter:
+        'To 병건오빠\n\n병건오빠 졸업축하해~\n작년에 같이 캠퍼스를 누비며 자주 나온 대화거리가 "졸업식"이었는데 이렇게 그 날이 됐네 ㅎㅎㅎ 같이 수험생활을 하면서 정말 많이 의지됐고 덕분에 즐거웠어! 정말 행복했던 추억으로 남을 것 같아! 내가 요즘 연락을 잘 못했네..ㅜㅜ 우리 앞으로 종종 보면서 즐거운 추억 많이 쌓자!! 졸업 후 새로운 시작을 응원해!\n\n-가은-',
+      image: './assets/images/friends/gaeuni.png',
+      alt: '가으니 프로필',
+    }),
+  ]),
+});
+
+export function getFriendsFeed() {
+  return FRIENDS_FEED;
 }
 
 /**
@@ -345,8 +496,7 @@ export function getGraduationStats(progress = null) {
     wordmark: BRAND.wordmark,
     summaryTitle: '여정 요약',
     summaryRows,
-    heroImage: './assets/images/node-ending.svg',
-    heroAlt: '졸업 보물상자',
-    ctaLabel: '새로운 챕터로 가기',
+    heroImage: './assets/images/ending-hero.webp',
+    heroAlt: '졸업가운을 입고 기뻐하는 병건이',
   };
 }

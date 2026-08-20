@@ -1,20 +1,20 @@
 /**
- * Map path slots — Figma 390 canvas node centers:
- * n1 193 / n2 148 / n3 117 / n4 148 / n5 207  (offset from 195)
+ * Map path slots — 4 course nodes (friends moved to GNB).
+ * n1 / n2 / n3 / n5 ending
  */
 const PATH_SLOTS = [
   { className: 'map-path__item--slot-1', lane: 'c', offset: '0%' },
   { className: 'map-path__item--slot-2', lane: 'l1', offset: '-12%' },
   { className: 'map-path__item--slot-3', lane: 'l2', offset: '-20%' },
-  { className: 'map-path__item--slot-4', lane: 'l1', offset: '-12%' },
-  { className: 'map-path__item--slot-5', lane: 'c', offset: '3%' },
+  { className: 'map-path__item--slot-4', lane: 'c', offset: '3%' },
 ];
 
 const NODE_ACTIVE_SRC = './assets/images/node-active.svg';
 const NODE_ACTIVE_PRESSED_SRC = './assets/images/node-active-pressed.svg';
 const NODE_LOCKED_SRC = './assets/images/node-locked.svg';
 const NODE_LOCKED_PRESSED_SRC = './assets/images/node-locked-pressed.svg';
-const NODE_ENDING_SRC = './assets/images/node-ending.svg';
+const NODE_ENDING_LOCKED_SRC = './assets/images/node-ending.svg';
+const NODE_ENDING_ACTIVE_SRC = './assets/images/node-ending-active.png';
 const ENDING_NODE_ID = 'n5';
 
 /**
@@ -76,8 +76,9 @@ export function createMapNodeButton(props, onClick) {
   let defaultSrc;
   let pressedSrc;
   if (isEnding) {
-    defaultSrc = NODE_ENDING_SRC;
-    pressedSrc = NODE_ENDING_SRC;
+    const endingUnlocked = props.status === 'active' || props.status === 'completed';
+    defaultSrc = endingUnlocked ? NODE_ENDING_ACTIVE_SRC : NODE_ENDING_LOCKED_SRC;
+    pressedSrc = defaultSrc;
   } else if (isLocked) {
     defaultSrc = NODE_LOCKED_SRC;
     pressedSrc = NODE_LOCKED_PRESSED_SRC;
@@ -90,8 +91,8 @@ export function createMapNodeButton(props, onClick) {
   asset.className = 'cb-map-node__asset';
   asset.src = defaultSrc;
   asset.alt = '';
-  asset.width = isEnding ? 80 : 71;
-  asset.height = isEnding ? 90 : 65;
+  asset.width = isEnding ? 130 : 71;
+  asset.height = isEnding ? 130 : 65;
   asset.setAttribute('aria-hidden', 'true');
   asset.decoding = 'async';
   btn.appendChild(asset);

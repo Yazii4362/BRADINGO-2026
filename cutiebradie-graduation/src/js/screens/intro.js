@@ -1,4 +1,6 @@
 import { BRAND } from '../data/course.js';
+import { t } from '../i18n.js';
+import { createTapUnlock, openCoffeeCoupon } from '../components/coffee-coupon.js';
 
 /**
  * @param {{ onStart: () => void }} props
@@ -9,14 +11,16 @@ export function renderIntro(props) {
   el.dataset.screen = 'intro';
   el.innerHTML = `
     <div class="intro-hero" aria-hidden="true">
-      <img
-        class="intro-hero__img"
-        src="./assets/images/intro-character.png"
-        alt=""
-        width="544"
-        height="934"
-        decoding="async"
-      />
+      <button type="button" class="intro-egg" data-action="egg" aria-label="${t('intro.eggAria')}">
+        <img
+          class="intro-hero__img"
+          src="./assets/images/intro-character.png"
+          alt=""
+          width="544"
+          height="934"
+          decoding="async"
+        />
+      </button>
     </div>
     <h1 class="intro-wordmark">
       <img
@@ -29,12 +33,19 @@ export function renderIntro(props) {
       />
     </h1>
     <p class="screen__body intro-lead">
-      병건이의 <strong>${BRAND.courseName}</strong>,<br>마지막 코스가 열렸어요. 🎓
+      ${t('intro.lead', { course: BRAND.courseName })}
     </p>
     <div class="cb-button-row">
-      <button type="button" class="cb-button cb-button--primary cb-button--fill" data-action="start">여정 시작하기</button>
+      <button type="button" class="cb-button cb-button--primary cb-button--fill" data-action="start">${t('intro.start')}</button>
     </div>
   `;
+
+  const unlockEgg = createTapUnlock({
+    taps: 5,
+    onUnlock: () => openCoffeeCoupon(),
+  });
+
   el.querySelector('[data-action="start"]')?.addEventListener('click', props.onStart);
+  el.querySelector('[data-action="egg"]')?.addEventListener('click', unlockEgg);
   return el;
 }

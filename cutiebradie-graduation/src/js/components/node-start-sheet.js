@@ -1,38 +1,62 @@
 /**
- * Active-node start sheet — chapter title + CTA.
+ * Path node popover — start (green) or locked (dark) bubble.
  * CB / Map / Node Start Sheet
- * Motion mirrors Duolingo path START → lesson enter.
+ * Motion mirrors Duolingo path START / locked level bubble.
  *
  * @param {{
  *   title: string,
+ *   body?: string,
  *   actionLabel?: string,
- *   onStart: () => void,
+ *   variant?: 'start' | 'locked',
+ *   anchorRect?: DOMRect | null,
+ *   onStart?: () => void,
  *   onDismiss?: () => void
  * }} props
  */
 export function openNodeStartSheet(props) {
+  const variant = props.variant ?? 'start';
+  const isLocked = variant === 'locked';
   const previouslyFocused = document.activeElement instanceof HTMLElement
     ? document.activeElement
     : null;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const host = document.getElementById('app') ?? document.body;
 
+  document.querySelector('.cb-node-start-sheet__overlay')?.remove();
+
   const overlay = document.createElement('div');
-  overlay.className = 'cb-node-start-sheet__overlay';
+  overlay.className = `cb-node-start-sheet__overlay${
+    props.anchorRect ? ' cb-node-start-sheet__overlay--anchored' : ''
+  }`;
   overlay.setAttribute('role', 'presentation');
 
   const sheet = document.createElement('div');
-  sheet.className = 'cb-node-start-sheet';
+  sheet.className = `cb-node-start-sheet${isLocked ? ' cb-node-start-sheet--locked' : ''}`;
   sheet.setAttribute('role', 'dialog');
   sheet.setAttribute('aria-modal', 'false');
   sheet.setAttribute('aria-labelledby', 'node-start-title');
+  sheet.tabIndex = -1;
+
+  const bodyHtml = props.body
+    ? `<p class="cb-node-start-sheet__body">${props.body}</p>`
+    : '';
+  const eyebrowHtml = isLocked
+    ? ''
+    : '<p class="cb-node-start-sheet__eyebrow">시작</p>';
+  const ctaLabel = props.actionLabel ?? (isLocked ? '잠김' : '시작하기');
 
   sheet.innerHTML = `
     <div class="cb-node-start-sheet__notch" aria-hidden="true"></div>
-    <p class="cb-node-start-sheet__eyebrow">시작</p>
+    ${eyebrowHtml}
     <h2 id="node-start-title" class="cb-node-start-sheet__title">${props.title}</h2>
-    <button type="button" class="cb-node-start-sheet__cta" data-action="start">
-      ${props.actionLabel ?? '시작하기'}
+    ${bodyHtml}
+    <button
+      type="button"
+      class="cb-node-start-sheet__cta"
+      data-action="start"
+      ${isLocked ? 'disabled aria-disabled="true"' : ''}
+    >
+      ${ctaLabel}
     </button>
   `;
 
@@ -42,8 +66,13 @@ export function openNodeStartSheet(props) {
   const startBtn = sheet.querySelector('[data-action="start"]');
   let closing = false;
 
+  if (props.anchorRect) {
+    positionNearAnchor(sheet, props.anchorRect);
+  }
+
   function finishClose() {
     document.removeEventListener('keydown', onKeyDown);
+    window.removeEventListener('resize', onReposition);
     overlay.remove();
     previouslyFocused?.focus();
   }
@@ -55,6 +84,7 @@ export function openNodeStartSheet(props) {
     if (closing) return;
     closing = true;
     document.removeEventListener('keydown', onKeyDown);
+    window.removeEventListener('resize', onReposition);
 
     if (reduceMotion) {
       finishClose();
@@ -85,6 +115,13 @@ export function openNodeStartSheet(props) {
     }
   }
 
+  function onReposition() {
+    if (props.anchorRect && !closing) {
+      const fresh = previouslyFocused?.getBoundingClientRect?.();
+      positionNearAnchor(sheet, fresh && fresh.width ? fresh : props.anchorRect);
+    }
+  }
+
   overlay.addEventListener('click', (event) => {
     if (event.target === overlay) {
       props.onDismiss?.();
@@ -92,19 +129,59 @@ export function openNodeStartSheet(props) {
     }
   });
 
-  startBtn?.addEventListener('click', () => {
-    if (!(startBtn instanceof HTMLElement) || closing) return;
-    startBtn.classList.add('is-pressed');
-    close(() => props.onStart());
-  });
+  if (!isLocked) {
+    startBtn?.addEventListener('click', () => {
+      if (!(startBtn instanceof HTMLElement) || closing) return;
+      startBtn.classList.add('is-pressed');
+      close(() => props.onStart?.());
+    });
+  }
 
   document.addEventListener('keydown', onKeyDown);
+  if (props.anchorRect) {
+    window.addEventListener('resize', onReposition);
+  }
+
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
+      if (props.anchorRect) {
+        positionNearAnchor(sheet, props.anchorRect);
+      }
       overlay.classList.add('is-open');
-      if (startBtn instanceof HTMLElement) startBtn.focus();
+      if (!isLocked && startBtn instanceof HTMLButtonElement && !startBtn.disabled) {
+        startBtn.focus();
+      } else {
+        sheet.focus();
+      }
     });
   });
 
   return { close: () => close() };
+}
+
+/**
+ * Place bubble under the tapped node, clamped to the viewport.
+ * @param {HTMLElement} sheet
+ * @param {DOMRect} anchorRect
+ */
+function positionNearAnchor(sheet, anchorRect) {
+  const gap = 14;
+  const margin = 16;
+  const width = Math.min(340, window.innerWidth - margin * 2);
+  sheet.style.width = `${width}px`;
+
+  let left = anchorRect.left + anchorRect.width / 2 - width / 2;
+  left = Math.max(margin, Math.min(left, window.innerWidth - width - margin));
+
+  let top = anchorRect.bottom + gap;
+  const sheetHeight = sheet.offsetHeight || 160;
+  if (top + sheetHeight > window.innerHeight - margin) {
+    top = Math.max(margin, anchorRect.top - sheetHeight - gap);
+    sheet.classList.add('cb-node-start-sheet--above');
+  } else {
+    sheet.classList.remove('cb-node-start-sheet--above');
+  }
+
+  sheet.style.left = `${left}px`;
+  sheet.style.top = `${top}px`;
 }
