@@ -324,6 +324,7 @@ const MESSAGES = {
     'memory.cat.travel': '여행',
     'memory.cat.school': '학교',
     'memory.cat.diary': '일기',
+    'memory.cat.meme': '밈',
     'memory.complete': '계속하기',
 
     'friends.title': '졸업축하 메시지',
@@ -477,6 +478,7 @@ const MESSAGES = {
     'memory.cat.travel': 'Travel',
     'memory.cat.school': 'School',
     'memory.cat.diary': 'Diary',
+    'memory.cat.meme': 'Meme',
     'memory.complete': 'Continue',
 
     'friends.title': 'Graduation messages',
@@ -630,6 +632,7 @@ const MESSAGES = {
     'memory.cat.travel': '旅行',
     'memory.cat.school': '学校',
     'memory.cat.diary': '日記',
+    'memory.cat.meme': 'ミーム',
     'memory.complete': 'つづける',
 
     'friends.title': '卒業お祝いメッセージ',
@@ -783,6 +786,7 @@ const MESSAGES = {
     'memory.cat.travel': 'Viaje',
     'memory.cat.school': 'Escuela',
     'memory.cat.diary': 'Diario',
+    'memory.cat.meme': 'Meme',
     'memory.complete': 'Continuar',
 
     'friends.title': 'Mensajes de graduación',

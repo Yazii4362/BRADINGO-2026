@@ -81,7 +81,7 @@ export function renderMemory(props) {
   const filters = document.createElement('div');
   filters.className = 'memory-filters';
   filters.setAttribute('role', 'tablist');
-  filters.setAttribute('aria-label', '추억 카테고리');
+  filters.setAttribute('aria-label', '연도별 추억');
 
   content.categories.forEach((category) => {
     const chip = document.createElement('button');
@@ -109,7 +109,7 @@ export function renderMemory(props) {
   const empty = document.createElement('p');
   empty.className = 'memory-empty';
   empty.hidden = true;
-  empty.textContent = '이 카테고리의 추억이 아직 없어요.';
+  empty.textContent = '이 연도의 추억이 아직 없어요.';
 
   const sentinel = document.createElement('div');
   sentinel.className = 'memory-sentinel';
@@ -170,7 +170,13 @@ export function renderMemory(props) {
   }
 
   function getFilteredMemories() {
-    if (activeCategory === 'all') return [...content.memories];
+    if (activeCategory === 'all') {
+      return [...content.memories].sort((a, b) => {
+        const ay = a.category === 'meme' ? '9999' : a.category;
+        const by = b.category === 'meme' ? '9999' : b.category;
+        return ay.localeCompare(by) || a.id.localeCompare(b.id);
+      });
+    }
     return content.memories.filter((memory) => memory.category === activeCategory);
   }
 

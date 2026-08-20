@@ -12,8 +12,8 @@ const LANGUAGES = [
   { id: 'es', flag: './assets/images/lang/flag-es.svg' },
 ];
 
-/** Animated WebP built from Lottie frames (`bradie-lang.json` + frame webps in same folder). */
-const BRADIE_LANG_WEBP = './assets/images/lotties/bradie-lang.webp';
+/** Map character illustration (swapped with lang Bradie animation). */
+const LANG_HERO_ILLUST = './assets/images/map-irumae.svg';
 
 /**
  * @param {{ onContinue: (langId: string) => void }} props
@@ -30,10 +30,10 @@ export function renderLangSelect(props) {
 
   const duo = document.createElement('img');
   duo.className = 'lang-hero__duo';
-  duo.src = BRADIE_LANG_WEBP;
+  duo.src = LANG_HERO_ILLUST;
   duo.alt = '';
-  duo.width = 360;
-  duo.height = 360;
+  duo.width = 131;
+  duo.height = 144;
   duo.decoding = 'async';
   duo.setAttribute('aria-hidden', 'true');
 

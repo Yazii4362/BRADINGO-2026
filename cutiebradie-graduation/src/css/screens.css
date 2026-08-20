@@ -353,6 +353,13 @@
   user-select: none;
 }
 
+.map-path__bird--bradie {
+  width: calc(var(--map-node-size) * 1.35);
+  aspect-ratio: 1 / 1;
+  top: 26%;
+  left: 54%;
+}
+
 .map-path__item {
   position: relative;
   z-index: 1;
@@ -1280,10 +1287,11 @@
 
 .lang-hero__duo {
   display: block;
-  width: 6.75rem;
-  height: 6.75rem;
+  width: 5.75rem;
+  height: auto;
+  aspect-ratio: 131 / 144;
   flex-shrink: 0;
-  margin-top: 0.15rem;
+  margin-top: 0.35rem;
   object-fit: contain;
 }
 

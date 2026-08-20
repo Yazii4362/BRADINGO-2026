@@ -69,11 +69,11 @@ export function renderMap(props) {
   path.className = 'map-path';
 
   const bird = document.createElement('img');
-  bird.className = 'map-path__bird';
-  bird.src = './assets/images/map-irumae.svg';
+  bird.className = 'map-path__bird map-path__bird--bradie';
+  bird.src = './assets/images/lotties/bradie-lang.webp';
   bird.alt = '';
-  bird.width = 131;
-  bird.height = 144;
+  bird.width = 360;
+  bird.height = 360;
   bird.setAttribute('aria-hidden', 'true');
   bird.decoding = 'async';
   path.appendChild(bird);

@@ -71,6 +71,19 @@
   }
 }
 
+@keyframes soft-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate3d(0, -5px, 0) rotate(-1.2deg);
+  }
+  66% {
+    transform: translate3d(0, -2px, 0) rotate(1deg);
+  }
+}
+
 @keyframes soft-pulse {
   0%,
   100% {
@@ -151,7 +164,7 @@
 }
 
 .lang-hero__duo {
-  animation: soft-bob 4.8s ease-in-out infinite;
+  animation: soft-bob 5.6s ease-in-out infinite;
 }
 
 .cb-map-node--active .cb-map-node__asset {
@@ -159,7 +172,12 @@
   transform-origin: center;
 }
 
-.map-path__bird {
+/* Bradie webp already animates — keep CSS motion very gentle */
+.map-path__bird--bradie {
+  animation: soft-drift 8.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+.map-path__bird:not(.map-path__bird--bradie) {
   animation: soft-bob 5.2s ease-in-out infinite;
 }
 
@@ -318,6 +336,7 @@
   .lang-hero__duo,
   .cb-map-node--active .cb-map-node__asset,
   .map-path__bird,
+  .map-path__bird--bradie,
   .creator-promo__cup,
   .cb-coffee-coupon__sheet,
   .cb-coffee-coupon__overlay,
