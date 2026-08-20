@@ -9,6 +9,7 @@
  *   actionLabel?: string,
  *   variant?: 'start' | 'locked',
  *   anchorRect?: DOMRect | null,
+ *   anchorEl?: HTMLElement | null,
  *   onStart?: () => void,
  *   onDismiss?: () => void
  * }} props
@@ -21,12 +22,13 @@ export function openNodeStartSheet(props) {
     : null;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const host = document.getElementById('app') ?? document.body;
+  const hasAnchor = Boolean(props.anchorEl || props.anchorRect);
 
   document.querySelector('.cb-node-start-sheet__overlay')?.remove();
 
   const overlay = document.createElement('div');
   overlay.className = `cb-node-start-sheet__overlay${
-    props.anchorRect ? ' cb-node-start-sheet__overlay--anchored' : ''
+    hasAnchor ? ' cb-node-start-sheet__overlay--anchored' : ''
   }`;
   overlay.setAttribute('role', 'presentation');
 
@@ -64,15 +66,37 @@ export function openNodeStartSheet(props) {
   host.appendChild(overlay);
 
   const startBtn = sheet.querySelector('[data-action="start"]');
+  const notch = sheet.querySelector('.cb-node-start-sheet__notch');
   let closing = false;
 
-  if (props.anchorRect) {
-    positionNearAnchor(sheet, props.anchorRect);
+  function readAnchorRect() {
+    const el = props.anchorEl;
+    if (el instanceof HTMLElement && el.isConnected) {
+      const circle = el.matches('.cb-map-node') ? el : el.querySelector('.cb-map-node');
+      if (circle instanceof HTMLElement) {
+        return circle.getBoundingClientRect();
+      }
+      return el.getBoundingClientRect();
+    }
+    return props.anchorRect ?? null;
+  }
+
+  function reposition() {
+    if (closing) return;
+    const rect = readAnchorRect();
+    if (rect && rect.width) {
+      positionNearAnchor(sheet, rect, notch instanceof HTMLElement ? notch : null);
+    }
+  }
+
+  if (hasAnchor) {
+    reposition();
   }
 
   function finishClose() {
     document.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('resize', onReposition);
+    document.removeEventListener('scroll', onReposition, true);
     overlay.remove();
     previouslyFocused?.focus();
   }
@@ -85,6 +109,7 @@ export function openNodeStartSheet(props) {
     closing = true;
     document.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('resize', onReposition);
+    document.removeEventListener('scroll', onReposition, true);
 
     if (reduceMotion) {
       finishClose();
@@ -116,10 +141,7 @@ export function openNodeStartSheet(props) {
   }
 
   function onReposition() {
-    if (props.anchorRect && !closing) {
-      const fresh = previouslyFocused?.getBoundingClientRect?.();
-      positionNearAnchor(sheet, fresh && fresh.width ? fresh : props.anchorRect);
-    }
+    reposition();
   }
 
   overlay.addEventListener('click', (event) => {
@@ -138,15 +160,15 @@ export function openNodeStartSheet(props) {
   }
 
   document.addEventListener('keydown', onKeyDown);
-  if (props.anchorRect) {
+  if (hasAnchor) {
     window.addEventListener('resize', onReposition);
+    // Capture: map may scroll inside .screen--map / .map-canvas, not window.
+    document.addEventListener('scroll', onReposition, true);
   }
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      if (props.anchorRect) {
-        positionNearAnchor(sheet, props.anchorRect);
-      }
+      if (hasAnchor) reposition();
       overlay.classList.add('is-open');
       if (!isLocked && startBtn instanceof HTMLButtonElement && !startBtn.disabled) {
         startBtn.focus();
@@ -161,10 +183,12 @@ export function openNodeStartSheet(props) {
 
 /**
  * Place bubble under the tapped node, clamped to the viewport.
+ * Notch tracks the node center even when the sheet is horizontally clamped.
  * @param {HTMLElement} sheet
  * @param {DOMRect} anchorRect
+ * @param {HTMLElement | null} notch
  */
-function positionNearAnchor(sheet, anchorRect) {
+function positionNearAnchor(sheet, anchorRect, notch) {
   const gap = 14;
   const margin = 16;
   const width = Math.min(340, window.innerWidth - margin * 2);
@@ -184,4 +208,11 @@ function positionNearAnchor(sheet, anchorRect) {
 
   sheet.style.left = `${left}px`;
   sheet.style.top = `${top}px`;
+
+  if (notch) {
+    const anchorCenterX = anchorRect.left + anchorRect.width / 2;
+    const notchPad = 18;
+    const notchX = Math.max(notchPad, Math.min(width - notchPad, anchorCenterX - left));
+    notch.style.left = `${notchX}px`;
+  }
 }

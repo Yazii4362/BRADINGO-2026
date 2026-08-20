@@ -224,14 +224,17 @@ const MESSAGES = {
     'gnb.friends': '피드',
 
     'header.aria': '학습 현황',
-    'header.streakAria': '스트릭 {streak}',
+    'header.streakAria': '스트릭 {streak}일',
     'header.streakBadge': '연속 학습 명예의 전당',
     'header.streakTitle': '{streak}일 연속 학습',
     'header.streakDesc': '어제 평소보다 많은 XP를 획득했습니다!',
     'header.friendsAria': '친구 무한대',
     'header.friendsTitle': '친구',
-    'header.friendsDesc': '친구가 무한대 명 입니다.',
+    'header.friendsDesc': '친구가 무한대 명이에요.',
     'header.week': '일,월,화,수,목,금,토',
+    'header.travelAria': '다녀온 나라 {count}개국',
+    'header.travelTitle': '여행',
+    'header.travelDesc': '병건이는 호주, 미국, 일본, 중국…… 또 어디 다녀왔지…… {count}개국을 다녀왔어요.',
 
     'quiz.close': '닫기',
     'quiz.closeProgress': '문제 닫기',
@@ -374,7 +377,7 @@ const MESSAGES = {
     'gnb.friends': 'Feed',
 
     'header.aria': 'Learning status',
-    'header.streakAria': 'Streak {streak}',
+    'header.streakAria': '{streak}-day streak',
     'header.streakBadge': 'Streak Hall of Fame',
     'header.streakTitle': '{streak}-day streak',
     'header.streakDesc': 'You earned more XP than usual yesterday!',
@@ -382,6 +385,9 @@ const MESSAGES = {
     'header.friendsTitle': 'Friends',
     'header.friendsDesc': 'You have unlimited friends.',
     'header.week': 'S,M,T,W,T,F,S',
+    'header.travelAria': '{count} countries visited',
+    'header.travelTitle': 'Travel',
+    'header.travelDesc': 'Byeonggeon has been to Australia, the US, Japan, and China…… where else was it…… {count} countries so far.',
 
     'quiz.close': 'Close',
     'quiz.closeProgress': 'Close quiz',
@@ -524,7 +530,7 @@ const MESSAGES = {
     'gnb.friends': 'フィード',
 
     'header.aria': '学習状況',
-    'header.streakAria': 'ストリーク {streak}',
+    'header.streakAria': '{streak}日連続ストリーク',
     'header.streakBadge': '連続学習の殿堂',
     'header.streakTitle': '{streak}日連続学習',
     'header.streakDesc': '昨日はいつもより多くのXPを獲得しました！',
@@ -532,6 +538,9 @@ const MESSAGES = {
     'header.friendsTitle': '友達',
     'header.friendsDesc': '友達はむげん人です。',
     'header.week': '日,月,火,水,木,金,土',
+    'header.travelAria': '訪れた国 {count}か国',
+    'header.travelTitle': '旅行',
+    'header.travelDesc': 'ビョンゴンはオーストラリア、アメリカ、日本、中国……ほかはどこだっけ…… {count}か国を旅しました。',
 
     'quiz.close': '閉じる',
     'quiz.closeProgress': '問題を閉じる',
@@ -674,7 +683,7 @@ const MESSAGES = {
     'gnb.friends': 'Feed',
 
     'header.aria': 'Estado de aprendizaje',
-    'header.streakAria': 'Racha {streak}',
+    'header.streakAria': 'Racha de {streak} días',
     'header.streakBadge': 'Salón de la fama de rachas',
     'header.streakTitle': 'Racha de {streak} días',
     'header.streakDesc': '¡Ayer ganaste más XP de lo habitual!',
@@ -682,6 +691,9 @@ const MESSAGES = {
     'header.friendsTitle': 'Amigos',
     'header.friendsDesc': 'Tienes amigos ilimitados.',
     'header.week': 'D,L,M,X,J,V,S',
+    'header.travelAria': '{count} países visitados',
+    'header.travelTitle': 'Viajes',
+    'header.travelDesc': 'Byeonggeon ha estado en Australia, EE. UU., Japón y China…… ¿y dónde más era……? {count} países por ahora.',
 
     'quiz.close': 'Cerrar',
     'quiz.closeProgress': 'Cerrar ejercicio',

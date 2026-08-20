@@ -126,8 +126,9 @@ function syncRouteWithProgress() {
  * @param {string} nodeId
  * @param {string} status
  * @param {DOMRect} anchor
+ * @param {HTMLElement} [anchorEl]
  */
-function handleNodeTap(nodeId, status, anchor) {
+function handleNodeTap(nodeId, status, anchor, anchorEl) {
   const node = getNodeById(nodeId);
   if (!node) return;
   const localized = localizeNode(node);
@@ -139,6 +140,7 @@ function handleNodeTap(nodeId, status, anchor) {
       body: t('node.lockedBody'),
       actionLabel: t('node.lockedAction'),
       anchorRect: anchor,
+      anchorEl: anchorEl ?? null,
     });
     return;
   }
@@ -150,6 +152,8 @@ function handleNodeTap(nodeId, status, anchor) {
     openNodeStartSheet({
       title: localized.title,
       actionLabel: t('node.startAction'),
+      anchorRect: anchor,
+      anchorEl: anchorEl ?? null,
       onStart: () => enterNode(node, mode),
     });
     return;

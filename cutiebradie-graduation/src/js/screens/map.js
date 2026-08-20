@@ -5,14 +5,17 @@ import { createCharacterBubbleController } from '../components/character-bubble.
 import { createCreatorPromoCard } from '../components/coffee-coupon.js';
 import {
   createMapNodeButton,
+  createMapPathConnector,
   getMapNodeAnchorRect,
+  PATH_SLOTS,
 } from '../components/map-node.js';
+import { importFromCdns } from '../lib/cdn-import.js';
 
 /**
  * @param {{
  *   nodeStatus: Record<string, 'locked' | 'active' | 'completed'>,
  *   highlightNodeId?: string | null,
- *   onNodeTap: (nodeId: string, status: string, anchor: DOMRect) => void,
+ *   onNodeTap: (nodeId: string, status: string, anchor: DOMRect, anchorEl: HTMLElement) => void,
  *   onHighlightPlayed?: () => void
  * }} props
  */
@@ -69,10 +72,10 @@ export function renderMap(props) {
 
   const bird = document.createElement('img');
   bird.className = 'map-path__bird';
-  bird.src = './assets/images/map-bird.webp';
+  bird.src = './assets/images/map-irumae.svg';
   bird.alt = '';
-  bird.width = 512;
-  bird.height = 512;
+  bird.width = 131;
+  bird.height = 144;
   bird.setAttribute('aria-hidden', 'true');
   bird.decoding = 'async';
   path.appendChild(bird);
@@ -80,6 +83,12 @@ export function renderMap(props) {
   COURSE_NODES.forEach((node, index) => {
     const status = props.nodeStatus[node.id] ?? 'locked';
     const localized = localizeNode(node);
+    const slot = PATH_SLOTS[index] ?? PATH_SLOTS[0];
+
+    if (index > 0) {
+      const prev = PATH_SLOTS[index - 1] ?? PATH_SLOTS[0];
+      path.appendChild(createMapPathConnector(prev.offset, slot.offset));
+    }
 
     const nodeWrap = createMapNodeButton(
       {
@@ -92,9 +101,10 @@ export function renderMap(props) {
         const target = event.currentTarget;
         if (!(target instanceof HTMLElement)) return;
         const item = target.closest('.map-path__item');
+        const anchorEl = item instanceof HTMLElement ? item : target;
         const anchor =
           item instanceof HTMLElement ? getMapNodeAnchorRect(item) : target.getBoundingClientRect();
-        props.onNodeTap(node.id, status, anchor);
+        props.onNodeTap(node.id, status, anchor, anchorEl);
       }
     );
     nodeWrap.dataset.nodeId = node.id;
@@ -197,7 +207,14 @@ async function playUnlockHighlight(target) {
   /** @type {{ killTweensOf: (t: HTMLElement) => void, fromTo: Function } | null} */
   let gsap = null;
   try {
-    const mod = await import('https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm');
+    const mod = await importFromCdns(
+      [
+        'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm',
+        'https://unpkg.com/gsap@3.13.0/index.js',
+        'https://esm.sh/gsap@3.13.0',
+      ],
+      'gsap'
+    );
     gsap = mod.default;
     if (!target.isConnected || !gsap) return;
     gsap.killTweensOf(target);

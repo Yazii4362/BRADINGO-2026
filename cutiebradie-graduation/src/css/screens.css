@@ -5,7 +5,9 @@
 .app-shell {
   width: 100%;
   max-width: var(--app-max);
+  min-height: 100vh;
   min-height: 100dvh;
+  height: 100vh;
   height: 100dvh;
   margin: 0 auto;
   background: var(--bg);
@@ -129,6 +131,7 @@
   display: block;
   width: auto;
   max-width: min(100%, 180px);
+  max-height: min(42vh, 20rem);
   max-height: min(42dvh, 20rem);
   height: auto;
   object-fit: contain;
@@ -321,8 +324,9 @@
   z-index: 0;
   top: 28%;
   left: 58%;
-  width: min(42%, 11.5rem);
+  width: var(--map-node-size);
   height: auto;
+  aspect-ratio: 131 / 144;
   pointer-events: none;
   user-select: none;
 }
@@ -344,22 +348,14 @@
   position: relative;
   z-index: 1;
   width: 3px;
-  height: clamp(20px, 5.5vw, 28px);
+  height: clamp(22px, 5.5vw, 30px);
   margin: 2px auto;
   border-radius: var(--radius-pill);
   background: var(--neutral-300);
-  transform-origin: center;
-}
-
-/* Figma zig-zag: c → l1 → l2 → l1 → c */
-.map-path__connector[data-from='c'][data-to='l1'],
-.map-path__connector[data-from='l1'][data-to='l2'] {
-  transform: translateX(-22px) rotate(32deg);
-}
-
-.map-path__connector[data-from='l2'][data-to='l1'],
-.map-path__connector[data-from='l1'][data-to='c'] {
-  transform: translateX(10px) rotate(-28deg);
+  /* Midpoint between lane % offsets — scales with path width (not fixed px). */
+  left: calc((var(--from-offset, 0%) + var(--to-offset, 0%)) / 2);
+  transform: rotate(var(--connector-tilt, 0deg));
+  transform-origin: center center;
 }
 
 @media (min-width: 960px) {
@@ -490,6 +486,10 @@
 .quiz-pane--actions {
   flex: 1;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .quiz-pane--prompt .cb-quiz-prompt,
@@ -718,6 +718,45 @@
   margin: 0;
   display: flex;
   justify-content: center;
+}
+
+/* Short / landscape viewports: unlock tile aspect so submit stays reachable */
+@media (max-height: 720px) {
+  .screen--quiz .answer-list--grid-2x2 .cb-answer-card,
+  .screen--quiz .cb-answer-card--tile {
+    aspect-ratio: auto;
+    min-height: 0;
+    height: auto;
+    max-height: min(42vw, 11.5rem);
+  }
+
+  .screen--quiz .answer-list--grid-2x2 .cb-answer-card__media {
+    flex: 0 1 auto;
+  }
+
+  .screen--quiz .quiz-listen-stage {
+    min-height: 0;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .screen--quiz .quiz-body {
+    gap: var(--space-2);
+  }
+
+  .screen--quiz .answer-list--grid-2x2 {
+    gap: var(--space-2);
+  }
+
+  .screen--quiz .answer-list--grid-2x2 .cb-answer-card,
+  .screen--quiz .cb-answer-card--tile {
+    max-height: min(28vh, 7.5rem);
+    padding: 0.45rem 0.4rem 0.4rem;
+  }
+
+  .screen--quiz .cb-answer-card__image {
+    width: min(100%, 3.25rem);
+  }
 }
 
 @media (min-width: 960px) {

@@ -112,16 +112,23 @@ export function createMapNodeButton(props, onClick) {
 }
 
 /**
- * Thin connector between two path lanes.
- * @param {string} fromLane
- * @param {string} toLane
+ * Thin connector between two path lane offsets (percent strings like `-12%`).
+ * Position/tilt scale with path width — no fixed px translates.
+ * @param {string} fromOffset
+ * @param {string} toOffset
  */
-export function createMapPathConnector(fromLane, toLane) {
+export function createMapPathConnector(fromOffset, toOffset) {
   const el = document.createElement('div');
   el.className = 'map-path__connector';
-  el.dataset.from = fromLane;
-  el.dataset.to = toLane;
   el.setAttribute('aria-hidden', 'true');
+  el.style.setProperty('--from-offset', fromOffset);
+  el.style.setProperty('--to-offset', toOffset);
+
+  const from = Number.parseFloat(fromOffset) || 0;
+  const to = Number.parseFloat(toOffset) || 0;
+  // ~2.5deg per lane-% matches the old 32deg step across a 12% lane jump.
+  const tilt = (to - from) * 2.5;
+  el.style.setProperty('--connector-tilt', `${tilt}deg`);
   return el;
 }
 

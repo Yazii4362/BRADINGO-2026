@@ -3,10 +3,9 @@ import { openConfirmModal } from '../components/confirm-modal.js';
 import { createTapUnlock, openCoffeeCoupon } from '../components/coffee-coupon.js';
 import { EXPORT_FILE_NAME } from '../constants.js';
 import {
-  createExportCard,
   deliverPngBlob,
-  mountExportCard,
-  renderExportCardToPngBlob,
+  prepareExportPngBlob,
+  prefetchExportLibs,
   showPngPreview,
 } from '../png/export.js';
 
@@ -38,6 +37,18 @@ export function renderEnding(props) {
   /** @type {'idle' | 'generating' | 'success' | 'failure' | 'cancelled'} */
   let exportStatus = 'idle';
   let markedComplete = false;
+
+  /** Ready before the tap whenever possible — required for iOS Web Share. */
+  /** @type {Blob | null} */
+  let readyBlob = null;
+  /** @type {Promise<Blob> | null} */
+  let preparePromise = null;
+
+  const fullClearProgress = {
+    nodeStatus: Object.fromEntries(
+      Object.keys(props.progress.nodeStatus).map((id) => [id, 'completed'])
+    ),
+  };
 
   const el = document.createElement('section');
   el.className = 'screen screen--ending';
@@ -109,7 +120,11 @@ export function renderEnding(props) {
   });
 
   exportBtn?.addEventListener('click', () => {
-    void runExport();
+    if (readyBlob) {
+      void deliverReadyBlob(readyBlob);
+      return;
+    }
+    void runExportWhenPending();
   });
 
   function setExportStatus(next, message = '') {
@@ -127,48 +142,89 @@ export function renderEnding(props) {
     }
   }
 
-  async function runExport() {
+  function startPrepare() {
+    prefetchExportLibs();
+    preparePromise = prepareExportPngBlob(fullClearProgress)
+      .then((blob) => {
+        if (!el.isConnected) return blob;
+        readyBlob = blob;
+        return blob;
+      })
+      .catch((error) => {
+        console.warn('[ending/export] 미리 생성 실패', error);
+        preparePromise = null;
+        throw error;
+      });
+  }
+
+  /**
+   * Hot path: blob already in memory — share() runs in this gesture turn.
+   * @param {Blob} blob
+   */
+  async function deliverReadyBlob(blob) {
     if (exportStatus === 'generating') return;
     setExportStatus('generating', '이미지를 준비하고 있어요');
-
-    const fullClearProgress = {
-      nodeStatus: Object.fromEntries(
-        Object.keys(props.progress.nodeStatus).map((id) => [id, 'completed'])
-      ),
-    };
-    const exportCard = createExportCard(fullClearProgress);
-    const unmount = mountExportCard(exportCard);
-
     try {
-      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-      const images = [...exportCard.querySelectorAll('img')];
-      for (const img of images) {
-        if (img.getAttribute('src') && img.complete && img.naturalWidth === 0) {
-          throw new Error('ExportCard image failed to load');
-        }
-      }
-
-      const blob = await renderExportCardToPngBlob(exportCard);
       const mode = await deliverPngBlob(blob, EXPORT_FILE_NAME);
-
       if (mode === 'cancelled') {
         setExportStatus('idle', '');
         return;
       }
-
       if (mode === 'download' && shouldShowMobilePreview()) {
         showPngPreview(blob);
       }
-
       setExportStatus('success', '이미지가 준비됐어요');
+    } catch (error) {
+      console.error('[ending/export] 전달 실패', error);
+      if (shouldShowMobilePreview()) {
+        showPngPreview(blob);
+        setExportStatus('success', '이미지를 길게 눌러 저장해 주세요');
+        return;
+      }
+      setExportStatus('failure', '이미지를 만들지 못했어요');
+    }
+  }
+
+  /** Cold path: still rendering — gesture will be lost; preview fallback on iOS. */
+  async function runExportWhenPending() {
+    if (exportStatus === 'generating') return;
+    setExportStatus('generating', '이미지를 준비하고 있어요');
+
+    /** @type {Blob | null} */
+    let blob = null;
+    try {
+      if (!preparePromise) startPrepare();
+      blob = await preparePromise;
+      readyBlob = blob;
     } catch (error) {
       console.error('[ending/export] PNG 생성 실패', error);
       setExportStatus('failure', '이미지를 만들지 못했어요');
-    } finally {
-      unmount();
+      return;
+    }
+
+    try {
+      const mode = await deliverPngBlob(blob, EXPORT_FILE_NAME);
+      if (mode === 'cancelled') {
+        setExportStatus('idle', '');
+        return;
+      }
+      // Gesture is usually gone here — prefer long-press preview on touch devices.
+      if (mode !== 'share' && shouldShowMobilePreview()) {
+        showPngPreview(blob);
+      }
+      setExportStatus('success', '이미지가 준비됐어요');
+    } catch (error) {
+      console.error('[ending/export] 전달 실패', error);
+      if (shouldShowMobilePreview() && blob) {
+        showPngPreview(blob);
+        setExportStatus('success', '이미지를 길게 눌러 저장해 주세요');
+        return;
+      }
+      setExportStatus('failure', '이미지를 만들지 못했어요');
     }
   }
+
+  startPrepare();
 
   requestAnimationFrame(() => {
     if (markedComplete) return;

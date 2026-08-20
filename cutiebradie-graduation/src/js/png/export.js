@@ -1,8 +1,26 @@
 import { EXPORT_FILE_NAME } from '../constants.js';
 import { getGraduationStats } from '../data/course.js';
+import { importFromCdns } from '../lib/cdn-import.js';
 
 export { EXPORT_FILE_NAME } from '../constants.js';
 export const PNG_SIZE = Object.freeze({ width: 1080, height: 1920 });
+
+const HTML_TO_IMAGE_URLS = Object.freeze([
+  'https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/+esm',
+  'https://unpkg.com/html-to-image@1.11.13/+esm',
+  'https://esm.sh/html-to-image@1.11.13',
+]);
+
+/** @type {Promise<{ toBlob: Function }> | null} */
+let htmlToImagePromise = null;
+
+/** Prefetch html-to-image so the save tap does not wait on the first CDN round-trip. */
+export function prefetchExportLibs() {
+  if (!htmlToImagePromise) {
+    htmlToImagePromise = importFromCdns(HTML_TO_IMAGE_URLS, 'html-to-image');
+  }
+  return htmlToImagePromise;
+}
 
 /**
  * @param {{ nodeStatus?: Record<string, string> } | null} [progress]
@@ -91,7 +109,7 @@ export async function waitForExportAssets(root) {
  * @returns {Promise<Blob>}
  */
 export async function renderExportCardToPngBlob(card) {
-  const { toBlob } = await import('https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/+esm');
+  const { toBlob } = await prefetchExportLibs();
   await waitForExportAssets(card);
 
   const blob = await toBlob(card, {
@@ -109,6 +127,44 @@ export async function renderExportCardToPngBlob(card) {
 }
 
 /**
+ * Build a PNG while the ending screen is idle so the save tap can call
+ * navigator.share() without awaiting blob work first (iOS user-gesture rule).
+ * @param {{ nodeStatus?: Record<string, string> } | null} progress
+ * @returns {Promise<Blob>}
+ */
+export async function prepareExportPngBlob(progress = null) {
+  prefetchExportLibs();
+  const card = createExportCard(progress);
+  const unmount = mountExportCard(card);
+  try {
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const images = [...card.querySelectorAll('img')];
+    for (const img of images) {
+      if (img.getAttribute('src') && img.complete && img.naturalWidth === 0) {
+        throw new Error('ExportCard image failed to load');
+      }
+    }
+
+    return await renderExportCardToPngBlob(card);
+  } finally {
+    unmount();
+  }
+}
+
+/**
+ * @param {unknown} error
+ */
+function shareErrorName(error) {
+  if (error && typeof error === 'object' && 'name' in error && typeof error.name === 'string') {
+    return error.name;
+  }
+  return '';
+}
+
+/**
+ * Deliver a PNG. Calls navigator.share() before any await when the Web Share
+ * API is available, so iOS keeps the user activation from the tap.
  * @param {Blob} blob
  * @param {string} filename
  * @returns {Promise<'download' | 'share' | 'cancelled'>}
@@ -118,12 +174,17 @@ export async function deliverPngBlob(blob, filename = EXPORT_FILE_NAME) {
 
   if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], title: filename });
+      // Must invoke share() synchronously in the user-gesture turn.
+      const sharing = navigator.share({ files: [file], title: filename });
+      await sharing;
       return 'share';
     } catch (error) {
-      if (error && typeof error === 'object' && 'name' in error && error.name === 'AbortError') {
+      const name = shareErrorName(error);
+      if (name === 'AbortError') {
         return 'cancelled';
       }
+      // NotAllowedError: gesture consumed by prior awaits — fall through.
+      console.warn('[export] share failed, falling back', name || error);
     }
   }
 
