@@ -8,17 +8,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./src/css/reset.css?v=cb90">
-  <link rel="stylesheet" href="./src/css/tokens.css?v=cb90">
-  <link rel="stylesheet" href="./src/css/base.css?v=cb90">
-  <link rel="stylesheet" href="./src/css/components.css?v=cb90">
-  <link rel="stylesheet" href="./src/css/screens.css?v=cb90">
-  <link rel="stylesheet" href="./src/css/animations.css?v=cb90">
+  <link rel="stylesheet" href="./src/css/reset.css?v=cb91">
+  <link rel="stylesheet" href="./src/css/tokens.css?v=cb91">
+  <link rel="stylesheet" href="./src/css/base.css?v=cb91">
+  <link rel="stylesheet" href="./src/css/components.css?v=cb91">
+  <link rel="stylesheet" href="./src/css/screens.css?v=cb91">
+  <link rel="stylesheet" href="./src/css/animations.css?v=cb91">
+  <script>
+    (function () {
+      var path = location.pathname;
+      if (!path.endsWith('/') && !/\.[a-zA-Z0-9]+$/.test(path)) {
+        location.replace(path + '/' + location.search + location.hash);
+      }
+    })();
+  </script>
 </head>
 <body>
   <div id="app" class="app-shell">
     <div id="screen-root" class="screen-root"></div>
   </div>
-  <script type="module" src="./src/js/app.js?v=cb90"></script>
+  <script type="module" src="./src/js/app.js?v=cb91"></script>
 </body>
 </html>
