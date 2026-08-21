@@ -243,9 +243,9 @@ export const QUIZZES = Object.freeze({
           }),
           Object.freeze({
             id: 'suyuk',
-            label: '삶은고기(수육)',
+            label: '삶은고기',
             image: './assets/images/quiz/food-suyuk.webp',
-            alt: '삶은고기(수육)',
+            alt: '삶은고기',
           }),
         ]),
         correctChoiceIds: Object.freeze(['suyuk']),
@@ -716,31 +716,28 @@ export function getGraduationStats(progress = null) {
 
   const stageValue = `${completedCount} / ${totalNodes}`;
 
-  /** @type {ReadonlyArray<{ id: string, label: string, value: string, valueHtml?: string, icon: string }>} */
+  /** @type {ReadonlyArray<{ id: string, tone: 'xp' | 'time' | 'lessons', head: string, label: string, value: string }>} */
   const summaryRows = [
     {
       id: 'stages',
+      tone: 'xp',
+      head: t('ending.stat.xpHead'),
       label: t('ending.stat.stages'),
       value: stageValue,
-      icon: './assets/images/ending/icon-book.svg',
     },
     {
       id: 'period',
+      tone: 'time',
+      head: t('ending.stat.timeHead'),
       label: t('ending.stat.uosLife'),
-      value: '2018 — 2026',
-      icon: './assets/images/ending/icon-calendar.svg',
+      value: t('ending.stat.timeValue'),
     },
     {
       id: 'memories',
+      tone: 'lessons',
+      head: t('ending.stat.lessonsHead'),
       label: t('ending.stat.memories'),
       value: t('ending.stat.memoriesValue'),
-      icon: './assets/images/icons/heart.svg',
-    },
-    {
-      id: 'letters',
-      label: t('ending.stat.letters'),
-      value: t('ending.stat.lettersValue'),
-      icon: './assets/images/ending/icon-star.svg',
     },
   ];
 

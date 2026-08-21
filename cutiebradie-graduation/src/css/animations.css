@@ -13,6 +13,50 @@
   }
 }
 
+@keyframes ending-hero-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Ending reveal — runs on splash exit, ends within ~850ms */
+.ending-stage-wrap.is-visible .ending-stage {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) both;
+}
+
+.ending-stage-wrap.is-visible .ending-hero {
+  animation: ending-hero-in var(--motion-state) var(--ease-out) 60ms both;
+}
+
+.ending-stage-wrap.is-visible .ending-title {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 220ms both;
+}
+
+.ending-stage-wrap.is-visible .ending-lead {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 300ms both;
+}
+
+.ending-stage-wrap.is-visible .ending-tagline {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 350ms both;
+}
+
+.ending-stage-wrap.is-visible .ending-summary {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 420ms both;
+}
+
+.ending-stage-wrap.is-visible .ending-cheer-card {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 490ms both;
+}
+
+.ending-stage-wrap.is-visible .ending-actions {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 560ms both;
+}
+
 @keyframes memory-shimmer {
   0% { background-position: 100% 0; }
   100% { background-position: -100% 0; }
@@ -126,6 +170,7 @@
 
 /* —— Staggered enter (children) —— */
 .screen--enter .intro-lead,
+.screen--enter .intro-cheer,
 .screen--enter .cb-button-row,
 .screen--enter .lang-hero,
 .screen--enter .lang-divider,
@@ -135,7 +180,6 @@
 .screen--enter .map-canvas,
 .screen--enter .creator-promo,
 .screen--enter .cb-map-cover,
-.screen--enter .friends-detail,
 .screen--enter .friends-deck,
 .screen--enter .quiz-body > *,
 .screen--enter .chapter-body > * {
@@ -143,6 +187,7 @@
 }
 
 .screen--enter .intro-lead { animation-delay: 60ms; }
+.screen--enter .intro-cheer { animation-delay: 90ms; }
 .screen--enter .cb-button-row { animation-delay: 120ms; }
 
 .screen--enter .lang-hero { animation-delay: 30ms; }
@@ -155,8 +200,7 @@
 .screen--enter .map-canvas { animation-delay: 100ms; }
 .screen--enter .creator-promo { animation-delay: 150ms; }
 
-.screen--enter .friends-detail { animation-delay: 60ms; }
-.screen--enter .friends-deck { animation-delay: 120ms; }
+.screen--enter .friends-deck { animation-delay: 60ms; }
 
 /* N2 review: stage → checklist, nothing longer */
 .screen--enter .review-stage { animation: soft-rise var(--motion-panel) var(--ease-out) both; }
@@ -346,11 +390,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ending-confetti,
-  .ending-title,
+  .ending-stage-wrap.is-visible .ending-stage,
+  .ending-stage-wrap.is-visible .ending-hero,
+  .ending-stage-wrap.is-visible .ending-title,
+  .ending-stage-wrap.is-visible .ending-lead,
+  .ending-stage-wrap.is-visible .ending-tagline,
+  .ending-stage-wrap.is-visible .ending-summary,
+  .ending-stage-wrap.is-visible .ending-cheer-card,
+  .ending-stage-wrap.is-visible .ending-actions,
   .screen--enter,
   .quiz-sheet-host:not(:empty) .cb-feedback-sheet,
   .screen--enter .intro-lead,
+  .screen--enter .intro-cheer,
   .screen--enter .cb-button-row,
   .screen--enter .lang-hero,
   .screen--enter .lang-divider,
@@ -360,7 +411,6 @@
   .screen--enter .map-canvas,
   .screen--enter .creator-promo,
   .screen--enter .cb-map-cover,
-  .screen--enter .friends-detail,
   .screen--enter .friends-deck,
   .screen--enter .quiz-body > *,
   .screen--enter .chapter-body > *,

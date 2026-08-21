@@ -122,7 +122,7 @@ export function openCreatorSupport(options = {}) {
   const body =
     variant === 'easter'
       ? `이 초대장을 만든 개발자 <strong>${DEVELOPER.handle}</strong>에게<br />커피챗을 요청할 수 있어요`
-      : `이 초대장을 만든 <strong>${DEVELOPER.displayName}</strong> (${DEVELOPER.handle})를<br />커피챗·인스타로 응원해 주세요`;
+      : `이 초대장을 만든 <strong>${DEVELOPER.displayName}</strong> (${DEVELOPER.handle})를<br />커피챗·인스타·메일로 응원해 주세요`;
 
   dialog.innerHTML = `
     <div class="cb-coffee-coupon__sheet">
@@ -166,7 +166,16 @@ export function openCreatorSupport(options = {}) {
         >
           <span class="cb-coffee-coupon__link-icon">${ICONS.github}</span>
         </a>
+        <a
+          class="cb-coffee-coupon__link"
+          href="mailto:${DEVELOPER.email}"
+          title="${DEVELOPER.email}"
+          aria-label="이메일 ${DEVELOPER.email}"
+        >
+          <span class="cb-coffee-coupon__link-icon">${ICONS.email}</span>
+        </a>
       </div>
+      <a class="cb-coffee-coupon__email" href="mailto:${DEVELOPER.email}">${DEVELOPER.email}</a>
       <div class="cb-coffee-coupon__note">
         <span class="cb-coffee-coupon__note-icon">${ICONS.info}</span>
         <p>

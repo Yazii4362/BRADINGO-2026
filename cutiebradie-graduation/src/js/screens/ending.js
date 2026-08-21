@@ -1,5 +1,6 @@
 import { getGraduationStats } from '../data/course.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
+import { createCheerHeart } from '../components/cheer-heart.js';
 import { createTapUnlock, openCoffeeCoupon } from '../components/coffee-coupon.js';
 import { EXPORT_FILE_NAME } from '../constants.js';
 import { t } from '../i18n.js';
@@ -58,108 +59,67 @@ export function renderEnding(props) {
   el.dataset.mode = props.mode;
   el.dataset.exportStatus = exportStatus;
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   const summaryHtml = summaryRows
     .map((row) => {
       const valueHtml = row.valueHtml ?? row.value;
       return `
-        <li class="cb-ending-stat">
-          <img class="cb-ending-stat__icon" src="${row.icon}" alt="" width="28" height="28" />
-          <span class="cb-ending-stat__label">${row.label}</span>
-          <strong class="cb-ending-stat__value">${valueHtml}</strong>
+        <li class="cb-ending-stat cb-ending-stat--${row.tone}">
+          <span class="cb-ending-stat__head">${row.head}</span>
+          <div class="cb-ending-stat__body">
+            ${endingStatGlyph(row.tone)}
+            <strong class="cb-ending-stat__value">${valueHtml}</strong>
+          </div>
+          <span class="visually-hidden">${row.label}</span>
         </li>
       `;
     })
     .join('');
 
   el.innerHTML = `
-    <div class="ending-splash" data-role="splash" aria-hidden="false">
-      <img
-        class="ending-splash__bg"
-        src="./assets/images/ending/splash.jpg"
-        alt=""
-        width="576"
-        height="1024"
-        decoding="sync"
-        fetchpriority="high"
-      />
-    </div>
-    <div class="ending-stage-wrap" data-role="stage" hidden>
+    <div class="ending-stage-wrap is-visible" data-role="stage">
       <div class="ending-bg" aria-hidden="true">
-        <img class="ending-bg__img" src="${stats.heroImage}" alt="" decoding="async" />
-        <div class="ending-bg__veil"></div>
-        ${reduceMotion ? '' : '<div class="ending-confetti"></div>'}
+        <img class="ending-bg__img" src="./assets/images/ending/bg.webp" alt="" width="576" height="1024" decoding="async" />
       </div>
       <div class="ending-body">
         <p class="ending-stage">${stats.stageLabel}</p>
+        <figure class="ending-hero">
+          <img class="ending-hero__img" src="${stats.heroImage}" alt="${stats.heroAlt}" decoding="async" />
+        </figure>
         <button type="button" class="ending-title ending-egg" data-action="egg" aria-label="${t('ending.eggAria')}">
           ${stats.title}
         </button>
         <p class="ending-lead">${stats.lead}</p>
         <p class="ending-tagline">${stats.tagline}</p>
         <section class="ending-summary" aria-label="${stats.summaryTitle}">
-          <h2 class="ending-summary__title">— ${stats.summaryTitle} —</h2>
+          <h2 class="ending-summary__title">${stats.summaryTitle}</h2>
           <ul class="ending-stats">${summaryHtml}</ul>
         </section>
-        <section class="ending-cheer" aria-label="${t('ending.cheerTitle')}">
-          <button type="button" class="ending-cheer__heart" data-action="cheer" aria-label="${t('ending.cheerCta')}">
-            💚
-          </button>
+        <section class="ending-cheer-card" aria-label="${t('ending.cheerTitle')}">
+          <p class="ending-cheer-card__title">${t('ending.cheerTitle')}</p>
+          <p class="ending-congrats">${t('ending.congrats')}</p>
         </section>
-        <p class="ending-status" role="status" aria-live="polite"></p>
         <div class="ending-actions">
           <button type="button" class="cb-button cb-button--primary cb-button--fill ending-save-text" data-action="export" aria-label="${t('ending.saveAria')}">
             ${t('ending.saveCta')}
           </button>
           <p class="ending-save-hint">${t('ending.saveHint')}</p>
+          <p class="ending-status" role="status" aria-live="polite"></p>
           <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">${t('ending.resetConfirm')}</button>
         </div>
-        <p class="ending-congrats">${t('ending.congrats')}</p>
       </div>
     </div>
   `;
 
-  const splashEl = el.querySelector('[data-role="splash"]');
-  const stageEl = el.querySelector('[data-role="stage"]');
+  el.querySelector('.ending-cheer-card')?.appendChild(createCheerHeart());
+
   const statusEl = el.querySelector('.ending-status');
   const exportBtn = el.querySelector('[data-action="export"]');
-  const cheerBtn = el.querySelector('[data-action="cheer"]');
-
-  /** @type {number | null} */
-  let splashTimer = null;
-  const SPLASH_MS = reduceMotion ? 600 : 2800;
-
-  function revealStage() {
-    if (!(splashEl instanceof HTMLElement) || !(stageEl instanceof HTMLElement)) return;
-    splashEl.classList.add('is-leaving');
-    stageEl.hidden = false;
-    requestAnimationFrame(() => {
-      stageEl.classList.add('is-visible');
-    });
-    window.setTimeout(() => {
-      splashEl.remove();
-    }, reduceMotion ? 0 : 420);
-  }
-
-  splashTimer = window.setTimeout(() => {
-    splashTimer = null;
-    revealStage();
-  }, SPLASH_MS);
 
   const unlockEgg = createTapUnlock({
     taps: 5,
     onUnlock: () => openCoffeeCoupon(),
   });
   el.querySelector('[data-action="egg"]')?.addEventListener('click', unlockEgg);
-
-  cheerBtn?.addEventListener('click', () => {
-    if (!(cheerBtn instanceof HTMLElement)) return;
-    cheerBtn.classList.remove('is-pop');
-    void cheerBtn.offsetWidth;
-    cheerBtn.classList.add('is-pop');
-    spawnHeartBurst(el.querySelector('.ending-cheer'), reduceMotion);
-  });
 
   el.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
     openConfirmModal({
@@ -285,38 +245,41 @@ export function renderEnding(props) {
     props.onEndingRendered();
   });
 
-  el.__cleanup = () => {
-    if (splashTimer != null) {
-      window.clearTimeout(splashTimer);
-      splashTimer = null;
-    }
-  };
-
   return el;
 }
 
 /**
- * @param {Element | null} host
- * @param {boolean} reduceMotion
+ * Duolingo-style XP / TIME / LESSONS glyphs from the ending stats mock.
+ * @param {'xp' | 'time' | 'lessons'} tone
  */
-function spawnHeartBurst(host, reduceMotion) {
-  if (!host || reduceMotion) return;
-  const burst = document.createElement('div');
-  burst.className = 'ending-heart-burst';
-  burst.setAttribute('aria-hidden', 'true');
-  const glyphs = ['💚', '💚', '💚', '💕', '💚', '💚', '💚', '💚'];
-  for (let i = 0; i < glyphs.length; i += 1) {
-    const heart = document.createElement('span');
-    heart.className = 'ending-heart-burst__item';
-    heart.textContent = glyphs[i];
-    heart.style.setProperty('--i', String(i));
-    heart.style.setProperty('--dx', `${(i - (glyphs.length - 1) / 2) * 22}px`);
-    heart.style.setProperty('--dy', `${-52 - (i % 3) * 18}px`);
-    heart.style.setProperty('--rot', `${(i - 3.5) * 12}deg`);
-    burst.appendChild(heart);
+function endingStatGlyph(tone) {
+  if (tone === 'xp') {
+    return `
+      <svg class="cb-ending-stat__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M13.2 2.15a.95.95 0 0 1 1.7.78l-1.22 6.72h5.05a.95.95 0 0 1 .72 1.56L10.8 21.85a.95.95 0 0 1-1.7-.78l1.22-6.72H5.27a.95.95 0 0 1-.72-1.56L13.2 2.15Z"/>
+      </svg>
+    `;
   }
-  host.appendChild(burst);
-  window.setTimeout(() => burst.remove(), 1000);
+
+  if (tone === 'time') {
+    return `
+      <svg class="cb-ending-stat__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="12" cy="13" r="7.15" fill="currentColor"/>
+        <circle cx="12" cy="13" r="2.35" fill="#ecffde"/>
+        <circle cx="12" cy="13" r="4.55" fill="none" stroke="#ecffde" stroke-width="1.7"/>
+        <path d="M15.3 7.2 15.55 9.4c.03.22.17.4.37.48l1.85.75c.2.08.22-.18.03-.3l-1.55-.7a.55.55 0 0 1-.28-.72L15.7 6.7c-.06-.22-.32-.3-.5-.15L15.3 7.2Z" fill="currentColor"/>
+        <path d="M12 13 18.2 8.2" fill="none" stroke="#478700" stroke-width="1.35" stroke-linecap="round"/>
+      </svg>
+    `;
+  }
+
+  return `
+    <svg class="cb-ending-stat__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12.2" r="6.4" fill="#ddf4ff" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="12" cy="12.4" r="1.55" fill="currentColor"/>
+      <path d="M11.7 12.5 16.4 8.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+  `;
 }
 
 function shouldShowMobilePreview() {

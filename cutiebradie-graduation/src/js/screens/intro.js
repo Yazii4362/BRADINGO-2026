@@ -1,5 +1,6 @@
 import { BRAND } from '../data/course.js';
 import { t } from '../i18n.js';
+import { createCheerHeart } from '../components/cheer-heart.js';
 import { createTapUnlock, openCoffeeCoupon } from '../components/coffee-coupon.js';
 
 /**
@@ -31,6 +32,8 @@ export function renderIntro(props) {
       <button type="button" class="cb-button cb-button--primary cb-button--fill" data-action="start">${t('intro.start')}</button>
     </div>
   `;
+
+  el.querySelector('.cb-button-row')?.before(createCheerHeart({ className: 'intro-cheer' }));
 
   const unlockEgg = createTapUnlock({
     taps: 5,

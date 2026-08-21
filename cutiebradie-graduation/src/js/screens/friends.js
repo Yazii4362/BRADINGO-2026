@@ -1,5 +1,4 @@
 import { getFriendsFeed } from '../data/course.js';
-import { openCreatorSupport } from '../components/coffee-coupon.js';
 import { t } from '../i18n.js';
 
 /**
@@ -83,10 +82,6 @@ export function renderFriends(props = {}) {
     btn.addEventListener('click', () => selectFriend(friend.id));
     avatars.appendChild(btn);
   });
-
-  const profile = document.createElement('article');
-  profile.className = 'friends-detail friends-detail--profile-only';
-  profile.setAttribute('aria-live', 'polite');
 
   const deck = document.createElement('div');
   deck.className = 'friends-deck';
@@ -204,7 +199,7 @@ export function renderFriends(props = {}) {
 
   const body = document.createElement('div');
   body.className = 'friends-body';
-  body.append(avatars, profile, deck);
+  body.append(avatars, deck);
 
   el.append(header, body);
 
@@ -232,7 +227,6 @@ export function renderFriends(props = {}) {
     if (!friend) return;
     activeId = friendId;
     viewedFriends.add(friendId);
-    renderProfile(friend);
     syncSelection();
     syncCompleteButton();
   }
@@ -282,46 +276,8 @@ export function renderFriends(props = {}) {
     nextBtn.disabled = friends.length < 2;
   }
 
-  /**
-   * @param {(typeof friends)[number]} friend
-   */
-  function renderProfile(friend) {
-    const isCreator = friend.id === 'yaji';
-    const avatarHtml = friend.image
-      ? `<img class="friends-detail__photo" src="${escapeHtml(friend.image)}" alt="${escapeHtml(friend.alt || friend.name)}" />`
-      : `<span class="friends-detail__initials" aria-hidden="true">${escapeHtml(friend.initials)}</span>`;
-
-    const faceTag = isCreator ? 'button' : 'div';
-    const faceAttrs = isCreator
-      ? ` type="button" class="friends-detail__face friends-detail__face--creator" data-action="creator-support" aria-label="${t('friends.creatorAria')}"`
-      : ' class="friends-detail__face"';
-
-    profile.innerHTML = `
-      <div class="friends-detail__profile">
-        <${faceTag}${faceAttrs}>${avatarHtml}</${faceTag}>
-        <div class="friends-detail__meta">
-          <h2 class="friends-detail__name">${escapeHtml(friend.name)}</h2>
-          ${
-            isCreator
-              ? `<button type="button" class="friends-detail__support" data-action="creator-support">${t('friends.creatorAria')}</button>`
-              : ''
-          }
-        </div>
-      </div>
-    `;
-
-    profile.querySelectorAll('[data-action="creator-support"]').forEach((node) => {
-      node.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        openCreatorSupport();
-      });
-    });
-  }
-
   const first = friends.find((item) => item.id === activeId) ?? friends[0];
   if (first) {
-    renderProfile(first);
     syncSelection();
   }
 

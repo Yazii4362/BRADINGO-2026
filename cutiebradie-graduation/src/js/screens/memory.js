@@ -259,7 +259,7 @@ function createMemoryTile(memory, onOpen) {
   item.className = 'cb-memory-card';
   item.dataset.memoryId = memory.id;
   item.setAttribute('role', 'listitem');
-  item.setAttribute('aria-label', `${memory.caption} 크게 보기`);
+  item.setAttribute('aria-label', '사진 크게 보기');
 
   const media = document.createElement('div');
   media.className = 'cb-memory-card__media';
@@ -276,15 +276,11 @@ function createMemoryTile(memory, onOpen) {
     const placeholder = document.createElement('div');
     placeholder.className = 'cb-memory-card__placeholder';
     placeholder.setAttribute('aria-hidden', 'true');
-    placeholder.innerHTML = `<span class="cb-memory-card__placeholder-label">${memory.caption}</span>`;
+    placeholder.innerHTML = `<span class="cb-memory-card__placeholder-label"></span>`;
     media.appendChild(placeholder);
   }
 
-  const caption = document.createElement('span');
-  caption.className = 'cb-memory-card__caption';
-  caption.textContent = memory.caption;
-
-  item.append(media, caption);
+  item.append(media);
   item.addEventListener('click', onOpen);
   return item;
 }
@@ -324,7 +320,6 @@ function createMemoryViewer(props) {
         ${CHEVRON_LEFT}
       </button>
       <div class="cb-memory-viewer__meta">
-        <p class="cb-memory-viewer__title" data-role="title"></p>
         <p class="cb-memory-viewer__date" data-role="date"></p>
       </div>
       <button type="button" class="cb-memory-viewer__nav" aria-label="다음 사진" data-action="next">
@@ -335,7 +330,6 @@ function createMemoryViewer(props) {
 
   const countEl = overlay.querySelector('[data-role="count"]');
   const mediaEl = overlay.querySelector('[data-role="media"]');
-  const titleEl = overlay.querySelector('[data-role="title"]');
   const dateEl = overlay.querySelector('[data-role="date"]');
   const stageEl = overlay.querySelector('[data-role="stage"]');
   const prevBtn = overlay.querySelector('[data-action="prev"]');
@@ -348,7 +342,6 @@ function createMemoryViewer(props) {
     if (countEl instanceof HTMLElement) {
       countEl.textContent = `${index + 1} / ${props.items.length}`;
     }
-    if (titleEl instanceof HTMLElement) titleEl.textContent = item.caption;
     if (dateEl instanceof HTMLElement) {
       dateEl.textContent = item.date || '';
       dateEl.hidden = !item.date;
@@ -359,13 +352,13 @@ function createMemoryViewer(props) {
       const img = document.createElement('img');
       img.className = 'cb-memory-viewer__image';
       img.src = item.image;
-      img.alt = item.alt || item.caption;
+      img.alt = item.alt || '';
       img.decoding = 'async';
       mediaEl.appendChild(img);
     } else {
       const placeholder = document.createElement('div');
       placeholder.className = 'cb-memory-viewer__placeholder';
-      placeholder.textContent = item.caption;
+      placeholder.textContent = '';
       mediaEl.appendChild(placeholder);
     }
 

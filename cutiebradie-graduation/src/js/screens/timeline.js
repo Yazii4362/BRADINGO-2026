@@ -68,24 +68,22 @@ export function renderTimeline() {
   list.className = 'timeline-list';
   list.setAttribute('aria-label', t('timeline.listAria'));
 
+  /** @type {HTMLElement[]} */
+  const allCards = [];
+
   years.forEach((entry, index) => {
     const isLast = index === years.length - 1;
     const card = document.createElement('li');
     card.className = `timeline-card timeline-card--${entry.accent}${isLast ? ' timeline-card--goal' : ''}`;
-    card.id = `timeline-year-${entry.year}`;
+    card.id = `timeline-${entry.id}`;
+    card.dataset.year = String(entry.year);
+    const media = entry.image
+      ? `<span class="cb-answer-card__media timeline-card__emoji timeline-card__emoji--stamp" aria-hidden="true"><img class="timeline-card__stamp" src="${entry.image}" alt=""></span>`
+      : `<span class="cb-answer-card__media timeline-card__emoji" aria-hidden="true">${entry.emoji}</span>`;
+
     card.innerHTML = `
       <article class="timeline-card__panel cb-answer-card cb-answer-card--row">
-        <span class="cb-answer-card__media">
-          <img
-            class="cb-answer-card__image timeline-card__photo"
-            src="${entry.image}"
-            alt=""
-            width="64"
-            height="64"
-            decoding="async"
-            loading="lazy"
-          />
-        </span>
+        ${media}
         <span class="cb-answer-card__label timeline-card__copy">
           <span class="timeline-card__meta">
             <span class="timeline-card__year">${
@@ -100,8 +98,10 @@ export function renderTimeline() {
       </article>
     `;
     list.appendChild(card);
-    cardByYear.set(entry.year, card);
+    allCards.push(card);
+    if (!cardByYear.has(entry.year)) cardByYear.set(entry.year, card);
 
+    if (chipByYear.has(entry.year)) return;
     const chip = document.createElement('button');
     chip.type = 'button';
     chip.className = 'memory-filter timeline-year-chip';
@@ -136,12 +136,12 @@ export function renderTimeline() {
         .filter((entry) => entry.isIntersecting)
         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
       if (!visible) return;
-      const year = Number(visible.target.id.replace('timeline-year-', ''));
+      const year = Number(visible.target.dataset.year);
       if (Number.isFinite(year)) applyActiveYear(year);
     },
     { root: body, rootMargin: '0px 0px -60% 0px', threshold: 0.01 }
   );
-  cardByYear.forEach((card) => observer.observe(card));
+  allCards.forEach((card) => observer.observe(card));
 
   el.__cleanup = () => {
     observer.disconnect();
