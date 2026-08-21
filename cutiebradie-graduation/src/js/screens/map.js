@@ -29,12 +29,6 @@ export function renderMap(props) {
   top.className = 'map-top';
   top.appendChild(createAppHeader({ gems: 2026 }));
 
-  const lastNodeReached =
-    props.nodeStatus.n5 === 'active' || props.nodeStatus.n5 === 'completed';
-  const profileSrc = lastNodeReached
-    ? './assets/images/profile-end.webp'
-    : './assets/images/profile.webp';
-
   const characterBubble = createCharacterBubbleController();
 
   const cover = document.createElement('button');
@@ -45,7 +39,7 @@ export function renderMap(props) {
     <div class="cb-map-cover__profile">
       <img
         class="cb-map-cover__profile-img"
-        src="${profileSrc}"
+        src="./assets/images/profile-end.webp"
         alt="${t('map.profileAlt')}"
         width="52"
         height="52"
