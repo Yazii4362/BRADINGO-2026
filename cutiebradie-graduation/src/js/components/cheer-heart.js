@@ -11,7 +11,7 @@ export function createCheerHeart(props = {}) {
   wrap.className = props.className ? `cb-cheer ${props.className}` : 'cb-cheer';
 
   wrap.innerHTML = `
-    <button type="button" class="cb-cheer__heart" data-action="cheer">
+    <button type="button" class="cb-cheer__heart" data-action="cheer" aria-label="${t('ending.cheerHint')}">
       <span class="cb-cheer__glyph" aria-hidden="true">💚</span>
       <span class="cb-cheer__label">${t('ending.cheerCta')}</span>
     </button>

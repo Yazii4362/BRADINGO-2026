@@ -118,6 +118,7 @@
 }
 
 .intro-hero {
+  position: relative;
   display: flex;
   flex: 1 1 auto;
   min-height: 0;
@@ -146,7 +147,6 @@
 }
 
 .screen--intro .intro-lead,
-.screen--intro .intro-cheer,
 .screen--intro .cb-button-row {
   flex: 0 0 auto;
   width: min(100%, var(--action-max));
@@ -154,10 +154,42 @@
 }
 
 .intro-cheer {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  z-index: 2;
   display: flex;
   justify-content: center;
-  z-index: 1;
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  margin: 0;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 8px 18px rgba(20, 40, 80, 0.22));
+}
+
+.intro-cheer .cb-cheer__heart {
+  position: relative;
+  padding: 0.7rem 1.2rem;
+  background: #fff;
+  border-color: color-mix(in srgb, var(--active) 55%, #fff);
+}
+
+.intro-cheer .cb-cheer__heart::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  border-right: 2px solid color-mix(in srgb, var(--active) 55%, #fff);
+  border-bottom: 2px solid color-mix(in srgb, var(--active) 55%, #fff);
+  background: #fff;
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 0 0 3px 0;
+}
+
+.intro-cheer .cb-cheer-burst {
+  z-index: 3;
 }
 
 .intro-lead {
@@ -996,23 +1028,8 @@
   gap: 0.45rem;
 }
 
-.ending-cheer-card {
-  width: 100%;
-  padding: 0.95rem 0.9rem 1rem;
-  border: 2px solid color-mix(in srgb, var(--active) 28%, var(--neutral-100));
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--active) 7%, var(--neutral-100));
-}
-
-.ending-cheer-card__title {
-  margin: 0;
-  font-size: 0.9375rem;
-  font-weight: 900;
-  color: var(--active-muted);
-}
-
 .ending-congrats {
-  margin: 0.3rem 0 0.85rem;
+  margin: 0;
   font-size: 0.8125rem;
   font-weight: 700;
   line-height: 1.5;
@@ -1020,7 +1037,6 @@
   word-break: keep-all;
 }
 
-.ending-cheer,
 .cb-cheer {
   position: relative;
   display: inline-flex;

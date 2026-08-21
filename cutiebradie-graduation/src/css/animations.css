@@ -45,12 +45,12 @@
   animation: ending-fade-up var(--motion-panel) var(--ease-out) 350ms both;
 }
 
-.ending-stage-wrap.is-visible .ending-summary {
-  animation: ending-fade-up var(--motion-panel) var(--ease-out) 420ms both;
+.ending-stage-wrap.is-visible .ending-congrats {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 380ms both;
 }
 
-.ending-stage-wrap.is-visible .ending-cheer-card {
-  animation: ending-fade-up var(--motion-panel) var(--ease-out) 490ms both;
+.ending-stage-wrap.is-visible .ending-summary {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 420ms both;
 }
 
 .ending-stage-wrap.is-visible .ending-actions {
@@ -395,8 +395,8 @@
   .ending-stage-wrap.is-visible .ending-title,
   .ending-stage-wrap.is-visible .ending-lead,
   .ending-stage-wrap.is-visible .ending-tagline,
+  .ending-stage-wrap.is-visible .ending-congrats,
   .ending-stage-wrap.is-visible .ending-summary,
-  .ending-stage-wrap.is-visible .ending-cheer-card,
   .ending-stage-wrap.is-visible .ending-actions,
   .screen--enter,
   .quiz-sheet-host:not(:empty) .cb-feedback-sheet,

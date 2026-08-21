@@ -33,7 +33,7 @@ export function renderIntro(props) {
     </div>
   `;
 
-  el.querySelector('.cb-button-row')?.before(createCheerHeart({ className: 'intro-cheer' }));
+  el.querySelector('.intro-hero')?.appendChild(createCheerHeart({ className: 'intro-cheer' }));
 
   const unlockEgg = createTapUnlock({
     taps: 5,

@@ -1,6 +1,5 @@
 import { getGraduationStats } from '../data/course.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
-import { createCheerHeart } from '../components/cheer-heart.js';
 import { createTapUnlock, openCoffeeCoupon } from '../components/coffee-coupon.js';
 import { EXPORT_FILE_NAME } from '../constants.js';
 import { t } from '../i18n.js';
@@ -90,13 +89,10 @@ export function renderEnding(props) {
         </button>
         <p class="ending-lead">${stats.lead}</p>
         <p class="ending-tagline">${stats.tagline}</p>
+        <p class="ending-congrats">${t('ending.congrats')}</p>
         <section class="ending-summary" aria-label="${stats.summaryTitle}">
           <h2 class="ending-summary__title">${stats.summaryTitle}</h2>
           <ul class="ending-stats">${summaryHtml}</ul>
-        </section>
-        <section class="ending-cheer-card" aria-label="${t('ending.cheerTitle')}">
-          <p class="ending-cheer-card__title">${t('ending.cheerTitle')}</p>
-          <p class="ending-congrats">${t('ending.congrats')}</p>
         </section>
         <div class="ending-actions">
           <button type="button" class="cb-button cb-button--primary cb-button--fill ending-save-text" data-action="export" aria-label="${t('ending.saveAria')}">
@@ -109,8 +105,6 @@ export function renderEnding(props) {
       </div>
     </div>
   `;
-
-  el.querySelector('.ending-cheer-card')?.appendChild(createCheerHeart());
 
   const statusEl = el.querySelector('.ending-status');
   const exportBtn = el.querySelector('[data-action="export"]');
