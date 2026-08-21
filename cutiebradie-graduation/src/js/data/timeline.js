@@ -65,6 +65,15 @@ export const TIMELINE_YEARS = Object.freeze([
     emoji: '📖',
   }),
   Object.freeze({
+    id: 'y2021h',
+    year: 2021,
+    tagKey: 'timeline.y2021h.tag',
+    line1Key: 'timeline.y2021h.l1',
+    line2Key: 'timeline.y2021h.l2',
+    accent: 'green',
+    emoji: '🏃',
+  }),
+  Object.freeze({
     id: 'y2022',
     year: 2022,
     month: 7,
@@ -139,6 +148,16 @@ export const TIMELINE_YEARS = Object.freeze([
     line2Key: 'timeline.y2025.l2',
     accent: 'orange',
     emoji: '😵‍💫',
+  }),
+  Object.freeze({
+    id: 'y2025t',
+    year: 2025,
+    month: 9,
+    tagKey: 'timeline.y2025t.tag',
+    line1Key: 'timeline.y2025t.l1',
+    line2Key: 'timeline.y2025t.l2',
+    accent: 'purple',
+    emoji: '🍽️',
   }),
   Object.freeze({
     id: 'y2026h',
