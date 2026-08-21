@@ -2,6 +2,7 @@ import { getGraduationStats } from '../data/course.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
 import { createTapUnlock, openCoffeeCoupon } from '../components/coffee-coupon.js';
 import { EXPORT_FILE_NAME } from '../constants.js';
+import { t } from '../i18n.js';
 import {
   deliverPngBlob,
   prepareExportPngBlob,
@@ -79,7 +80,7 @@ export function renderEnding(props) {
       ${reduceMotion ? '' : '<div class="ending-confetti"></div>'}
     </div>
     <div class="ending-body">
-      <button type="button" class="ending-title ending-egg" data-action="egg" aria-label="숨겨진 쿠폰">
+      <button type="button" class="ending-title ending-egg" data-action="egg" aria-label="${t('ending.eggAria')}">
         ${stats.title}
       </button>
       <p class="ending-lead">${stats.lead}</p>
@@ -90,10 +91,10 @@ export function renderEnding(props) {
       </section>
       <p class="ending-status" role="status" aria-live="polite"></p>
       <div class="ending-actions">
-        <button type="button" class="ending-save-btn" data-action="export" aria-label="이미지로 저장">
+        <button type="button" class="ending-save-btn" data-action="export" aria-label="${t('ending.saveAria')}">
           <img class="ending-save-btn__icon" src="./assets/images/ending/btn-save.svg" alt="" width="50" height="48" decoding="async" />
         </button>
-        <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">처음부터 다시</button>
+        <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">${t('ending.resetConfirm')}</button>
       </div>
     </div>
   `;
@@ -109,10 +110,10 @@ export function renderEnding(props) {
 
   el.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
     openConfirmModal({
-      title: '정말 처음부터 시작할까요?',
-      body: '지금까지의 진행 기록이 모두 지워져요.',
-      cancelLabel: '취소',
-      confirmLabel: '처음부터 다시',
+      title: t('ending.resetTitle'),
+      body: t('ending.resetBody'),
+      cancelLabel: t('ending.resetCancel'),
+      confirmLabel: t('ending.resetConfirm'),
       confirmVariant: 'danger',
       onCancel: () => {},
       onConfirm: () => props.onResetConfirmed(),

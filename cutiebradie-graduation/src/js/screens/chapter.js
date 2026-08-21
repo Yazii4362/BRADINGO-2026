@@ -33,12 +33,25 @@ export function renderChapter(props) {
   const header = document.createElement('header');
   header.className = 'chapter-header';
   header.innerHTML = `
-    <button type="button" class="chapter-back" aria-label="${t('quiz.close')}">${BACK_ICON}</button>
+    <button type="button" class="chapter-back" aria-label="${t('chapter.backToMap')}">${BACK_ICON}</button>
     <h1 class="chapter-title">${props.title}</h1>
   `;
   header.querySelector('.chapter-back')?.addEventListener('click', () => {
     props.onBackToMap();
   });
+
+  const highlights = content?.highlights ?? [];
+  const cardsHtml = highlights
+    .map((item) => {
+      const label = t(`chapter.${props.nodeId}.${item.id}`) || item.label;
+      return `
+        <li class="chapter-card">
+          <img class="chapter-card__image" src="${item.image}" alt="" width="120" height="120" decoding="async" />
+          <p class="chapter-card__label">${label}</p>
+        </li>
+      `;
+    })
+    .join('');
 
   const main = document.createElement('div');
   main.className = 'chapter-body';
@@ -52,6 +65,11 @@ export function renderChapter(props) {
       decoding="async"
     />
     <p class="chapter-copy">${body}</p>
+    ${
+      cardsHtml
+        ? `<ul class="chapter-cards" aria-label="${t('chapter.n2.highlightsAria')}">${cardsHtml}</ul>`
+        : ''
+    }
   `;
 
   const footer = document.createElement('footer');

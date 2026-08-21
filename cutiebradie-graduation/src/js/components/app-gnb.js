@@ -2,6 +2,8 @@
  * Bottom GNB — Home (map) + Friends (letters feed).
  */
 
+import { t } from '../i18n.js';
+
 const HOME_ICON = `
 <svg width="32" height="32" viewBox="18 10 32 38" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <path d="M43.6587 44.4244C43.3247 46.1777 41.7917 47.4462 40.0069 47.4462H27.9704C26.1856 47.4462 24.6526 46.1777 24.3187 44.4244L21.6039 30.1719L33.8879 21.0879L46.374 30.1687L43.6587 44.4244Z" fill="#FFC800"/>
@@ -55,22 +57,25 @@ export function createAppGnb(props) {
   const nav = document.createElement('nav');
   nav.className = 'app-gnb';
   nav.id = 'app-gnb';
-  nav.setAttribute('aria-label', '주요 메뉴');
+  nav.setAttribute('aria-label', t('gnb.aria'));
+
+  const homeLabel = t('gnb.home');
+  const feedLabel = t('gnb.friends');
 
   const home = document.createElement('button');
   home.type = 'button';
   home.className = 'app-gnb__item';
   home.dataset.tab = 'map';
-  home.setAttribute('aria-label', '홈');
-  home.innerHTML = `<span class="app-gnb__icon">${HOME_ICON}</span><span class="app-gnb__label">홈</span>`;
+  home.setAttribute('aria-label', homeLabel);
+  home.innerHTML = `<span class="app-gnb__icon">${HOME_ICON}</span><span class="app-gnb__label">${homeLabel}</span>`;
   home.addEventListener('click', () => props.onHome());
 
   const friends = document.createElement('button');
   friends.type = 'button';
   friends.className = 'app-gnb__item';
   friends.dataset.tab = 'friends';
-  friends.setAttribute('aria-label', '피드');
-  friends.innerHTML = `<span class="app-gnb__icon">${FRIENDS_ICON}</span><span class="app-gnb__label">피드</span>`;
+  friends.setAttribute('aria-label', feedLabel);
+  friends.innerHTML = `<span class="app-gnb__icon">${FRIENDS_ICON}</span><span class="app-gnb__label">${feedLabel}</span>`;
   friends.addEventListener('click', () => props.onFriends());
 
   nav.append(home, friends);

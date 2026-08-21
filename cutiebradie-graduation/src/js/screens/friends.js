@@ -1,5 +1,6 @@
 import { getFriendsFeed } from '../data/course.js';
 import { openCreatorSupport } from '../components/coffee-coupon.js';
+import { t } from '../i18n.js';
 
 /**
  * Escape text for safe HTML insertion.
@@ -36,6 +37,7 @@ export function renderFriends(props = {}) {
   /** @type {string} */
   let activeId = friends[0]?.id ?? '';
   const isPathChapter = typeof props.onComplete === 'function';
+  const viewedFriends = new Set(activeId ? [activeId] : []);
 
   const el = document.createElement('section');
   el.className = `screen screen--friends${isPathChapter ? ' screen--friends-path' : ''}`;
@@ -46,7 +48,7 @@ export function renderFriends(props = {}) {
   header.innerHTML = `
     ${
       isPathChapter
-        ? `<button type="button" class="friends-back" aria-label="맵으로 돌아가기">
+        ? `<button type="button" class="friends-back" aria-label="${t('chapter.backToMap')}">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -54,8 +56,8 @@ export function renderFriends(props = {}) {
         : ''
     }
     <div class="friends-header__copy">
-      <h1 class="friends-header__title">${escapeHtml(content.title)}</h1>
-      <p class="friends-header__subtitle">${escapeHtml(content.subtitle)}</p>
+      <h1 class="friends-header__title">${escapeHtml(t('friends.title'))}</h1>
+      <p class="friends-header__subtitle">${escapeHtml(t('friends.subtitle'))}</p>
     </div>
   `;
   if (isPathChapter) {
@@ -67,7 +69,7 @@ export function renderFriends(props = {}) {
   const avatars = document.createElement('div');
   avatars.className = 'friends-avatars';
   avatars.setAttribute('role', 'tablist');
-  avatars.setAttribute('aria-label', '친구 프로필');
+  avatars.setAttribute('aria-label', t('friends.profilesAria'));
 
   friends.forEach((friend) => {
     const btn = document.createElement('button');
@@ -229,8 +231,19 @@ export function renderFriends(props = {}) {
     const friend = friends.find((item) => item.id === friendId);
     if (!friend) return;
     activeId = friendId;
+    viewedFriends.add(friendId);
     renderProfile(friend);
     syncSelection();
+    syncCompleteButton();
+  }
+
+  /** @type {HTMLButtonElement | null} */
+  let completeBtn = null;
+
+  function syncCompleteButton() {
+    if (!completeBtn || props.mode !== 'play') return;
+    const ready = viewedFriends.size >= friends.length;
+    completeBtn.disabled = !ready;
   }
 
   function syncSelection() {
@@ -280,7 +293,7 @@ export function renderFriends(props = {}) {
 
     const faceTag = isCreator ? 'button' : 'div';
     const faceAttrs = isCreator
-      ? ' type="button" class="friends-detail__face friends-detail__face--creator" data-action="creator-support" aria-label="만든 사람 응원하기"'
+      ? ` type="button" class="friends-detail__face friends-detail__face--creator" data-action="creator-support" aria-label="${t('friends.creatorAria')}"`
       : ' class="friends-detail__face"';
 
     profile.innerHTML = `
@@ -290,7 +303,7 @@ export function renderFriends(props = {}) {
           <h2 class="friends-detail__name">${escapeHtml(friend.name)}</h2>
           ${
             isCreator
-              ? `<button type="button" class="friends-detail__support" data-action="creator-support">만든 사람 응원하기</button>`
+              ? `<button type="button" class="friends-detail__support" data-action="creator-support">${t('friends.creatorAria')}</button>`
               : ''
           }
         </div>
@@ -315,12 +328,18 @@ export function renderFriends(props = {}) {
   if (isPathChapter) {
     const footer = document.createElement('footer');
     footer.className = 'friends-path-footer';
-    const completeBtn = document.createElement('button');
+    completeBtn = document.createElement('button');
     completeBtn.type = 'button';
     completeBtn.className = 'cb-button cb-button--primary cb-button--fill';
     completeBtn.textContent =
-      props.mode === 'replay' ? '맵으로 돌아가기' : '편지 읽기 완료';
-    completeBtn.addEventListener('click', () => props.onComplete?.());
+      props.mode === 'replay' ? t('chapter.backToMap') : t('friends.complete');
+    if (props.mode === 'play') {
+      completeBtn.disabled = viewedFriends.size < friends.length;
+    }
+    completeBtn.addEventListener('click', () => {
+      if (props.mode === 'play' && completeBtn?.disabled) return;
+      props.onComplete?.();
+    });
     footer.appendChild(completeBtn);
     el.appendChild(footer);
   }

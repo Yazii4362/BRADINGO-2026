@@ -1364,6 +1364,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: var(--space-3);
+}
+
+.lang-footer__note {
+  margin: 0;
+  max-width: 22rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--muted);
+  word-break: keep-all;
 }
 
 .lang-footer .cb-button {
@@ -1441,6 +1453,8 @@
   gap: var(--space-5);
   padding: var(--space-4) var(--space-5) var(--space-6);
   text-align: center;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .chapter-art {
@@ -1456,6 +1470,41 @@
   font-weight: 700;
   line-height: 1.45;
   color: var(--text);
+}
+
+.chapter-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  width: min(100%, 22rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chapter-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: center;
+  text-align: center;
+}
+
+.chapter-card__image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  background: var(--neutral-100);
+}
+
+.chapter-card__label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--neutral-700);
+  word-break: keep-all;
 }
 
 .chapter-footer {

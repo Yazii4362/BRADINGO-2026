@@ -1,4 +1,5 @@
 import { getMemoryByNodeId } from '../data/course.js';
+import { t } from '../i18n.js';
 
 const BACK_ICON = `
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -64,12 +65,12 @@ export function renderMemory(props) {
   const header = document.createElement('header');
   header.className = 'memory-album-header';
   header.innerHTML = `
-    <button type="button" class="memory-album-header__back" aria-label="맵으로 돌아가기" data-action="back">
+    <button type="button" class="memory-album-header__back" aria-label="${t('memory.backAria')}" data-action="back">
       ${BACK_ICON}
     </button>
     <div class="memory-album-header__copy">
-      <h1 class="memory-album-header__title">${content.title || props.title}</h1>
-      <p class="memory-album-header__subtitle">${content.subtitle || ''}</p>
+      <h1 class="memory-album-header__title">${t('memory.title')}</h1>
+      <p class="memory-album-header__subtitle">${t('memory.subtitle')}</p>
     </div>
     <span class="memory-album-header__camera" aria-hidden="true">${CAMERA_ICON}</span>
   `;
@@ -81,7 +82,7 @@ export function renderMemory(props) {
   const filters = document.createElement('div');
   filters.className = 'memory-filters';
   filters.setAttribute('role', 'tablist');
-  filters.setAttribute('aria-label', '연도별 추억');
+  filters.setAttribute('aria-label', t('memory.filtersAria'));
 
   content.categories.forEach((category) => {
     const chip = document.createElement('button');
@@ -89,7 +90,9 @@ export function renderMemory(props) {
     chip.className = 'memory-filter';
     chip.setAttribute('role', 'tab');
     chip.dataset.category = category.id;
-    chip.textContent = category.label;
+    const catKey = `memory.cat.${category.id}`;
+    const localized = t(catKey);
+    chip.textContent = localized.startsWith('memory.cat.') ? category.label : localized;
     chip.addEventListener('click', () => {
       if (activeCategory === category.id) return;
       activeCategory = category.id;
@@ -109,7 +112,7 @@ export function renderMemory(props) {
   const empty = document.createElement('p');
   empty.className = 'memory-empty';
   empty.hidden = true;
-  empty.textContent = '이 연도의 추억이 아직 없어요.';
+  empty.textContent = t('memory.empty');
 
   const sentinel = document.createElement('div');
   sentinel.className = 'memory-sentinel';
@@ -122,13 +125,14 @@ export function renderMemory(props) {
 
   const hint = document.createElement('p');
   hint.className = 'memory-complete-hint';
-  hint.textContent = '사진을 둘러보면 완료할 수 있어요';
+  hint.textContent = t('memory.hint');
   hint.hidden = props.mode !== 'play';
 
   const completeBtn = document.createElement('button');
   completeBtn.type = 'button';
   completeBtn.className = 'cb-button cb-button--primary cb-button--fill memory-complete';
-  completeBtn.textContent = props.mode === 'replay' ? '맵으로 돌아가기' : '추억 감상 완료';
+  completeBtn.textContent =
+    props.mode === 'replay' ? t('chapter.backToMap') : t('memory.complete');
   if (props.mode === 'play') {
     completeBtn.disabled = true;
   }
@@ -193,11 +197,7 @@ export function renderMemory(props) {
       onClose: () => {
         viewer = null;
       },
-      onNavigate: () => {
-        enableComplete();
-      },
     });
-    enableComplete();
   }
 
   function renderGrid() {

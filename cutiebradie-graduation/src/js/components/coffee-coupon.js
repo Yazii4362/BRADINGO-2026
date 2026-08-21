@@ -166,14 +166,6 @@ export function openCreatorSupport(options = {}) {
         >
           <span class="cb-coffee-coupon__link-icon">${ICONS.github}</span>
         </a>
-        <a
-          class="cb-coffee-coupon__link"
-          href="mailto:${DEVELOPER.email}?subject=${encodeURIComponent('yazii 응원 / 커피챗')}"
-          title="${DEVELOPER.email}"
-          aria-label="이메일 ${DEVELOPER.email}"
-        >
-          <span class="cb-coffee-coupon__link-icon">${ICONS.email}</span>
-        </a>
       </div>
       <div class="cb-coffee-coupon__note">
         <span class="cb-coffee-coupon__note-icon">${ICONS.info}</span>

@@ -1,5 +1,5 @@
 import { createAnswerTile } from '../components/answer-tile.js';
-import { DEFAULT_LOCALE, isLocaleId, tFor } from '../i18n.js';
+import { DEFAULT_LOCALE, getLocale, isLocaleId, tFor } from '../i18n.js';
 
 /** @typedef {{ id: string, flag: string }} LangOption */
 
@@ -23,7 +23,7 @@ export function renderLangSelect(props) {
   el.className = 'screen screen--lang';
   el.dataset.screen = 'lang';
 
-  let selectedId = DEFAULT_LOCALE;
+  let selectedId = getLocale() || DEFAULT_LOCALE;
 
   const hero = document.createElement('div');
   hero.className = 'lang-hero';
@@ -78,12 +78,15 @@ export function renderLangSelect(props) {
 
   const footer = document.createElement('div');
   footer.className = 'lang-footer';
+  const note = document.createElement('p');
+  note.className = 'lang-footer__note';
+  note.dataset.role = 'note';
   const continueBtn = document.createElement('button');
   continueBtn.type = 'button';
   continueBtn.className = 'cb-button cb-button--primary cb-button--fill';
   continueBtn.dataset.action = 'continue';
   continueBtn.addEventListener('click', () => props.onContinue(selectedId));
-  footer.appendChild(continueBtn);
+  footer.append(note, continueBtn);
 
   el.append(hero, divider, list, footer);
 
@@ -97,6 +100,7 @@ export function renderLangSelect(props) {
     if (bubbleEl) bubbleEl.innerHTML = tFor(locale, 'lang.bubble');
     list.setAttribute('aria-label', tFor(locale, 'lang.listAria'));
     continueBtn.textContent = tFor(locale, 'lang.continue');
+    note.textContent = tFor(locale, 'lang.partialNote');
 
     tiles.forEach((tile, id) => {
       const label = tFor(locale, `lang.${id}`);

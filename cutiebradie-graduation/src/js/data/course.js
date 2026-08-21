@@ -264,11 +264,31 @@ export const QUIZZES = Object.freeze({
 
 /**
  * Lightweight chapter copy for non-quiz / non-memory path nodes.
- * @type {Readonly<Record<string, { body: string }>>}
+ * @type {Readonly<Record<string, {
+ *   body: string,
+ *   highlights?: ReadonlyArray<{ id: string, label: string, image: string }>
+ * }>>}
  */
 export const CHAPTER_CONTENTS = Object.freeze({
   n2: Object.freeze({
     body: '캠퍼스에서 보낸 날들을 떠올리며 다음 스테이지로 넘어가 보세요.',
+    highlights: Object.freeze([
+      Object.freeze({
+        id: 'chicago',
+        label: '시카고 교환학생',
+        image: './assets/images/quiz/campus-chicago.webp',
+      }),
+      Object.freeze({
+        id: 'australia',
+        label: '호주 워홀 1년',
+        image: './assets/images/quiz/campus-australia.webp',
+      }),
+      Object.freeze({
+        id: 'jeju',
+        label: '제주·강원대 학점교류',
+        image: './assets/images/quiz/campus-jeju.webp',
+      }),
+    ]),
   }),
 });
 
@@ -549,33 +569,26 @@ export function getGraduationStats(progress = null) {
     : totalNodes;
 
   const courseValue = `${completedCount} / ${totalNodes}`;
-  const badgeValue = `${totalNodes} 개`;
 
   /** @type {ReadonlyArray<{ id: string, label: string, value: string, valueHtml?: string, icon: string }>} */
   const summaryRows = [
     {
       id: 'period',
-      label: '여정 기간',
+      label: t('ending.stat.period'),
       value: '2018 → 2026',
       icon: './assets/images/ending/icon-calendar.svg',
     },
     {
       id: 'courses',
-      label: '완료한 코스',
+      label: t('ending.stat.chapters'),
       value: courseValue,
       icon: './assets/images/ending/icon-book.svg',
     },
     {
-      id: 'badges',
-      label: '획득한 배지',
-      value: badgeValue,
-      icon: './assets/images/ending/icon-star.svg',
-    },
-    {
       id: 'memories',
-      label: '함께한 추억',
-      value: '무한대 ∞',
-      valueHtml: '무한대 <span class="ending-infinity">∞</span>',
+      label: t('ending.stat.memories'),
+      value: t('ending.stat.memoriesValue'),
+      valueHtml: `${t('ending.stat.memoriesValue')} <span class="ending-infinity">∞</span>`,
       icon: './assets/images/icons/heart.svg',
     },
   ];
@@ -589,7 +602,7 @@ export function getGraduationStats(progress = null) {
     subtitle: `${t('ending.lead')}\n${t('ending.tagline')}`,
     exportSubtitle: `${t('brand.courseTitle')} · ${BRAND.coursePeriod}`,
     wordmark: BRAND.wordmark,
-    summaryTitle: '여정 요약',
+    summaryTitle: t('ending.summaryTitle'),
     summaryRows,
     heroImage: './assets/images/ending/hero.webp',
     heroAlt: t('ending.heroAlt'),

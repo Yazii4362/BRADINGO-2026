@@ -7,6 +7,7 @@ import {
   saveProgress,
 } from './state.js';
 import { createAppGnb } from './components/app-gnb.js';
+import { openConfirmModal } from './components/confirm-modal.js';
 import { openNodeStartSheet } from './components/node-start-sheet.js';
 import { renderIntro } from './screens/intro.js';
 import { renderLangSelect } from './screens/lang-select.js';
@@ -96,7 +97,26 @@ function goToMap(options = {}) {
     return;
   }
 
+  // Path content / GNB friends: pop back to the previous map entry instead of stacking another map.
+  const canPopToMap =
+    history.state?.screen === route.screen &&
+    ((route.nodeId &&
+      (route.screen === 'chapter' ||
+        route.screen === 'memory' ||
+        route.screen === 'friends' ||
+        route.screen === 'ending')) ||
+      (route.screen === 'friends' && !route.nodeId));
+
+  if (canPopToMap) {
+    history.back();
+    return;
+  }
+
   navigate('map');
+}
+
+function isFeedUnlocked() {
+  return loadProgress().nodeStatus.n4 === 'completed';
 }
 
 /**
@@ -242,6 +262,18 @@ function mountGnb(active) {
         navigate('map');
       },
       onFriends: () => {
+        if (route.screen === 'friends' && !route.nodeId) return;
+        if (!isFeedUnlocked()) {
+          openConfirmModal({
+            title: t('feed.lockedTitle'),
+            body: t('feed.lockedBody'),
+            cancelLabel: t('feed.lockedCancel'),
+            confirmLabel: t('feed.lockedAction'),
+            onCancel: () => {},
+            onConfirm: () => {},
+          });
+          return;
+        }
         if (route.screen === 'friends') return;
         navigate('friends');
       },
