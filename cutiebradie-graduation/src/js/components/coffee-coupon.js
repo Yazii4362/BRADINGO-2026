@@ -175,7 +175,6 @@ export function openCreatorSupport(options = {}) {
           <span class="cb-coffee-coupon__link-icon">${ICONS.email}</span>
         </a>
       </div>
-      <a class="cb-coffee-coupon__email" href="mailto:${DEVELOPER.email}">${DEVELOPER.email}</a>
       <div class="cb-coffee-coupon__note">
         <span class="cb-coffee-coupon__note-icon">${ICONS.info}</span>
         <p>

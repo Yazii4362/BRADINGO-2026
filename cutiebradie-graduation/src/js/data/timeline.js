@@ -56,6 +56,15 @@ export const TIMELINE_YEARS = Object.freeze([
     emoji: '✈️',
   }),
   Object.freeze({
+    id: 'y2020a',
+    year: 2020,
+    tagKey: 'timeline.y2020a.tag',
+    line1Key: 'timeline.y2020a.l1',
+    line2Key: 'timeline.y2020a.l2',
+    accent: 'green',
+    emoji: '🦘',
+  }),
+  Object.freeze({
     id: 'y2021',
     year: 2021,
     tagKey: 'timeline.y2021.tag',
@@ -130,15 +139,6 @@ export const TIMELINE_YEARS = Object.freeze([
     line2Key: 'timeline.y2024h.l2',
     accent: 'gold',
     image: './assets/images/timeline/machimnae.png',
-  }),
-  Object.freeze({
-    id: 'y2024a',
-    year: 2024,
-    tagKey: 'timeline.y2024a.tag',
-    line1Key: 'timeline.y2024a.l1',
-    line2Key: 'timeline.y2024a.l2',
-    accent: 'green',
-    emoji: '🦘',
   }),
   Object.freeze({
     id: 'y2025',

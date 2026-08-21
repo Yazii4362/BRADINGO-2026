@@ -1605,21 +1605,6 @@
   gap: 0.5rem;
 }
 
-.cb-coffee-coupon__email {
-  display: block;
-  margin: 0.55rem 0 0;
-  font-size: 0.8125rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: #fff;
-  text-decoration: none;
-  word-break: break-all;
-}
-
-.cb-coffee-coupon__email:hover {
-  text-decoration: underline;
-}
-
 .cb-coffee-coupon__link {
   display: grid;
   place-items: center;
@@ -1650,6 +1635,7 @@
   width: 1.35rem;
   height: 1.35rem;
   color: #7b68ee;
+  pointer-events: none;
 }
 
 .cb-coffee-coupon__icon-svg {
