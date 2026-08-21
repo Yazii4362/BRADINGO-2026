@@ -2,9 +2,9 @@ import { t } from '../i18n.js';
 
 /**
  * Top status header — streak / gems / hearts / travel (CB / App Header).
- * Travel (rightmost) → plane + country count + tooltip (4 nations).
- * Streak → 명예의 전당 tooltip (always 3095일).
- * Hearts → friends tooltip (무한대) using GNB friends art.
+ * Streak → 연속 재학 tooltip (always 3095일).
+ * Hearts → friends tooltip.
+ * Travel (rightmost) → plane + country count + tooltip.
  * @param {{
  *   gems?: number | string,
  * }} [props]
