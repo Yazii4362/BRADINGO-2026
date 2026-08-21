@@ -169,9 +169,8 @@
 }
 
 /* —— Staggered enter (children) —— */
-.screen--enter .intro-lead,
 .screen--enter .intro-cheer,
-.screen--enter .cb-button-row,
+.screen--enter .intro-dock,
 .screen--enter .lang-hero,
 .screen--enter .lang-divider,
 .screen--enter .lang-list,
@@ -186,9 +185,8 @@
   animation: soft-rise var(--motion-panel) var(--ease-out) both;
 }
 
-.screen--enter .intro-lead { animation-delay: 60ms; }
-.screen--enter .intro-cheer { animation-delay: 90ms; }
-.screen--enter .cb-button-row { animation-delay: 120ms; }
+.screen--enter .intro-cheer { animation-delay: 70ms; }
+.screen--enter .intro-dock { animation-delay: 110ms; }
 
 .screen--enter .lang-hero { animation-delay: 30ms; }
 .screen--enter .lang-divider { animation-delay: 70ms; }
@@ -400,9 +398,8 @@
   .ending-stage-wrap.is-visible .ending-actions,
   .screen--enter,
   .quiz-sheet-host:not(:empty) .cb-feedback-sheet,
-  .screen--enter .intro-lead,
   .screen--enter .intro-cheer,
-  .screen--enter .cb-button-row,
+  .screen--enter .intro-dock,
   .screen--enter .lang-hero,
   .screen--enter .lang-divider,
   .screen--enter .lang-list,

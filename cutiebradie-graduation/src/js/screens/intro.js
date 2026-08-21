@@ -25,11 +25,11 @@ export function renderIntro(props) {
     <div class="intro-hero">
       <button type="button" class="intro-egg" data-action="egg" aria-label="${t('intro.eggAria')}"></button>
     </div>
-    <p class="screen__body intro-lead">
-      ${t('intro.lead', { course: BRAND.courseName })}
-    </p>
-    <div class="cb-button-row">
-      <button type="button" class="cb-button cb-button--primary cb-button--fill" data-action="start">${t('intro.start')}</button>
+    <div class="intro-dock">
+      <p class="intro-lead">${t('intro.lead', { course: BRAND.courseName })}</p>
+      <div class="cb-button-row">
+        <button type="button" class="cb-button cb-button--primary cb-button--fill" data-action="start">${t('intro.start')}</button>
+      </div>
     </div>
   `;
 

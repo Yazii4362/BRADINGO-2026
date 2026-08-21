@@ -203,7 +203,7 @@ const MESSAGES = {
     'lang.es': '스페인어',
 
     'intro.eggAria': '숨겨진 쿠폰',
-    'intro.lead': '병건이의 <strong>{course}</strong>,<br>마지막 코스가 열렸어요 🎓',
+    'intro.lead': '마지막 코스가 열렸어요 🎓',
     'intro.start': '여정 시작하기',
 
     'map.coverAria': '{title} — 병건이에게 인사하기',
@@ -469,7 +469,7 @@ const MESSAGES = {
     'lang.es': 'Spanish',
 
     'intro.eggAria': 'Hidden coupon',
-    'intro.lead': "Bradie's <strong>{course}</strong>,<br>the final course is open. 🎓",
+    'intro.lead': 'The final course is open. 🎓',
     'intro.start': 'Start the journey',
 
     'map.coverAria': '{title} — say hi to Byeonggeon',
@@ -737,7 +737,7 @@ const MESSAGES = {
     'lang.es': 'スペイン語',
 
     'intro.eggAria': '隠しクーポン',
-    'intro.lead': "Bradie's <strong>{course}</strong>、<br>最後のコースが開きました。🎓",
+    'intro.lead': '最後のコースが開きました。🎓',
     'intro.start': '旅をはじめる',
 
     'map.coverAria': '{title} — ビョンゴンに挨拶',
@@ -1005,7 +1005,7 @@ const MESSAGES = {
     'lang.es': 'Español',
 
     'intro.eggAria': 'Cupón oculto',
-    'intro.lead': "Bradie's <strong>{course}</strong>,<br>el curso final ya está abierto. 🎓",
+    'intro.lead': 'El curso final ya está abierto. 🎓',
     'intro.start': 'Empezar el viaje',
 
     'map.coverAria': '{title} — saluda a Byeonggeon',
