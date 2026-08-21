@@ -85,6 +85,15 @@ export const TIMELINE_YEARS = Object.freeze([
     emoji: '🧀',
   }),
   Object.freeze({
+    id: 'y2023c',
+    year: 2023,
+    tagKey: 'timeline.y2023c.tag',
+    line1Key: 'timeline.y2023c.l1',
+    line2Key: 'timeline.y2023c.l2',
+    accent: 'blue',
+    emoji: '🏙️',
+  }),
+  Object.freeze({
     id: 'y2023s',
     year: 2023,
     month: 7,
@@ -114,6 +123,15 @@ export const TIMELINE_YEARS = Object.freeze([
     image: './assets/images/timeline/machimnae.png',
   }),
   Object.freeze({
+    id: 'y2024a',
+    year: 2024,
+    tagKey: 'timeline.y2024a.tag',
+    line1Key: 'timeline.y2024a.l1',
+    line2Key: 'timeline.y2024a.l2',
+    accent: 'green',
+    emoji: '🦘',
+  }),
+  Object.freeze({
     id: 'y2025',
     year: 2025,
     tagKey: 'timeline.y2025.tag',
@@ -121,6 +139,16 @@ export const TIMELINE_YEARS = Object.freeze([
     line2Key: 'timeline.y2025.l2',
     accent: 'orange',
     emoji: '😵‍💫',
+  }),
+  Object.freeze({
+    id: 'y2026h',
+    year: 2026,
+    month: 1,
+    tagKey: 'timeline.y2026h.tag',
+    line1Key: 'timeline.y2026h.l1',
+    line2Key: 'timeline.y2026h.l2',
+    accent: 'green',
+    emoji: '🏠',
   }),
   Object.freeze({
     id: 'y2026',
