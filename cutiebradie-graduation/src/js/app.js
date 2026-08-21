@@ -7,7 +7,6 @@ import {
   saveProgress,
 } from './state.js';
 import { createAppGnb } from './components/app-gnb.js';
-import { openConfirmModal } from './components/confirm-modal.js';
 import { openNodeStartSheet } from './components/node-start-sheet.js';
 import { renderIntro } from './screens/intro.js';
 import { renderLangSelect } from './screens/lang-select.js';
@@ -22,10 +21,11 @@ import { renderMemory } from './screens/memory.js';
 import { renderFriends } from './screens/friends.js';
 import { renderChapter } from './screens/chapter.js';
 import { renderEnding } from './screens/ending.js';
+import { renderTimeline } from './screens/timeline.js';
 
 applyDocumentLocale();
 
-/** @typedef {'intro' | 'lang' | 'map' | 'quiz' | 'chapter' | 'memory' | 'friends' | 'ending'} ScreenId */
+/** @typedef {'intro' | 'lang' | 'map' | 'quiz' | 'chapter' | 'memory' | 'friends' | 'ending' | 'timeline'} ScreenId */
 
 const root = document.getElementById('screen-root');
 const appShell = document.getElementById('app');
@@ -97,7 +97,7 @@ function goToMap(options = {}) {
     return;
   }
 
-  // Path content / GNB friends: pop back to the previous map entry instead of stacking another map.
+  // Path content / GNB timeline: pop back to the previous map entry instead of stacking another map.
   const canPopToMap =
     history.state?.screen === route.screen &&
     ((route.nodeId &&
@@ -105,7 +105,7 @@ function goToMap(options = {}) {
         route.screen === 'memory' ||
         route.screen === 'friends' ||
         route.screen === 'ending')) ||
-      (route.screen === 'friends' && !route.nodeId));
+      route.screen === 'timeline');
 
   if (canPopToMap) {
     history.back();
@@ -113,10 +113,6 @@ function goToMap(options = {}) {
   }
 
   navigate('map');
-}
-
-function isFeedUnlocked() {
-  return loadProgress().nodeStatus.n4 === 'completed';
 }
 
 /**
@@ -129,6 +125,7 @@ function syncRouteWithProgress() {
     route.screen === 'map' ||
     route.screen === 'intro' ||
     route.screen === 'lang' ||
+    route.screen === 'timeline' ||
     (route.screen === 'friends' && !route.nodeId)
   ) {
     return;
@@ -158,7 +155,6 @@ function handleNodeTap(nodeId, status, anchor, anchorEl) {
       variant: 'locked',
       title: localized.title,
       body: t('node.lockedBody'),
-      actionLabel: t('node.lockedAction'),
       anchorRect: anchor,
       anchorEl: anchorEl ?? null,
     });
@@ -249,7 +245,7 @@ function handleResetConfirmed() {
 
 /**
  * Pin GNB to the app shell (always visible under the screen).
- * @param {'map' | 'friends'} active
+ * @param {'map' | 'timeline'} active
  */
 function mountGnb(active) {
   clearGnb();
@@ -261,21 +257,9 @@ function mountGnb(active) {
         if (route.screen === 'map') return;
         navigate('map');
       },
-      onFriends: () => {
-        if (route.screen === 'friends' && !route.nodeId) return;
-        if (!isFeedUnlocked()) {
-          openConfirmModal({
-            title: t('feed.lockedTitle'),
-            body: t('feed.lockedBody'),
-            cancelLabel: t('feed.lockedCancel'),
-            confirmLabel: t('feed.lockedAction'),
-            onCancel: () => {},
-            onConfirm: () => {},
-          });
-          return;
-        }
-        if (route.screen === 'friends') return;
-        navigate('friends');
+      onTimeline: () => {
+        if (route.screen === 'timeline') return;
+        navigate('timeline');
       },
     })
   );
@@ -300,7 +284,7 @@ function render() {
 
   /** @type {HTMLElement | null} */
   let screenEl = null;
-  /** @type {'map' | 'friends' | null} */
+  /** @type {'map' | 'timeline' | null} */
   let gnbActive = null;
 
   if (route.screen === 'intro') {
@@ -326,6 +310,9 @@ function render() {
       },
     });
     gnbActive = 'map';
+  } else if (route.screen === 'timeline') {
+    screenEl = renderTimeline();
+    gnbActive = 'timeline';
   } else if (route.screen === 'friends') {
     if (route.nodeId && route.mode) {
       screenEl = renderFriends({
@@ -334,8 +321,10 @@ function render() {
         onComplete: handleNodeComplete,
       });
     } else {
-      screenEl = renderFriends();
-      gnbActive = 'friends';
+      // Legacy feed route → redirect to timeline archive
+      route = { screen: 'timeline', nodeId: null, mode: null };
+      screenEl = renderTimeline();
+      gnbActive = 'timeline';
     }
   } else {
     const node = route.nodeId ? getNodeById(route.nodeId) : null;

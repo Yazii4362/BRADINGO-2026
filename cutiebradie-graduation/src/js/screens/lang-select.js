@@ -23,7 +23,8 @@ export function renderLangSelect(props) {
   el.className = 'screen screen--lang';
   el.dataset.screen = 'lang';
 
-  let selectedId = getLocale() || DEFAULT_LOCALE;
+  const storedLocale = getLocale();
+  let selectedId = isLocaleId(storedLocale) ? storedLocale : DEFAULT_LOCALE;
 
   const hero = document.createElement('div');
   hero.className = 'lang-hero';

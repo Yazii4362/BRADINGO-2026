@@ -1,7 +1,6 @@
 /**
  * Path node popover — start (green) or locked (dark) bubble.
  * CB / Map / Node Start Sheet
- * Motion mirrors Duolingo path START / locked level bubble.
  *
  * @param {{
  *   title: string,
@@ -42,24 +41,22 @@ export function openNodeStartSheet(props) {
   const bodyHtml = props.body
     ? `<p class="cb-node-start-sheet__body">${props.body}</p>`
     : '';
-  const eyebrowHtml = isLocked
+
+  const ctaHtml = isLocked
     ? ''
-    : '<p class="cb-node-start-sheet__eyebrow">시작</p>';
-  const ctaLabel = props.actionLabel ?? (isLocked ? '잠김' : '시작하기');
+    : `<button
+        type="button"
+        class="cb-node-start-sheet__cta"
+        data-action="start"
+      >
+        ${props.actionLabel ?? ''}
+      </button>`;
 
   sheet.innerHTML = `
     <div class="cb-node-start-sheet__notch" aria-hidden="true"></div>
-    ${eyebrowHtml}
     <h2 id="node-start-title" class="cb-node-start-sheet__title">${props.title}</h2>
     ${bodyHtml}
-    <button
-      type="button"
-      class="cb-node-start-sheet__cta"
-      data-action="start"
-      ${isLocked ? 'disabled aria-disabled="true"' : ''}
-    >
-      ${ctaLabel}
-    </button>
+    ${ctaHtml}
   `;
 
   overlay.appendChild(sheet);
@@ -68,6 +65,7 @@ export function openNodeStartSheet(props) {
   const startBtn = sheet.querySelector('[data-action="start"]');
   const notch = sheet.querySelector('.cb-node-start-sheet__notch');
   let closing = false;
+  const ignoreScrollUntil = Date.now() + 180;
 
   function readAnchorRect() {
     const el = props.anchorEl;
@@ -96,9 +94,21 @@ export function openNodeStartSheet(props) {
   function finishClose() {
     document.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('resize', onReposition);
-    document.removeEventListener('scroll', onReposition, true);
+    window.removeEventListener('orientationchange', onReposition);
+    window.visualViewport?.removeEventListener('resize', onReposition);
+    window.visualViewport?.removeEventListener('scroll', onReposition);
+    detachScrollClosers();
     overlay.remove();
     previouslyFocused?.focus();
+  }
+
+  /** @type {Array<() => void>} */
+  const scrollCloserCleanups = [];
+
+  function detachScrollClosers() {
+    while (scrollCloserCleanups.length) {
+      scrollCloserCleanups.pop()?.();
+    }
   }
 
   /**
@@ -109,7 +119,10 @@ export function openNodeStartSheet(props) {
     closing = true;
     document.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('resize', onReposition);
-    document.removeEventListener('scroll', onReposition, true);
+    window.removeEventListener('orientationchange', onReposition);
+    window.visualViewport?.removeEventListener('resize', onReposition);
+    window.visualViewport?.removeEventListener('scroll', onReposition);
+    detachScrollClosers();
 
     if (reduceMotion) {
       finishClose();
@@ -144,6 +157,33 @@ export function openNodeStartSheet(props) {
     reposition();
   }
 
+  function onMapScrollClose() {
+    if (closing) return;
+    if (Date.now() < ignoreScrollUntil) return;
+    props.onDismiss?.();
+    close();
+  }
+
+  /**
+   * Bind close-on-scroll to the real map scroller(s), not document (scroll doesn't bubble).
+   */
+  function attachScrollClosers() {
+    const roots = new Set();
+    const anchor = props.anchorEl;
+    if (anchor instanceof HTMLElement) {
+      const mapScreen = anchor.closest('.screen--map');
+      const canvas = anchor.closest('.map-canvas');
+      if (mapScreen) roots.add(mapScreen);
+      if (canvas) roots.add(canvas);
+    }
+    document.querySelectorAll('.screen--map, .map-canvas').forEach((node) => roots.add(node));
+
+    roots.forEach((node) => {
+      node.addEventListener('scroll', onMapScrollClose, { passive: true });
+      scrollCloserCleanups.push(() => node.removeEventListener('scroll', onMapScrollClose));
+    });
+  }
+
   overlay.addEventListener('click', (event) => {
     if (event.target === overlay) {
       props.onDismiss?.();
@@ -162,8 +202,10 @@ export function openNodeStartSheet(props) {
   document.addEventListener('keydown', onKeyDown);
   if (hasAnchor) {
     window.addEventListener('resize', onReposition);
-    // Capture: map may scroll inside .screen--map / .map-canvas, not window.
-    document.addEventListener('scroll', onReposition, true);
+    window.addEventListener('orientationchange', onReposition);
+    window.visualViewport?.addEventListener('resize', onReposition);
+    window.visualViewport?.addEventListener('scroll', onReposition);
+    attachScrollClosers();
   }
 
   requestAnimationFrame(() => {
@@ -182,7 +224,54 @@ export function openNodeStartSheet(props) {
 }
 
 /**
- * Place bubble under the tapped node, clamped to the viewport.
+ * @returns {{ left: number, right: number, top: number, bottom: number, width: number }}
+ */
+function getPlacementBounds() {
+  const margin = 12;
+  const app = document.getElementById('app');
+  const appRect = app?.getBoundingClientRect();
+  const vv = window.visualViewport;
+  const viewLeft = vv?.offsetLeft ?? 0;
+  const viewTop = vv?.offsetTop ?? 0;
+  const viewRight = viewLeft + (vv?.width ?? window.innerWidth);
+  const viewBottom = viewTop + (vv?.height ?? window.innerHeight);
+
+  const frameLeft = appRect ? Math.max(appRect.left, viewLeft) : viewLeft;
+  const frameRight = appRect ? Math.min(appRect.right, viewRight) : viewRight;
+  const frameTop = appRect ? Math.max(appRect.top, viewTop) : viewTop;
+  let frameBottom = appRect ? Math.min(appRect.bottom, viewBottom) : viewBottom;
+
+  const gnb = document.getElementById('app-gnb');
+  if (gnb) {
+    const gnbRect = gnb.getBoundingClientRect();
+    if (gnbRect.height > 0) {
+      frameBottom = Math.min(frameBottom, gnbRect.top);
+    }
+  }
+
+  const safeBottom =
+    Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-bottom)')
+    ) || 0;
+  // env() via getPropertyValue often returns empty; use padding from GNB instead.
+  void safeBottom;
+
+  const left = frameLeft + margin;
+  const right = frameRight - margin;
+  const top = frameTop + margin;
+  const bottom = frameBottom - margin;
+
+  return {
+    left,
+    right,
+    top,
+    bottom,
+    width: Math.max(0, right - left),
+  };
+}
+
+/**
+ * Place bubble under/above the tapped node, clamped to #app ∩ visual viewport above GNB.
  * Notch tracks the node center even when the sheet is horizontally clamped.
  * @param {HTMLElement} sheet
  * @param {DOMRect} anchorRect
@@ -190,27 +279,42 @@ export function openNodeStartSheet(props) {
  */
 function positionNearAnchor(sheet, anchorRect, notch) {
   const gap = 14;
-  const margin = 16;
-  const width = Math.min(340, window.innerWidth - margin * 2);
+  const bounds = getPlacementBounds();
+  const width = Math.min(320, Math.max(200, bounds.width));
   sheet.style.width = `${width}px`;
 
-  let left = anchorRect.left + anchorRect.width / 2 - width / 2;
-  left = Math.max(margin, Math.min(left, window.innerWidth - width - margin));
+  const anchorCenterX = anchorRect.left + anchorRect.width / 2;
+  let left = anchorCenterX - width / 2;
+  left = Math.max(bounds.left, Math.min(left, bounds.right - width));
 
+  const sheetHeight = sheet.offsetHeight || (sheet.classList.contains('cb-node-start-sheet--locked') ? 96 : 140);
   let top = anchorRect.bottom + gap;
-  const sheetHeight = sheet.offsetHeight || 160;
-  if (top + sheetHeight > window.innerHeight - margin) {
-    top = Math.max(margin, anchorRect.top - sheetHeight - gap);
+  const fitsBelow = top + sheetHeight <= bounds.bottom;
+  const aboveTop = anchorRect.top - sheetHeight - gap;
+  const fitsAbove = aboveTop >= bounds.top;
+
+  if (!fitsBelow && fitsAbove) {
+    top = aboveTop;
     sheet.classList.add('cb-node-start-sheet--above');
+  } else if (!fitsBelow && !fitsAbove) {
+    // Prefer above when near bottom (GNB), else below — then clamp.
+    if (anchorRect.bottom > (bounds.top + bounds.bottom) / 2) {
+      top = Math.max(bounds.top, Math.min(aboveTop, bounds.bottom - sheetHeight));
+      sheet.classList.add('cb-node-start-sheet--above');
+    } else {
+      top = Math.max(bounds.top, Math.min(top, bounds.bottom - sheetHeight));
+      sheet.classList.remove('cb-node-start-sheet--above');
+    }
   } else {
     sheet.classList.remove('cb-node-start-sheet--above');
   }
+
+  top = Math.max(bounds.top, Math.min(top, bounds.bottom - sheetHeight));
 
   sheet.style.left = `${left}px`;
   sheet.style.top = `${top}px`;
 
   if (notch) {
-    const anchorCenterX = anchorRect.left + anchorRect.width / 2;
     const notchPad = 18;
     const notchX = Math.max(notchPad, Math.min(width - notchPad, anchorCenterX - left));
     notch.style.left = `${notchX}px`;

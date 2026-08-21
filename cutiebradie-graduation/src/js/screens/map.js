@@ -86,6 +86,7 @@ export function renderMap(props) {
       {
         id: node.id,
         title: localized.title,
+        mapLabel: localized.mapLabel,
         status,
         pathIndex: index,
       },

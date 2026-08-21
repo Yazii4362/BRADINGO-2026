@@ -17,7 +17,8 @@ export function renderIntro(props) {
       alt=""
       width="576"
       height="1024"
-      decoding="async"
+      decoding="sync"
+      fetchpriority="high"
       aria-hidden="true"
     />
     <div class="intro-hero">

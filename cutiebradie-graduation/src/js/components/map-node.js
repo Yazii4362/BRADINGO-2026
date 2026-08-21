@@ -45,6 +45,7 @@ function bindPressSwap(asset, defaultSrc, pressedSrc, btn) {
  * @param {{
  *   id: string,
  *   title: string,
+ *   mapLabel?: string,
  *   status: 'locked' | 'active' | 'completed',
  *   pathIndex: number
  * }} props
@@ -62,6 +63,7 @@ export function createMapNodeButton(props, onClick) {
 
   const isEnding = props.id === ENDING_NODE_ID;
   const isLocked = props.status === 'locked';
+  const mapLabel = props.mapLabel || props.title;
 
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -103,7 +105,7 @@ export function createMapNodeButton(props, onClick) {
 
   const label = document.createElement('span');
   label.className = 'cb-map-node__label';
-  label.textContent = props.title;
+  label.textContent = mapLabel;
 
   stack.append(btn, label);
   wrap.appendChild(stack);

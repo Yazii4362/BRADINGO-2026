@@ -1,4 +1,3 @@
-import { getChapterByNodeId } from '../data/course.js';
 import { t } from '../i18n.js';
 
 const BACK_ICON = `
@@ -7,8 +6,16 @@ const BACK_ICON = `
 </svg>
 `;
 
+/** @type {ReadonlyArray<{ id: string, labelKey: string, accent: string }>} */
+const REVIEW_ITEMS = Object.freeze([
+  Object.freeze({ id: 'survive', labelKey: 'review.item.survive', accent: 'green' }),
+  Object.freeze({ id: 'adapt', labelKey: 'review.item.adapt', accent: 'blue' }),
+  Object.freeze({ id: 'friends', labelKey: 'review.item.friends', accent: 'purple' }),
+  Object.freeze({ id: 'will', labelKey: 'review.item.will', accent: 'orange' }),
+]);
+
 /**
- * Lightweight path chapter (non-quiz content gate).
+ * N2 — Graduation qualification review (playful interaction).
  * @param {{
  *   nodeId: string,
  *   title: string,
@@ -18,70 +25,157 @@ const BACK_ICON = `
  * }} props
  */
 export function renderChapter(props) {
-  const content = getChapterByNodeId(props.nodeId);
-  const localizedBody = t(`chapter.${props.nodeId}.body`);
-  const body =
-    (!localizedBody.startsWith('chapter.') && localizedBody) ||
-    content?.body ||
-    '';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /** @type {number[]} */
+  const timers = [];
 
   const el = document.createElement('section');
-  el.className = 'screen screen--chapter';
+  el.className = 'screen screen--chapter screen--review';
   el.dataset.screen = 'chapter';
   el.dataset.nodeId = props.nodeId;
 
   const header = document.createElement('header');
-  header.className = 'chapter-header';
+  header.className = 'chapter-header review-header';
   header.innerHTML = `
     <button type="button" class="chapter-back" aria-label="${t('chapter.backToMap')}">${BACK_ICON}</button>
-    <h1 class="chapter-title">${props.title}</h1>
+    <p class="review-progress">${t('review.progress')}</p>
   `;
   header.querySelector('.chapter-back')?.addEventListener('click', () => {
+    clearTimers();
     props.onBackToMap();
   });
 
-  const highlights = content?.highlights ?? [];
-  const cardsHtml = highlights
-    .map((item) => {
-      const label = t(`chapter.${props.nodeId}.${item.id}`) || item.label;
-      return `
-        <li class="chapter-card">
-          <img class="chapter-card__image" src="${item.image}" alt="" width="120" height="120" decoding="async" />
-          <p class="chapter-card__label">${label}</p>
-        </li>
-      `;
-    })
-    .join('');
-
   const main = document.createElement('div');
-  main.className = 'chapter-body';
-  main.innerHTML = `
+  main.className = 'review-body';
+
+  const titleBlock = document.createElement('div');
+  titleBlock.className = 'review-intro';
+  titleBlock.innerHTML = `
+    <h1 class="review-title">${t('review.title')}</h1>
+    <p class="review-desc">${t('review.desc')}</p>
+  `;
+
+  const stage = document.createElement('div');
+  stage.className = 'review-stage';
+  stage.innerHTML = `
     <img
-      class="chapter-art"
+      class="review-character"
       src="./assets/images/quiz/n2-character-full.png"
       alt=""
-      width="220"
-      height="220"
+      width="180"
+      height="180"
       decoding="async"
     />
-    <p class="chapter-copy">${body}</p>
-    ${
-      cardsHtml
-        ? `<ul class="chapter-cards" aria-label="${t('chapter.n2.highlightsAria')}">${cardsHtml}</ul>`
-        : ''
-    }
+  `;
+
+  const list = document.createElement('ul');
+  list.className = 'review-list';
+  list.setAttribute('aria-label', t('review.listAria'));
+
+  /** @type {Map<string, HTMLElement>} */
+  const statusEls = new Map();
+
+  REVIEW_ITEMS.forEach((item) => {
+    const row = document.createElement('li');
+    row.className = `review-row review-row--${item.accent}`;
+    row.dataset.itemId = item.id;
+    row.innerHTML = `
+      <span class="review-row__dot" aria-hidden="true"></span>
+      <span class="review-row__label">${t(item.labelKey)}</span>
+      <span class="review-row__status" data-role="status">${
+        item.id === 'will' ? t('review.measuring') : '…'
+      }</span>
+    `;
+    const status = row.querySelector('[data-role="status"]');
+    if (status instanceof HTMLElement) statusEls.set(item.id, status);
+    list.appendChild(row);
+  });
+
+  const result = document.createElement('div');
+  result.className = 'review-result';
+  result.hidden = true;
+  result.innerHTML = `
+    <p class="review-result__eyebrow">${t('review.resultLabel')}</p>
+    <p class="review-result__title">${t('review.resultTitle')}</p>
+    <p class="review-result__body">${t('review.resultBody')}</p>
   `;
 
   const footer = document.createElement('footer');
-  footer.className = 'chapter-footer';
+  footer.className = 'chapter-footer review-footer';
+
   const completeBtn = document.createElement('button');
   completeBtn.type = 'button';
   completeBtn.className = 'cb-button cb-button--primary cb-button--fill';
   completeBtn.textContent =
-    props.mode === 'replay' ? t('chapter.backToMap') : t('chapter.complete');
-  completeBtn.addEventListener('click', () => props.onComplete());
-  footer.appendChild(completeBtn);
+    props.mode === 'replay' ? t('chapter.backToMap') : t('review.approve');
+  completeBtn.disabled = props.mode === 'play';
+  completeBtn.addEventListener('click', () => {
+    if (props.mode === 'play' && completeBtn.disabled) return;
+    clearTimers();
+    props.onComplete();
+  });
 
+  const secondary = document.createElement('button');
+  secondary.type = 'button';
+  secondary.className = 'cb-button cb-button--text review-secondary';
+  secondary.textContent = t('chapter.backToMap');
+  secondary.hidden = props.mode !== 'play';
+  secondary.addEventListener('click', () => {
+    clearTimers();
+    props.onBackToMap();
+  });
+
+  footer.append(completeBtn, secondary);
+  main.append(titleBlock, stage, list, result);
   el.append(header, main, footer);
+
+  function clearTimers() {
+    while (timers.length) {
+      const id = timers.pop();
+      if (id != null) window.clearTimeout(id);
+    }
+  }
+
+  function markPass(id) {
+    const status = statusEls.get(id);
+    if (!status) return;
+    status.textContent = t('review.pass');
+    status.classList.add('is-pass');
+    const row = list.querySelector(`[data-item-id="${id}"]`);
+    row?.classList.add('is-done');
+  }
+
+  function finishReview() {
+    markPass('will');
+    result.hidden = false;
+    result.classList.add('is-visible');
+    if (props.mode === 'play') {
+      completeBtn.disabled = false;
+    }
+  }
+
+  if (props.mode === 'replay' || reduceMotion) {
+    REVIEW_ITEMS.forEach((item) => markPass(item.id));
+    result.hidden = false;
+    result.classList.add('is-visible');
+    completeBtn.disabled = false;
+  } else {
+    const schedule = [
+      { id: 'survive', delay: 450 },
+      { id: 'adapt', delay: 950 },
+      { id: 'friends', delay: 1450 },
+      { id: 'will-done', delay: 2600 },
+    ];
+    schedule.forEach((step) => {
+      timers.push(
+        window.setTimeout(() => {
+          if (step.id === 'will-done') finishReview();
+          else markPass(step.id);
+        }, step.delay)
+      );
+    });
+  }
+
+  el.__cleanup = () => clearTimers();
   return el;
 }

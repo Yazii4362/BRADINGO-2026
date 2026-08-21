@@ -35,7 +35,7 @@ export const COURSE_NODES = Object.freeze([
   {
     id: 'n2',
     order: 2,
-    title: '병건이의 학교생활',
+    title: '졸업 자격 심사',
     type: 'content',
     typeLabel: '콘텐츠',
     screen: 'chapter',
@@ -125,7 +125,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'bradie',
             label: '',
-            image: './assets/images/quiz/n1-bradie-real.webp',
+            image: './assets/images/quiz/n1-bradie.png',
             alt: '정병건',
           }),
         ]),
@@ -712,28 +712,33 @@ export function getGraduationStats(progress = null) {
     ? COURSE_NODES.filter((node) => progress.nodeStatus[node.id] === 'completed').length
     : totalNodes;
 
-  const courseValue = `${completedCount} / ${totalNodes}`;
+  const stageValue = `${completedCount} / ${totalNodes}`;
 
   /** @type {ReadonlyArray<{ id: string, label: string, value: string, valueHtml?: string, icon: string }>} */
   const summaryRows = [
     {
-      id: 'period',
-      label: t('ending.stat.period'),
-      value: '2018 → 2026',
-      icon: './assets/images/ending/icon-calendar.svg',
+      id: 'stages',
+      label: t('ending.stat.stages'),
+      value: stageValue,
+      icon: './assets/images/ending/icon-book.svg',
     },
     {
-      id: 'courses',
-      label: t('ending.stat.chapters'),
-      value: courseValue,
-      icon: './assets/images/ending/icon-book.svg',
+      id: 'period',
+      label: t('ending.stat.uosLife'),
+      value: '2018 — 2026',
+      icon: './assets/images/ending/icon-calendar.svg',
     },
     {
       id: 'memories',
       label: t('ending.stat.memories'),
       value: t('ending.stat.memoriesValue'),
-      valueHtml: `${t('ending.stat.memoriesValue')} <span class="ending-infinity">∞</span>`,
       icon: './assets/images/icons/heart.svg',
+    },
+    {
+      id: 'letters',
+      label: t('ending.stat.letters'),
+      value: t('ending.stat.lettersValue'),
+      icon: './assets/images/ending/icon-star.svg',
     },
   ];
 
@@ -741,6 +746,7 @@ export function getGraduationStats(progress = null) {
     totalNodes,
     completedCount,
     title: 'BRADUATION COMPLETE!',
+    stageLabel: t('ending.stageLabel'),
     lead: t('ending.lead'),
     tagline: t('ending.tagline'),
     subtitle: `${t('ending.lead')}\n${t('ending.tagline')}`,

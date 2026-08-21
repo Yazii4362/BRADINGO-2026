@@ -159,9 +159,7 @@
 .screen--enter .friends-deck { animation-delay: 160ms; }
 
 /* —— Ambient —— */
-.intro-bg {
-  animation: soft-float 7.5s ease-in-out infinite;
-}
+/* Intro bg stays static for full-bleed cover (no letterbox from float translate). */
 
 .lang-hero__duo {
   animation: soft-bob 5.6s ease-in-out infinite;
@@ -368,6 +366,6 @@
   }
 
   .intro-bg {
-    transform: translateX(-50%);
+    transform: none;
   }
 }

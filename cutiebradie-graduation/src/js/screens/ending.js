@@ -29,7 +29,7 @@ export function renderEnding(props) {
       : stats.completedCount;
 
   const summaryRows = stats.summaryRows.map((row) => {
-    if (row.id === 'courses') {
+    if (row.id === 'stages') {
       return { ...row, value: `${completedDisplay} / ${stats.totalNodes}` };
     }
     return row;
@@ -74,39 +74,101 @@ export function renderEnding(props) {
     .join('');
 
   el.innerHTML = `
-    <div class="ending-bg" aria-hidden="true">
-      <img class="ending-bg__img" src="${stats.heroImage}" alt="" decoding="async" />
-      <div class="ending-bg__veil"></div>
-      ${reduceMotion ? '' : '<div class="ending-confetti"></div>'}
+    <div class="ending-splash" data-role="splash" aria-hidden="false">
+      <img
+        class="ending-splash__bg"
+        src="./assets/images/intro/bg.webp"
+        alt=""
+        width="576"
+        height="1024"
+        decoding="sync"
+        fetchpriority="high"
+      />
     </div>
-    <div class="ending-body">
-      <button type="button" class="ending-title ending-egg" data-action="egg" aria-label="${t('ending.eggAria')}">
-        ${stats.title}
-      </button>
-      <p class="ending-lead">${stats.lead}</p>
-      <p class="ending-tagline">${stats.tagline}</p>
-      <section class="ending-summary" aria-label="${stats.summaryTitle}">
-        <h2 class="ending-summary__title">— ${stats.summaryTitle} —</h2>
-        <ul class="ending-stats">${summaryHtml}</ul>
-      </section>
-      <p class="ending-status" role="status" aria-live="polite"></p>
-      <div class="ending-actions">
-        <button type="button" class="ending-save-btn" data-action="export" aria-label="${t('ending.saveAria')}">
-          <img class="ending-save-btn__icon" src="./assets/images/ending/btn-save.svg" alt="" width="50" height="48" decoding="async" />
+    <div class="ending-stage-wrap" data-role="stage" hidden>
+      <div class="ending-bg" aria-hidden="true">
+        <img class="ending-bg__img" src="${stats.heroImage}" alt="" decoding="async" />
+        <div class="ending-bg__veil"></div>
+        ${reduceMotion ? '' : '<div class="ending-confetti"></div>'}
+      </div>
+      <div class="ending-body">
+        <p class="ending-stage">${stats.stageLabel}</p>
+        <button type="button" class="ending-title ending-egg" data-action="egg" aria-label="${t('ending.eggAria')}">
+          ${stats.title}
         </button>
-        <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">${t('ending.resetConfirm')}</button>
+        <p class="ending-lead">${stats.lead}</p>
+        <p class="ending-tagline">${stats.tagline}</p>
+        <section class="ending-summary" aria-label="${stats.summaryTitle}">
+          <h2 class="ending-summary__title">— ${stats.summaryTitle} —</h2>
+          <ul class="ending-stats">${summaryHtml}</ul>
+        </section>
+        <section class="ending-cheer" aria-label="${t('ending.cheerTitle')}">
+          <h2 class="ending-cheer__title">${t('ending.cheerTitle')}</h2>
+          <button type="button" class="cb-button cb-button--primary cb-button--fill ending-cheer__btn" data-action="cheer">
+            ${t('ending.cheerCta')}
+          </button>
+          <p class="ending-cheer__hint">${t('ending.cheerHint')}</p>
+          <p class="ending-cheer__toast" role="status" aria-live="polite" hidden></p>
+        </section>
+        <p class="ending-status" role="status" aria-live="polite"></p>
+        <div class="ending-actions">
+          <button type="button" class="cb-button cb-button--primary cb-button--fill ending-save-text" data-action="export" aria-label="${t('ending.saveAria')}">
+            ${t('ending.saveCta')}
+          </button>
+          <p class="ending-save-hint">${t('ending.saveHint')}</p>
+          <button type="button" class="cb-button cb-button--text ending-btn" data-action="reset">${t('ending.resetConfirm')}</button>
+        </div>
+        <p class="ending-congrats">${t('ending.congrats')}</p>
       </div>
     </div>
   `;
 
+  const splashEl = el.querySelector('[data-role="splash"]');
+  const stageEl = el.querySelector('[data-role="stage"]');
   const statusEl = el.querySelector('.ending-status');
   const exportBtn = el.querySelector('[data-action="export"]');
+  const cheerBtn = el.querySelector('[data-action="cheer"]');
+  const cheerToast = el.querySelector('.ending-cheer__toast');
+
+  /** @type {number | null} */
+  let splashTimer = null;
+  const SPLASH_MS = reduceMotion ? 600 : 2800;
+
+  function revealStage() {
+    if (!(splashEl instanceof HTMLElement) || !(stageEl instanceof HTMLElement)) return;
+    splashEl.classList.add('is-leaving');
+    stageEl.hidden = false;
+    requestAnimationFrame(() => {
+      stageEl.classList.add('is-visible');
+    });
+    window.setTimeout(() => {
+      splashEl.remove();
+    }, reduceMotion ? 0 : 420);
+  }
+
+  splashTimer = window.setTimeout(() => {
+    splashTimer = null;
+    revealStage();
+  }, SPLASH_MS);
 
   const unlockEgg = createTapUnlock({
     taps: 5,
     onUnlock: () => openCoffeeCoupon(),
   });
   el.querySelector('[data-action="egg"]')?.addEventListener('click', unlockEgg);
+
+  cheerBtn?.addEventListener('click', () => {
+    if (!(cheerBtn instanceof HTMLElement)) return;
+    cheerBtn.classList.remove('is-pop');
+    // restart animation
+    void cheerBtn.offsetWidth;
+    cheerBtn.classList.add('is-pop');
+    spawnHeartBurst(el.querySelector('.ending-cheer'), reduceMotion);
+    if (cheerToast instanceof HTMLElement) {
+      cheerToast.hidden = false;
+      cheerToast.textContent = t('ending.cheerToast');
+    }
+  });
 
   el.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
     openConfirmModal({
@@ -138,7 +200,7 @@ export function renderEnding(props) {
       exportBtn.classList.toggle('is-loading', busy);
       exportBtn.setAttribute(
         'aria-label',
-        next === 'failure' ? '다시 시도' : busy ? '이미지 준비 중' : '이미지로 저장'
+        next === 'failure' ? t('ending.saveRetry') : busy ? t('ending.savePreparing') : t('ending.saveAria')
       );
     }
   }
@@ -164,7 +226,7 @@ export function renderEnding(props) {
    */
   async function deliverReadyBlob(blob) {
     if (exportStatus === 'generating') return;
-    setExportStatus('generating', '이미지를 준비하고 있어요');
+    setExportStatus('generating', t('ending.savePreparingMsg'));
     try {
       const mode = await deliverPngBlob(blob, EXPORT_FILE_NAME);
       if (mode === 'cancelled') {
@@ -174,22 +236,22 @@ export function renderEnding(props) {
       if (mode === 'download' && shouldShowMobilePreview()) {
         showPngPreview(blob);
       }
-      setExportStatus('success', '이미지가 준비됐어요');
+      setExportStatus('success', t('ending.saveReady'));
     } catch (error) {
       console.error('[ending/export] 전달 실패', error);
       if (shouldShowMobilePreview()) {
         showPngPreview(blob);
-        setExportStatus('success', '이미지를 길게 눌러 저장해 주세요');
+        setExportStatus('success', t('ending.saveLongPress'));
         return;
       }
-      setExportStatus('failure', '이미지를 만들지 못했어요');
+      setExportStatus('failure', t('ending.saveFail'));
     }
   }
 
   /** Cold path: still rendering — gesture will be lost; preview fallback on iOS. */
   async function runExportWhenPending() {
     if (exportStatus === 'generating') return;
-    setExportStatus('generating', '이미지를 준비하고 있어요');
+    setExportStatus('generating', t('ending.savePreparingMsg'));
 
     /** @type {Blob | null} */
     let blob = null;
@@ -199,7 +261,7 @@ export function renderEnding(props) {
       readyBlob = blob;
     } catch (error) {
       console.error('[ending/export] PNG 생성 실패', error);
-      setExportStatus('failure', '이미지를 만들지 못했어요');
+      setExportStatus('failure', t('ending.saveFail'));
       return;
     }
 
@@ -209,19 +271,18 @@ export function renderEnding(props) {
         setExportStatus('idle', '');
         return;
       }
-      // Gesture is usually gone here — prefer long-press preview on touch devices.
       if (mode !== 'share' && shouldShowMobilePreview()) {
         showPngPreview(blob);
       }
-      setExportStatus('success', '이미지가 준비됐어요');
+      setExportStatus('success', t('ending.saveReady'));
     } catch (error) {
       console.error('[ending/export] 전달 실패', error);
       if (shouldShowMobilePreview() && blob) {
         showPngPreview(blob);
-        setExportStatus('success', '이미지를 길게 눌러 저장해 주세요');
+        setExportStatus('success', t('ending.saveLongPress'));
         return;
       }
-      setExportStatus('failure', '이미지를 만들지 못했어요');
+      setExportStatus('failure', t('ending.saveFail'));
     }
   }
 
@@ -233,7 +294,34 @@ export function renderEnding(props) {
     props.onEndingRendered();
   });
 
+  el.__cleanup = () => {
+    if (splashTimer != null) {
+      window.clearTimeout(splashTimer);
+      splashTimer = null;
+    }
+  };
+
   return el;
+}
+
+/**
+ * @param {Element | null} host
+ * @param {boolean} reduceMotion
+ */
+function spawnHeartBurst(host, reduceMotion) {
+  if (!host || reduceMotion) return;
+  const burst = document.createElement('div');
+  burst.className = 'ending-heart-burst';
+  burst.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 6; i += 1) {
+    const heart = document.createElement('span');
+    heart.className = 'ending-heart-burst__item';
+    heart.textContent = '💚';
+    heart.style.setProperty('--i', String(i));
+    burst.appendChild(heart);
+  }
+  host.appendChild(burst);
+  window.setTimeout(() => burst.remove(), 900);
 }
 
 function shouldShowMobilePreview() {
