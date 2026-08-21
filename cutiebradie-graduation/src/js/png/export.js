@@ -1,154 +1,71 @@
 import { EXPORT_FILE_NAME } from '../constants.js';
-import { getGraduationStats } from '../data/course.js';
-import { importFromCdns } from '../lib/cdn-import.js';
 
 export { EXPORT_FILE_NAME } from '../constants.js';
-export const PNG_SIZE = Object.freeze({ width: 1080, height: 1920 });
 
-const HTML_TO_IMAGE_URLS = Object.freeze([
-  'https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/+esm',
-  'https://unpkg.com/html-to-image@1.11.13/+esm',
-  'https://esm.sh/html-to-image@1.11.13',
-]);
+/** Graduation card export uses the site OG thumbnail as the saved image. */
+export const EXPORT_IMAGE_SRC = './assets/images/og-thumbnail.jpg';
 
-/** @type {Promise<{ toBlob: Function }> | null} */
-let htmlToImagePromise = null;
+/** Thumbnail native size (1200×630). Kept for callers that still reference PNG_SIZE. */
+export const PNG_SIZE = Object.freeze({ width: 1200, height: 630 });
 
-/** Prefetch html-to-image so the save tap does not wait on the first CDN round-trip. */
+/** @type {Promise<Blob> | null} */
+let preparedBlobPromise = null;
+
+/**
+ * Prefetch the export thumbnail so the save tap is ready sooner.
+ */
 export function prefetchExportLibs() {
-  if (!htmlToImagePromise) {
-    htmlToImagePromise = importFromCdns(HTML_TO_IMAGE_URLS, 'html-to-image');
-  }
-  return htmlToImagePromise;
+  return prepareExportPngBlob();
 }
 
 /**
- * @param {{ nodeStatus?: Record<string, string> } | null} [progress]
- */
-export function createExportCard(progress = null) {
-  const stats = getGraduationStats(progress);
-  const card = document.createElement('div');
-  card.className = 'cb-export-card';
-  card.setAttribute('aria-hidden', 'true');
-  card.style.width = `${PNG_SIZE.width}px`;
-  card.style.height = `${PNG_SIZE.height}px`;
-
-  const summaryHtml = stats.summaryRows
-    .map(
-      (row) => `
-        <li class="cb-export-card__stat">
-          <img class="cb-export-card__stat-icon" src="${row.icon}" alt="" width="48" height="48" />
-          <span class="cb-export-card__stat-label">${row.label}</span>
-          <strong class="cb-export-card__stat-value">${row.valueHtml ?? row.value}</strong>
-        </li>
-      `
-    )
-    .join('');
-
-  card.innerHTML = `
-    <div class="cb-export-card__bg" aria-hidden="true">
-      <img class="cb-export-card__bg-img" src="${stats.heroImage}" alt="" />
-      <div class="cb-export-card__veil"></div>
-    </div>
-    <div class="cb-export-card__inner">
-      <h1 class="cb-export-card__title">${stats.title}</h1>
-      <p class="cb-export-card__lead">${stats.lead}</p>
-      <p class="cb-export-card__tagline">${stats.tagline}</p>
-      <section class="cb-export-card__summary">
-        <h2 class="cb-export-card__summary-title">— ${stats.summaryTitle} —</h2>
-        <ul class="cb-export-card__stats">${summaryHtml}</ul>
-      </section>
-    </div>
-  `;
-
-  return card;
-}
-
-/**
- * Mount card off-screen for capture, then remove.
- * @param {HTMLElement} card
- */
-export function mountExportCard(card) {
-  const host = document.createElement('div');
-  host.className = 'export-card-host';
-  host.appendChild(card);
-  document.body.appendChild(host);
-  return () => host.remove();
-}
-
-/**
- * @param {HTMLElement} root
- */
-export async function waitForExportAssets(root) {
-  if (document.fonts?.ready) {
-    await document.fonts.ready;
-  }
-
-  const images = [...root.querySelectorAll('img')];
-  await Promise.all(
-    images.map(
-      (img) =>
-        new Promise((resolve) => {
-          if (img.complete && img.naturalWidth > 0) {
-            resolve();
-            return;
-          }
-          const done = () => resolve();
-          img.addEventListener('load', done, { once: true });
-          img.addEventListener('error', done, { once: true });
-          if (typeof img.decode === 'function') {
-            img.decode().then(done).catch(done);
-          }
-        })
-    )
-  );
-}
-
-/**
- * @param {HTMLElement} card
+ * Load the OG thumbnail and convert it to a PNG blob for share/download.
+ * @param {{ nodeStatus?: Record<string, string> } | null} [_progress]
  * @returns {Promise<Blob>}
  */
-export async function renderExportCardToPngBlob(card) {
-  const { toBlob } = await prefetchExportLibs();
-  await waitForExportAssets(card);
-
-  const blob = await toBlob(card, {
-    width: PNG_SIZE.width,
-    height: PNG_SIZE.height,
-    pixelRatio: 1,
-    cacheBust: false,
-    backgroundColor: '#061433',
-  });
-
-  if (!blob) {
-    throw new Error('html-to-image returned empty blob');
+export async function prepareExportPngBlob(_progress = null) {
+  if (!preparedBlobPromise) {
+    preparedBlobPromise = loadThumbnailAsPngBlob().catch((error) => {
+      preparedBlobPromise = null;
+      throw error;
+    });
   }
-  return blob;
+  return preparedBlobPromise;
 }
 
 /**
- * Build a PNG while the ending screen is idle so the save tap can call
- * navigator.share() without awaiting blob work first (iOS user-gesture rule).
- * @param {{ nodeStatus?: Record<string, string> } | null} progress
  * @returns {Promise<Blob>}
  */
-export async function prepareExportPngBlob(progress = null) {
-  prefetchExportLibs();
-  const card = createExportCard(progress);
-  const unmount = mountExportCard(card);
+async function loadThumbnailAsPngBlob() {
+  const response = await fetch(EXPORT_IMAGE_SRC, { cache: 'force-cache' });
+  if (!response.ok) {
+    throw new Error(`Failed to load export image (${response.status})`);
+  }
+
+  const sourceBlob = await response.blob();
+  const bitmap = await createImageBitmap(sourceBlob);
   try {
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-    const images = [...card.querySelectorAll('img')];
-    for (const img of images) {
-      if (img.getAttribute('src') && img.complete && img.naturalWidth === 0) {
-        throw new Error('ExportCard image failed to load');
-      }
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Canvas 2D unavailable');
     }
+    ctx.drawImage(bitmap, 0, 0);
 
-    return await renderExportCardToPngBlob(card);
+    const pngBlob = await new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Failed to encode PNG'));
+        },
+        'image/png'
+      );
+    });
+    return pngBlob;
   } finally {
-    unmount();
+    bitmap.close?.();
   }
 }
 
@@ -174,7 +91,6 @@ export async function deliverPngBlob(blob, filename = EXPORT_FILE_NAME) {
 
   if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
     try {
-      // Must invoke share() synchronously in the user-gesture turn.
       const sharing = navigator.share({ files: [file], title: filename });
       await sharing;
       return 'share';
@@ -183,7 +99,6 @@ export async function deliverPngBlob(blob, filename = EXPORT_FILE_NAME) {
       if (name === 'AbortError') {
         return 'cancelled';
       }
-      // NotAllowedError: gesture consumed by prior awaits — fall through.
       console.warn('[export] share failed, falling back', name || error);
     }
   }
@@ -199,7 +114,6 @@ export async function deliverPngBlob(blob, filename = EXPORT_FILE_NAME) {
     anchor.remove();
     return 'download';
   } finally {
-    // Keep URL briefly for mobile preview fallback callers.
     window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
   }
 }
@@ -218,7 +132,7 @@ export function showPngPreview(blob) {
   overlay.innerHTML = `
     <div class="cb-confirm-modal png-preview" role="dialog" aria-modal="true" aria-labelledby="png-preview-title">
       <h2 id="png-preview-title" class="cb-confirm-modal__title">이미지가 준비됐어요</h2>
-      <p class="cb-confirm-modal__body">이미지를 길게 눌러 저장해 주세요.</p>
+      <p class="cb-confirm-modal__body">이미지를 길게 눌러 저장해 주세요</p>
       <img class="png-preview__img" src="${url}" alt="졸업 축하 카드 미리보기" />
       <div class="cb-confirm-modal__actions">
         <button type="button" class="cb-button cb-button--primary" data-action="close">닫기</button>

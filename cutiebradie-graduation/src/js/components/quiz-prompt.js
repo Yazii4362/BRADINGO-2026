@@ -14,7 +14,12 @@ export function createQuizPrompt(props) {
 
   const badge = props.badge?.trim() || '';
   const variant =
-    props.badgeVariant ?? (badge === '어려운 문제' ? 'hard' : badge ? 'new-word' : '');
+    props.badgeVariant ??
+    (badge === '어려운 문제' || badge === 'Hard exercise' || badge === 'むずかしい問題' || badge === 'Ejercicio difícil'
+      ? 'hard'
+      : badge
+        ? 'new-word'
+        : '');
   const word = props.promptWord?.trim() || '';
   const iconSrc =
     variant === 'hard'

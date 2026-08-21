@@ -21,18 +21,18 @@
 @keyframes screen-enter {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.985);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 @keyframes feedback-slide-up {
   from {
     opacity: 0;
-    transform: translateY(100%);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -43,7 +43,7 @@
 @keyframes soft-rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -139,24 +139,28 @@
 .screen--enter .friends-deck,
 .screen--enter .quiz-body > *,
 .screen--enter .chapter-body > * {
-  animation: soft-rise 520ms var(--ease-out) both;
+  animation: soft-rise var(--motion-panel) var(--ease-out) both;
 }
 
-.screen--enter .intro-lead { animation-delay: 80ms; }
-.screen--enter .cb-button-row { animation-delay: 160ms; }
+.screen--enter .intro-lead { animation-delay: 60ms; }
+.screen--enter .cb-button-row { animation-delay: 120ms; }
 
-.screen--enter .lang-hero { animation-delay: 40ms; }
-.screen--enter .lang-divider { animation-delay: 100ms; }
-.screen--enter .lang-list { animation-delay: 160ms; }
-.screen--enter .lang-footer { animation-delay: 240ms; }
+.screen--enter .lang-hero { animation-delay: 30ms; }
+.screen--enter .lang-divider { animation-delay: 70ms; }
+.screen--enter .lang-list { animation-delay: 110ms; }
+.screen--enter .lang-footer { animation-delay: 160ms; }
 
-.screen--enter .map-top { animation-delay: 40ms; }
-.screen--enter .cb-map-cover { animation-delay: 80ms; }
-.screen--enter .map-canvas { animation-delay: 140ms; }
-.screen--enter .creator-promo { animation-delay: 220ms; }
+.screen--enter .map-top { animation-delay: 30ms; }
+.screen--enter .cb-map-cover { animation-delay: 60ms; }
+.screen--enter .map-canvas { animation-delay: 100ms; }
+.screen--enter .creator-promo { animation-delay: 150ms; }
 
-.screen--enter .friends-detail { animation-delay: 80ms; }
-.screen--enter .friends-deck { animation-delay: 160ms; }
+.screen--enter .friends-detail { animation-delay: 60ms; }
+.screen--enter .friends-deck { animation-delay: 120ms; }
+
+/* N2 review: stage → checklist, nothing longer */
+.screen--enter .review-stage { animation: soft-rise var(--motion-panel) var(--ease-out) both; }
+.screen--enter .review-list { animation: soft-rise var(--motion-panel) var(--ease-out) both; animation-delay: 70ms; }
 
 /* —— Ambient —— */
 /* Intro bg stays static for full-bleed cover (no letterbox from float translate). */
@@ -165,9 +169,68 @@
   animation: soft-bob 5.6s ease-in-out infinite;
 }
 
+/* Active node breathes just enough to read as "you are here" */
 .cb-map-node--active .cb-map-node__asset {
-  animation: soft-pulse 2.8s ease-in-out infinite;
+  animation: soft-bob 1.7s ease-in-out infinite;
   transform-origin: center;
+}
+
+/* Unlock: locked → active, once, never looped. GSAP drives it when available;
+   this class is the offline fallback so the beat never silently disappears. */
+.cb-map-node--unlock-fallback {
+  animation: node-unlock var(--motion-unlock) var(--ease-pop) both;
+}
+
+@keyframes node-unlock {
+  0% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.map-node-sparkles {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.map-node-sparkles__item {
+  position: absolute;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: var(--radius-pill);
+  background: var(--fox-500, #ffc800);
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.55);
+  opacity: 0;
+  animation: node-sparkle var(--motion-unlock) var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes node-sparkle {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.3);
+  }
+  40% {
+    opacity: 1;
+    transform: translate3d(calc(var(--dx) * 0.6), calc(var(--dy) * 0.6), 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--dx), var(--dy), 0) scale(0.4);
+  }
 }
 
 /* Bradie webp already animates — keep CSS motion very gentle */
@@ -282,35 +345,6 @@
   to { opacity: 1; }
 }
 
-/* Node start sheet open / leave (Duolingo START bubble) */
-.cb-node-start-sheet {
-  opacity: 0;
-  transform: translateY(16px) scale(0.92);
-  transition:
-    opacity var(--motion-sheet) var(--ease-out),
-    transform var(--motion-sheet) var(--ease-out);
-}
-
-.cb-node-start-sheet__overlay.is-open .cb-node-start-sheet {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.cb-node-start-sheet__overlay.is-leaving .cb-node-start-sheet {
-  opacity: 0;
-  transform: translateY(10px) scale(0.94);
-  transition-timing-function: var(--ease-in);
-}
-
-.cb-node-start-sheet__overlay.is-leaving {
-  pointer-events: none;
-}
-
-.cb-node-start-sheet__cta.is-pressed {
-  transform: translateY(2px) scale(0.98);
-  box-shadow: 0 2px 0 var(--start-cta-edge);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .ending-confetti,
   .ending-title,
@@ -347,8 +381,12 @@
     animation: none;
   }
 
-  .cb-node-start-sheet__overlay,
-  .cb-node-start-sheet,
+  .review-row__spinner,
+  .review-row__status.is-pass,
+  .review-row.is-done .review-row__check {
+    animation: none !important;
+  }
+
   .cb-button,
   .cb-answer-card,
   .cb-map-cover,
@@ -358,11 +396,6 @@
   .creator-promo__cta,
   .cb-coffee-coupon__link {
     transition: none !important;
-  }
-
-  .cb-node-start-sheet {
-    opacity: 1;
-    transform: none;
   }
 
   .intro-bg {

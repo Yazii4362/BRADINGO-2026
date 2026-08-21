@@ -121,8 +121,8 @@ export function openCreatorSupport(options = {}) {
     variant === 'easter' ? 'EASTER EGG UNLOCKED' : 'SUPPORT THE CREATOR';
   const body =
     variant === 'easter'
-      ? `이 초대장을 만든 개발자 <strong>${DEVELOPER.handle}</strong>에게<br />커피챗을 요청할 수 있어요.`
-      : `이 초대장을 만든 <strong>${DEVELOPER.displayName}</strong> (${DEVELOPER.handle})를<br />커피챗·인스타로 응원해 주세요.`;
+      ? `이 초대장을 만든 개발자 <strong>${DEVELOPER.handle}</strong>에게<br />커피챗을 요청할 수 있어요`
+      : `이 초대장을 만든 <strong>${DEVELOPER.displayName}</strong> (${DEVELOPER.handle})를<br />커피챗·인스타로 응원해 주세요`;
 
   dialog.innerHTML = `
     <div class="cb-coffee-coupon__sheet">
@@ -170,8 +170,8 @@ export function openCreatorSupport(options = {}) {
       <div class="cb-coffee-coupon__note">
         <span class="cb-coffee-coupon__note-icon">${ICONS.info}</span>
         <p>
-          개인 졸업 축하 프로젝트 · Duolingo와 무관합니다.
-          진행 기록은 이 기기(localStorage)에만 저장됩니다.
+          개인 졸업 축하 프로젝트예요 · Duolingo와 관련 없어요
+          진행 기록은 이 기기에만 저장돼요
         </p>
       </div>
     </div>
@@ -219,7 +219,7 @@ export function createCreatorPromoCard() {
     <div class="creator-promo__row">
       <div class="creator-promo__copy">
         <p class="creator-promo__title">만든 사람 응원하기</p>
-        <p class="creator-promo__body">열심히 개발한 야지님을 응원해주세요!</p>
+        <p class="creator-promo__body">열심히 개발한 야지님을 응원해 주세요</p>
       </div>
       <div class="creator-promo__art" aria-hidden="true">
         ${ICONS.coffee.replace('cb-coffee-coupon__icon-svg', 'creator-promo__cup')}

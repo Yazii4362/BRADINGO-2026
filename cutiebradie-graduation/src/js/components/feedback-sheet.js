@@ -38,7 +38,8 @@ export function createFeedbackSheet(props) {
   return el;
 }
 
-const CHECK_ICON = `
+/** Filled circle check — shared with the N2 review list. */
+export const CHECK_ICON = `
 <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
   <circle cx="14" cy="14" r="14" fill="currentColor"/>
   <path d="M8.2 14.2L12.1 18.1L19.8 10.2" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>

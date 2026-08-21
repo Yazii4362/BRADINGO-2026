@@ -240,7 +240,7 @@ function renderMemoryMissing(props) {
   el.innerHTML = `
     <p class="screen__eyebrow">S04 · Memory</p>
     <h1 class="screen__title">${props.title}</h1>
-    <div class="placeholder-box">추억 데이터가 없습니다.</div>
+    <div class="placeholder-box">추억을 불러오지 못했어요</div>
     <div class="cb-button-row">
       <button type="button" class="cb-button cb-button--ghost" data-action="back">맵으로 돌아가기</button>
     </div>

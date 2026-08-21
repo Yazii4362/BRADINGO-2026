@@ -1,102 +1,155 @@
-import { getTimelineFriends, getTimelineYears } from '../data/timeline.js';
+import { getTimelineYears } from '../data/timeline.js';
 import { t } from '../i18n.js';
 
-const HEART_ICON = `
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-  <path d="M12 20.5s-6.5-4.1-8.7-7.8C1.3 9.6 2.6 6.5 5.6 5.5c1.8-.6 3.7.1 4.8 1.5C11.5 5.6 13.4 4.9 15.2 5.5c3 .9 4.3 4.1 2.3 7.2C18.5 16.4 12 20.5 12 20.5Z" fill="currentColor"/>
-</svg>
-`;
-
-const COMMENT_ICON = `
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-  <path d="M5 5.5h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H10l-4.5 3.2V16.5H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-</svg>
-`;
-
 /**
- * GNB archive — Byeonggeon's 2018–2026 school-life timeline.
+ * GNB archive — Byeonggeon's 2018–2026 school-life timeline (light mode).
  * Not a course node.
  */
 export function renderTimeline() {
   const years = getTimelineYears();
-  const friends = getTimelineFriends();
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const el = document.createElement('section');
   el.className = 'screen screen--timeline screen--with-gnb';
   el.dataset.screen = 'timeline';
 
   const header = document.createElement('header');
-  header.className = 'timeline-header';
-  header.innerHTML = `<h1 class="timeline-header__title">${t('timeline.title')}</h1>`;
-
-  const avatars = document.createElement('div');
-  avatars.className = 'timeline-avatars';
-  avatars.setAttribute('role', 'list');
-  avatars.setAttribute('aria-label', t('timeline.friendsAria'));
-  friends.forEach((friend) => {
-    const item = document.createElement('div');
-    item.className = 'timeline-avatar';
-    item.setAttribute('role', 'listitem');
-    item.innerHTML = `
-      <img class="timeline-avatar__img" src="${friend.image}" alt="${friend.alt}" width="48" height="48" decoding="async" />
-      <span class="timeline-avatar__name">${friend.name}</span>
-    `;
-    avatars.appendChild(item);
-  });
-
-  const banner = document.createElement('div');
-  banner.className = 'timeline-banner';
-  banner.setAttribute('aria-hidden', 'false');
-  banner.innerHTML = `
-    <p class="timeline-banner__eyebrow">${t('timeline.bannerTitle')}</p>
-    <p class="timeline-banner__range">${t('timeline.bannerRange')}</p>
+  header.className = 'chapter-header timeline-header';
+  header.innerHTML = `
+    <span aria-hidden="true"></span>
+    <div class="timeline-heading">
+      <h1 class="chapter-title">${t('timeline.title')}</h1>
+      <p class="timeline-heading__sub">
+        <span class="timeline-heading__range">${t('timeline.bannerRange')}</span>
+      </p>
+    </div>
+    <span aria-hidden="true"></span>
   `;
+
+  const yearNav = document.createElement('nav');
+  yearNav.className = 'memory-filters timeline-years';
+  yearNav.setAttribute('aria-label', t('timeline.bannerRange'));
+
+  /** @type {Map<number, HTMLButtonElement>} */
+  const chipByYear = new Map();
+  /** @type {Map<number, HTMLElement>} */
+  const cardByYear = new Map();
+
+  const body = document.createElement('div');
+  body.className = 'timeline-body';
+
+  /** @type {number | null} */
+  let activeYear = null;
+  /** Scroll-driven sync pauses while a tapped jump is still animating. */
+  let jumpTimer = /** @type {number | null} */ (null);
+
+  /**
+   * @param {number} year
+   * @param {{ revealChip?: boolean }} [options]
+   */
+  function applyActiveYear(year, options = {}) {
+    if (activeYear === year) return;
+    activeYear = year;
+    chipByYear.forEach((chip, chipYear) => {
+      const isActive = chipYear === year;
+      chip.classList.toggle('is-active', isActive);
+      if (isActive) chip.setAttribute('aria-current', 'true');
+      else chip.removeAttribute('aria-current');
+    });
+    if (options.revealChip === false) return;
+    chipByYear.get(year)?.scrollIntoView({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'nearest',
+      inline: 'center',
+    });
+  }
 
   const list = document.createElement('ol');
   list.className = 'timeline-list';
   list.setAttribute('aria-label', t('timeline.listAria'));
 
   years.forEach((entry, index) => {
+    const isLast = index === years.length - 1;
     const card = document.createElement('li');
-    card.className = `timeline-card timeline-card--${entry.accent}`;
+    card.className = `timeline-card timeline-card--${entry.accent}${isLast ? ' timeline-card--goal' : ''}`;
+    card.id = `timeline-year-${entry.year}`;
     card.innerHTML = `
-      <div class="timeline-card__rail" aria-hidden="true">
-        <span class="timeline-card__dot"></span>
-        ${index < years.length - 1 ? '<span class="timeline-card__line"></span>' : ''}
-      </div>
-      <article class="timeline-card__panel">
-        <div class="timeline-card__copy">
-          <div class="timeline-card__meta">
-            <h2 class="timeline-card__year">${entry.year}</h2>
+      <article class="timeline-card__panel cb-answer-card cb-answer-card--row">
+        <span class="cb-answer-card__media">
+          <img
+            class="cb-answer-card__image timeline-card__photo"
+            src="${entry.image}"
+            alt=""
+            width="64"
+            height="64"
+            decoding="async"
+            loading="lazy"
+          />
+        </span>
+        <span class="cb-answer-card__label timeline-card__copy">
+          <span class="timeline-card__meta">
+            <span class="timeline-card__year">${
+              entry.month ? `${entry.year}.${entry.month}` : entry.year
+            }</span>
             <span class="timeline-card__tag">${t(entry.tagKey)}</span>
-          </div>
-          <p class="timeline-card__text">
-            <span>${t(entry.line1Key)}</span><br />
-            <span>${t(entry.line2Key)}</span>
-          </p>
-          <div class="timeline-card__reacts" aria-hidden="true">
-            <span class="timeline-card__react">${HEART_ICON}</span>
-            <span class="timeline-card__react">${COMMENT_ICON}</span>
-          </div>
-        </div>
-        <img
-          class="timeline-card__art"
-          src="./assets/images/quiz/n2-character-full.png"
-          alt=""
-          width="88"
-          height="88"
-          decoding="async"
-          loading="lazy"
-        />
+          </span>
+          <span class="timeline-card__text">
+            ${t(entry.line1Key)} ${t(entry.line2Key)}
+          </span>
+        </span>
       </article>
     `;
     list.appendChild(card);
+    cardByYear.set(entry.year, card);
+
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'memory-filter timeline-year-chip';
+    chip.textContent = String(entry.year);
+    chip.dataset.year = String(entry.year);
+    chip.addEventListener('click', () => {
+      if (jumpTimer != null) window.clearTimeout(jumpTimer);
+      jumpTimer = window.setTimeout(() => {
+        jumpTimer = null;
+      }, 700);
+      applyActiveYear(entry.year, { revealChip: false });
+      card.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    });
+    yearNav.appendChild(chip);
+    chipByYear.set(entry.year, chip);
   });
 
-  const body = document.createElement('div');
-  body.className = 'timeline-body';
-  body.append(avatars, banner, list);
+  body.appendChild(list);
+  el.append(header, yearNav, body);
 
-  el.append(header, body);
+  const firstYear = years[0]?.year;
+  if (firstYear != null) applyActiveYear(firstYear, { revealChip: false });
+
+  /** Track the card nearest the top of the scroll area. */
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (jumpTimer != null) return;
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (!visible) return;
+      const year = Number(visible.target.id.replace('timeline-year-', ''));
+      if (Number.isFinite(year)) applyActiveYear(year);
+    },
+    { root: body, rootMargin: '0px 0px -60% 0px', threshold: 0.01 }
+  );
+  cardByYear.forEach((card) => observer.observe(card));
+
+  el.__cleanup = () => {
+    observer.disconnect();
+    if (jumpTimer != null) {
+      window.clearTimeout(jumpTimer);
+      jumpTimer = null;
+    }
+  };
+
   return el;
 }

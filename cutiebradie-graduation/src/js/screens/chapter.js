@@ -1,3 +1,5 @@
+import { CHECK_ICON, createFeedbackSheet } from '../components/feedback-sheet.js';
+import { createMotionScope, prefersReducedMotion } from '../lib/motion.js';
 import { t } from '../i18n.js';
 
 const BACK_ICON = `
@@ -14,8 +16,18 @@ const REVIEW_ITEMS = Object.freeze([
   Object.freeze({ id: 'will', labelKey: 'review.item.will', accent: 'orange' }),
 ]);
 
+/** Sequence beats (ms). Total lands just under 3s. */
+const SEQ = Object.freeze({
+  start: 300,
+  step: 380,
+  /** Last row hesitates for comic timing. */
+  lastStep: 800,
+  resultPause: 200,
+  resultReveal: 420,
+});
+
 /**
- * N2 — Graduation qualification review (playful interaction).
+ * N2 — Graduation qualification review (light mode, existing CB components).
  * @param {{
  *   nodeId: string,
  *   title: string,
@@ -25,9 +37,9 @@ const REVIEW_ITEMS = Object.freeze([
  * }} props
  */
 export function renderChapter(props) {
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  /** @type {number[]} */
-  const timers = [];
+  const reduceMotion = prefersReducedMotion();
+  const scope = createMotionScope();
+  let completing = false;
 
   const el = document.createElement('section');
   el.className = 'screen screen--chapter screen--review';
@@ -35,147 +47,176 @@ export function renderChapter(props) {
   el.dataset.nodeId = props.nodeId;
 
   const header = document.createElement('header');
-  header.className = 'chapter-header review-header';
+  header.className = 'chapter-header';
   header.innerHTML = `
     <button type="button" class="chapter-back" aria-label="${t('chapter.backToMap')}">${BACK_ICON}</button>
-    <p class="review-progress">${t('review.progress')}</p>
+    <h1 class="chapter-title">${t('review.title')}</h1>
+    <span aria-hidden="true"></span>
   `;
   header.querySelector('.chapter-back')?.addEventListener('click', () => {
-    clearTimers();
+    scope.dispose();
     props.onBackToMap();
   });
 
   const main = document.createElement('div');
   main.className = 'review-body';
 
-  const titleBlock = document.createElement('div');
-  titleBlock.className = 'review-intro';
-  titleBlock.innerHTML = `
-    <h1 class="review-title">${t('review.title')}</h1>
-    <p class="review-desc">${t('review.desc')}</p>
-  `;
-
   const stage = document.createElement('div');
   stage.className = 'review-stage';
   stage.innerHTML = `
     <img
       class="review-character"
-      src="./assets/images/quiz/n2-character-full.png"
+      src="./assets/images/review/graduation-review.svg"
       alt=""
-      width="180"
-      height="180"
+      width="245"
+      height="162"
       decoding="async"
     />
+    <p class="review-desc">${t('review.desc')}</p>
   `;
 
   const list = document.createElement('ul');
-  list.className = 'review-list';
+  list.className = 'review-list answer-list answer-list--stack';
   list.setAttribute('aria-label', t('review.listAria'));
 
-  /** @type {Map<string, HTMLElement>} */
-  const statusEls = new Map();
+  /** @type {Map<string, { row: HTMLElement, status: HTMLElement }>} */
+  const rows = new Map();
 
   REVIEW_ITEMS.forEach((item) => {
     const row = document.createElement('li');
-    row.className = `review-row review-row--${item.accent}`;
+    row.className = `review-row review-row--${item.accent} cb-answer-card cb-answer-card--row is-waiting`;
     row.dataset.itemId = item.id;
     row.innerHTML = `
-      <span class="review-row__dot" aria-hidden="true"></span>
-      <span class="review-row__label">${t(item.labelKey)}</span>
-      <span class="review-row__status" data-role="status">${
-        item.id === 'will' ? t('review.measuring') : '…'
-      }</span>
+      <span class="review-row__swatch" aria-hidden="true"></span>
+      <span class="cb-answer-card__label review-row__label">${t(item.labelKey)}</span>
+      <span class="review-row__status" data-role="status"></span>
+      <span class="review-row__mark" aria-hidden="true">
+        <span class="review-row__dots"><i></i><i></i><i></i></span>
+        <span class="review-row__check">${CHECK_ICON}</span>
+      </span>
     `;
     const status = row.querySelector('[data-role="status"]');
-    if (status instanceof HTMLElement) statusEls.set(item.id, status);
+    if (status instanceof HTMLElement) rows.set(item.id, { row, status });
     list.appendChild(row);
   });
 
-  const result = document.createElement('div');
-  result.className = 'review-result';
-  result.hidden = true;
-  result.innerHTML = `
-    <p class="review-result__eyebrow">${t('review.resultLabel')}</p>
-    <p class="review-result__title">${t('review.resultTitle')}</p>
-    <p class="review-result__body">${t('review.resultBody')}</p>
-  `;
+  const sheetHost = document.createElement('div');
+  sheetHost.className = 'review-sheet-host';
+  sheetHost.hidden = true;
 
-  const footer = document.createElement('footer');
-  footer.className = 'chapter-footer review-footer';
+  main.append(stage, list);
+  el.append(header, main, sheetHost);
 
-  const completeBtn = document.createElement('button');
-  completeBtn.type = 'button';
-  completeBtn.className = 'cb-button cb-button--primary cb-button--fill';
-  completeBtn.textContent =
-    props.mode === 'replay' ? t('chapter.backToMap') : t('review.approve');
-  completeBtn.disabled = props.mode === 'play';
-  completeBtn.addEventListener('click', () => {
-    if (props.mode === 'play' && completeBtn.disabled) return;
-    clearTimers();
-    props.onComplete();
-  });
-
-  const secondary = document.createElement('button');
-  secondary.type = 'button';
-  secondary.className = 'cb-button cb-button--text review-secondary';
-  secondary.textContent = t('chapter.backToMap');
-  secondary.hidden = props.mode !== 'play';
-  secondary.addEventListener('click', () => {
-    clearTimers();
-    props.onBackToMap();
-  });
-
-  footer.append(completeBtn, secondary);
-  main.append(titleBlock, stage, list, result);
-  el.append(header, main, footer);
-
-  function clearTimers() {
-    while (timers.length) {
-      const id = timers.pop();
-      if (id != null) window.clearTimeout(id);
+  /** @param {string} id */
+  function markChecking(id) {
+    const entry = rows.get(id);
+    if (!entry) return;
+    entry.row.classList.remove('is-waiting');
+    entry.row.classList.add('is-current');
+    // Only the lingering last row is on screen long enough to read a label.
+    if (id === 'will') {
+      entry.status.textContent = t('review.measuring');
+      entry.status.classList.add('is-pending');
     }
   }
 
+  /** @param {string} id */
   function markPass(id) {
-    const status = statusEls.get(id);
-    if (!status) return;
-    status.textContent = t('review.pass');
-    status.classList.add('is-pass');
-    const row = list.querySelector(`[data-item-id="${id}"]`);
-    row?.classList.add('is-done');
+    const entry = rows.get(id);
+    if (!entry) return;
+    entry.row.classList.remove('is-waiting', 'is-current');
+    entry.row.classList.add('is-done', 'cb-answer-card--correct');
+    entry.status.textContent = t('review.pass');
+    entry.status.classList.remove('is-pending');
+    entry.status.classList.add('is-pass');
   }
 
-  function finishReview() {
-    markPass('will');
-    result.hidden = false;
-    result.classList.add('is-visible');
-    if (props.mode === 'play') {
-      completeBtn.disabled = false;
+  function showResult() {
+    sheetHost.hidden = false;
+    sheetHost.replaceChildren();
+
+    const ctaLabel = props.mode === 'replay' ? t('chapter.backToMap') : t('review.approve');
+    const sheet = createFeedbackSheet({
+      variant: 'correct',
+      title: t('review.resultTitle'),
+      body: t('review.resultBody'),
+      actionLabel: ctaLabel,
+      onAction: () => finishReview(sheet),
+    });
+    sheet.classList.add('is-revealing');
+    sheetHost.appendChild(sheet);
+
+    const cta = sheet.querySelector('.cb-feedback-sheet__cta');
+    if (cta instanceof HTMLButtonElement) {
+      // Stays disabled until the panel has finished revealing (spec §8).
+      cta.disabled = true;
+      scope.after(() => {
+        cta.disabled = false;
+        cta.classList.add('is-enabling');
+      }, reduceMotion ? 0 : SEQ.resultReveal);
     }
+  }
+
+  /** @param {HTMLElement} sheet */
+  function finishReview(sheet) {
+    if (completing) return;
+    completing = true;
+
+    const cta = sheet.querySelector('.cb-feedback-sheet__cta');
+    if (cta instanceof HTMLButtonElement) {
+      cta.disabled = true;
+      if (props.mode !== 'replay') {
+        cta.textContent = t('review.approved');
+        cta.classList.add('is-approved');
+        spawnApprovalSparkles(sheet, reduceMotion);
+      }
+    }
+
+    const hold = reduceMotion || props.mode === 'replay' ? 0 : 480;
+    scope.after(() => {
+      scope.dispose();
+      props.onComplete();
+    }, hold);
   }
 
   if (props.mode === 'replay' || reduceMotion) {
     REVIEW_ITEMS.forEach((item) => markPass(item.id));
-    result.hidden = false;
-    result.classList.add('is-visible');
-    completeBtn.disabled = false;
+    showResult();
   } else {
-    const schedule = [
-      { id: 'survive', delay: 450 },
-      { id: 'adapt', delay: 950 },
-      { id: 'friends', delay: 1450 },
-      { id: 'will-done', delay: 2600 },
-    ];
-    schedule.forEach((step) => {
-      timers.push(
-        window.setTimeout(() => {
-          if (step.id === 'will-done') finishReview();
-          else markPass(step.id);
-        }, step.delay)
-      );
+    let at = SEQ.start;
+    REVIEW_ITEMS.forEach((item, index) => {
+      const isLast = index === REVIEW_ITEMS.length - 1;
+      const dwell = isLast ? SEQ.lastStep : SEQ.step;
+      const checkingAt = at;
+      scope.after(() => markChecking(item.id), checkingAt);
+      scope.after(() => markPass(item.id), checkingAt + dwell);
+      at = checkingAt + dwell;
     });
+    scope.after(showResult, at + SEQ.resultPause);
   }
 
-  el.__cleanup = () => clearTimers();
+  el.__cleanup = () => scope.dispose();
   return el;
+}
+
+/**
+ * Small star pop around the approval CTA — not a full-screen burst.
+ * @param {HTMLElement} host
+ * @param {boolean} reduceMotion
+ */
+function spawnApprovalSparkles(host, reduceMotion) {
+  if (reduceMotion) return;
+  const burst = document.createElement('div');
+  burst.className = 'review-sparkles';
+  burst.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 5; i += 1) {
+    const spark = document.createElement('span');
+    spark.className = 'review-sparkles__item';
+    spark.style.setProperty('--dx', `${(i - 2) * 26}px`);
+    spark.style.setProperty('--dy', `${-30 - (i % 3) * 12}px`);
+    spark.style.setProperty('--d', `${i * 40}ms`);
+    burst.appendChild(spark);
+  }
+  host.appendChild(burst);
+  window.setTimeout(() => burst.remove(), 800);
 }

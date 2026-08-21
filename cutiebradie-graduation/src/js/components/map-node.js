@@ -40,7 +40,7 @@ function bindPressSwap(asset, defaultSrc, pressedSrc, btn) {
 
 /**
  * CB / Map / Node — basic skill button.
- * Locked nodes stay clickable (aria-disabled) so lock tooltip can show.
+ * Locked nodes stay clickable but do not enter the chapter.
  *
  * @param {{
  *   id: string,

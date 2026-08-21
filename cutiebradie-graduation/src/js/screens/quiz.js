@@ -28,9 +28,10 @@ export function openQuizExitModal(onConfirmLeave) {
 
   const handle = openConfirmModal({
     title: '문제를 그만둘까요?',
-    body: '선택한 답은 저장되지 않아요.',
+    body: '지금까지 고른 답은 저장되지 않아요',
     cancelLabel: '계속 풀기',
     confirmLabel: '맵으로 나가기',
+    confirmVariant: 'danger',
     onCancel: () => {
       quizExitModal = null;
     },
@@ -116,7 +117,7 @@ function renderQuizPlaceholder(props) {
       ${props.choiceType === 'multi' ? '복수 선택' : '단일 선택'} · 준비 중
       · 모드: ${props.mode === 'replay' ? '다시 보기' : '진행'}
     </p>
-    <div class="placeholder-box">이 노드의 문제 UI는 다음 단계에서 구현합니다.</div>
+    <div class="placeholder-box">아직 준비 중인 문제예요</div>
     <div class="cb-button-row">
       <button type="button" class="cb-button cb-button--ghost" data-action="back">맵으로 돌아가기</button>
     </div>
@@ -375,7 +376,7 @@ function renderChoiceQuiz(props, questions) {
     }
     setPhase('idle');
     sheetHost.replaceChildren();
-    if (submitBtn) submitBtn.textContent = '확인';
+    if (submitBtn) submitBtn.textContent = '확인하기';
     syncCards();
     syncSentenceUI();
     syncSubmitEnabled();
@@ -435,7 +436,7 @@ function renderChoiceQuiz(props, questions) {
             variant: 'correct',
             title: fb.title,
             body: fb.body,
-            actionLabel: '계속',
+            actionLabel: '계속하기',
             onAction: () => {
               if (isLast) props.onCorrectContinue();
               else goNextQuestion();
@@ -529,7 +530,7 @@ function renderChoiceQuiz(props, questions) {
     submitBtn = document.createElement('button');
     submitBtn.type = 'button';
     submitBtn.className = 'cb-button cb-button--primary cb-button--fill quiz-submit';
-    submitBtn.textContent = '확인';
+    submitBtn.textContent = '확인하기';
     submitBtn.disabled = true;
     submitBtn.addEventListener('click', submit);
     footer.appendChild(submitBtn);
@@ -610,7 +611,7 @@ function renderChoiceQuiz(props, questions) {
     submitBtn = document.createElement('button');
     submitBtn.type = 'button';
     submitBtn.className = 'cb-button cb-button--primary cb-button--fill quiz-submit';
-    submitBtn.textContent = '확인';
+    submitBtn.textContent = '확인하기';
     submitBtn.disabled = true;
     submitBtn.addEventListener('click', submit);
     footer.appendChild(submitBtn);

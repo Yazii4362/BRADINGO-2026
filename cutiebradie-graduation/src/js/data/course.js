@@ -101,7 +101,7 @@ export const QUIZZES = Object.freeze({
         choiceType: 'single',
         layout: 'image',
         badge: 'NEW WORD',
-        question: '틀린 것을 고르시오',
+        question: '틀린 것을 골라 주세요',
         promptWord: '정병건',
         choices: Object.freeze([
           Object.freeze({
@@ -132,18 +132,19 @@ export const QUIZZES = Object.freeze({
         correctChoiceIds: Object.freeze(['pong']),
         feedback: Object.freeze({
           correct: Object.freeze({
-            title: '정답입니다!',
-            body: '노란색 이미지는 정병건이 아니에요.',
+            title: '정답이에요',
+            body: '로고 속 인물은 백종원이에요',
           }),
           incorrect: Object.freeze({
-            title: '오답입니다!',
-            body: '틀린 것은 노란색 이미지예요.',
+            title: '다시 생각해 볼까요?',
+            body: '',
           }),
         }),
       }),
       Object.freeze({
         choiceType: 'single',
         layout: 'image',
+        badge: '학교생활',
         question: '병건이의 학교생활이 아닌 것은?',
         choices: Object.freeze([
           Object.freeze({
@@ -174,12 +175,12 @@ export const QUIZZES = Object.freeze({
         correctChoiceIds: Object.freeze(['skip']),
         feedback: Object.freeze({
           correct: Object.freeze({
-            title: '정답입니다!',
-            body: '병건이는 새벽 조깅과 아침 식사를 마친 뒤에도 1교시 수업을 성실하게 들었어요.',
+            title: '정답이에요',
+            body: '',
           }),
           incorrect: Object.freeze({
-            title: '오답입니다!',
-            body: '병건이는 시카고 교환학생, 호주 워킹홀리데이, 제주도와 강원대학교 학점교류를 모두 경험했어요.',
+            title: '다시 생각해 볼까요?',
+            body: '',
           }),
         }),
       }),
@@ -188,7 +189,7 @@ export const QUIZZES = Object.freeze({
         layout: 'listen',
         badge: '어려운 문제',
         badgeVariant: 'hard',
-        question: '들은 내용을 탭하세요',
+        question: '들은 내용을 눌러 주세요',
         characterImage: './assets/images/quiz/n2-character-full.png',
         characterAlt: '병건이 캐릭터',
         listenText: '병건아 졸업을 축하해',
@@ -206,19 +207,20 @@ export const QUIZZES = Object.freeze({
         correctOrder: Object.freeze(['byeong', 'jol', 'chuk']),
         feedback: Object.freeze({
           correct: Object.freeze({
-            title: '정답입니다!',
-            body: '병건아, 졸업을 축하해!',
+            title: '정답이에요',
+            body: '',
           }),
           incorrect: Object.freeze({
-            title: '오답입니다!',
-            body: '정답은 「병건아 졸업을 축하해」예요.',
+            title: '다시 생각해 볼까요?',
+            body: '',
           }),
         }),
       }),
       Object.freeze({
         choiceType: 'single',
         layout: 'image',
-        badge: 'FOOD',
+        badge: '어려운 문제',
+        badgeVariant: 'hard',
         question: '병건이가 먹어보지 못한 음식은?',
         choices: Object.freeze([
           Object.freeze({
@@ -249,12 +251,12 @@ export const QUIZZES = Object.freeze({
         correctChoiceIds: Object.freeze(['suyuk']),
         feedback: Object.freeze({
           correct: Object.freeze({
-            title: '정답입니다!',
-            body: '병건이는 아직 삶은고기(수육)를 먹어보지 못했어요.',
+            title: '정답이에요',
+            body: '',
           }),
           incorrect: Object.freeze({
-            title: '오답입니다!',
-            body: '병건이가 먹어보지 못한 음식은 삶은고기(수육)이에요.',
+            title: '다시 생각해 볼까요?',
+            body: '',
           }),
         }),
       }),
@@ -271,7 +273,7 @@ export const QUIZZES = Object.freeze({
  */
 export const CHAPTER_CONTENTS = Object.freeze({
   n2: Object.freeze({
-    body: '캠퍼스에서 보낸 날들을 떠올리며 다음 스테이지로 넘어가 보세요.',
+    body: '캠퍼스에서 보낸 날들을 떠올려 보세요',
     highlights: Object.freeze([
       Object.freeze({
         id: 'chicago',
@@ -339,7 +341,7 @@ export function getQuizByNodeId(id) {
 export const MEMORY_CONTENTS = Object.freeze({
   n3: Object.freeze({
     title: '우리의 추억',
-    subtitle: '함께한 순간들이 너무 소중해 💚',
+    subtitle: '함께한 순간들이 참 소중해요 💚',
     categories: Object.freeze([
       Object.freeze({ id: 'all', label: '전체' }),
       Object.freeze({ id: '2023', label: '2023' }),
@@ -641,7 +643,7 @@ export function getMemoryByNodeId(id) {
  */
 export const FRIENDS_FEED = Object.freeze({
   title: '졸업축하 메시지',
-  subtitle: '카드를 넘겨 편지를 읽어보세요',
+  subtitle: '카드를 넘겨 편지를 읽어 보세요',
   friends: Object.freeze([
     Object.freeze({
       id: 'dabin',

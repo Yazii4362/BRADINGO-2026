@@ -77,7 +77,7 @@ export function renderEnding(props) {
     <div class="ending-splash" data-role="splash" aria-hidden="false">
       <img
         class="ending-splash__bg"
-        src="./assets/images/intro/bg.webp"
+        src="./assets/images/ending/splash.jpg"
         alt=""
         width="576"
         height="1024"
@@ -103,12 +103,9 @@ export function renderEnding(props) {
           <ul class="ending-stats">${summaryHtml}</ul>
         </section>
         <section class="ending-cheer" aria-label="${t('ending.cheerTitle')}">
-          <h2 class="ending-cheer__title">${t('ending.cheerTitle')}</h2>
-          <button type="button" class="cb-button cb-button--primary cb-button--fill ending-cheer__btn" data-action="cheer">
-            ${t('ending.cheerCta')}
+          <button type="button" class="ending-cheer__heart" data-action="cheer" aria-label="${t('ending.cheerCta')}">
+            💚
           </button>
-          <p class="ending-cheer__hint">${t('ending.cheerHint')}</p>
-          <p class="ending-cheer__toast" role="status" aria-live="polite" hidden></p>
         </section>
         <p class="ending-status" role="status" aria-live="polite"></p>
         <div class="ending-actions">
@@ -128,7 +125,6 @@ export function renderEnding(props) {
   const statusEl = el.querySelector('.ending-status');
   const exportBtn = el.querySelector('[data-action="export"]');
   const cheerBtn = el.querySelector('[data-action="cheer"]');
-  const cheerToast = el.querySelector('.ending-cheer__toast');
 
   /** @type {number | null} */
   let splashTimer = null;
@@ -160,14 +156,9 @@ export function renderEnding(props) {
   cheerBtn?.addEventListener('click', () => {
     if (!(cheerBtn instanceof HTMLElement)) return;
     cheerBtn.classList.remove('is-pop');
-    // restart animation
     void cheerBtn.offsetWidth;
     cheerBtn.classList.add('is-pop');
     spawnHeartBurst(el.querySelector('.ending-cheer'), reduceMotion);
-    if (cheerToast instanceof HTMLElement) {
-      cheerToast.hidden = false;
-      cheerToast.textContent = t('ending.cheerToast');
-    }
   });
 
   el.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
@@ -313,15 +304,19 @@ function spawnHeartBurst(host, reduceMotion) {
   const burst = document.createElement('div');
   burst.className = 'ending-heart-burst';
   burst.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < 6; i += 1) {
+  const glyphs = ['💚', '💚', '💚', '💕', '💚', '💚', '💚', '💚'];
+  for (let i = 0; i < glyphs.length; i += 1) {
     const heart = document.createElement('span');
     heart.className = 'ending-heart-burst__item';
-    heart.textContent = '💚';
+    heart.textContent = glyphs[i];
     heart.style.setProperty('--i', String(i));
+    heart.style.setProperty('--dx', `${(i - (glyphs.length - 1) / 2) * 22}px`);
+    heart.style.setProperty('--dy', `${-52 - (i % 3) * 18}px`);
+    heart.style.setProperty('--rot', `${(i - 3.5) * 12}deg`);
     burst.appendChild(heart);
   }
   host.appendChild(burst);
-  window.setTimeout(() => burst.remove(), 900);
+  window.setTimeout(() => burst.remove(), 1000);
 }
 
 function shouldShowMobilePreview() {

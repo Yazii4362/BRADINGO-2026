@@ -6,8 +6,8 @@ import {
   resetProgress,
   saveProgress,
 } from './state.js';
+import { ROUTE_STORAGE_KEY } from './constants.js';
 import { createAppGnb } from './components/app-gnb.js';
-import { openNodeStartSheet } from './components/node-start-sheet.js';
 import { renderIntro } from './screens/intro.js';
 import { renderLangSelect } from './screens/lang-select.js';
 import { renderMap } from './screens/map.js';
@@ -26,6 +26,19 @@ import { renderTimeline } from './screens/timeline.js';
 applyDocumentLocale();
 
 /** @typedef {'intro' | 'lang' | 'map' | 'quiz' | 'chapter' | 'memory' | 'friends' | 'ending' | 'timeline'} ScreenId */
+
+/** @type {ReadonlyArray<ScreenId>} */
+const SCREEN_IDS = Object.freeze([
+  'intro',
+  'lang',
+  'map',
+  'quiz',
+  'chapter',
+  'memory',
+  'friends',
+  'ending',
+  'timeline',
+]);
 
 const root = document.getElementById('screen-root');
 const appShell = document.getElementById('app');
@@ -47,6 +60,62 @@ let mapHighlightNodeId = /** @type {string | null} */ (null);
 
 /** When true, quiz popstate may navigate (leave/complete) instead of exit prompt. */
 let skipQuizExitGuard = false;
+
+/**
+ * @param {unknown} value
+ * @returns {value is ScreenId}
+ */
+function isScreenId(value) {
+  return typeof value === 'string' && SCREEN_IDS.includes(/** @type {ScreenId} */ (value));
+}
+
+/**
+ * @returns {{ screen: ScreenId, nodeId: string | null, mode: 'play' | 'replay' | null } | null}
+ */
+function loadSavedRoute() {
+  try {
+    const fromHistory = history.state;
+    if (fromHistory && isScreenId(fromHistory.screen)) {
+      return {
+        screen: fromHistory.screen,
+        nodeId: typeof fromHistory.nodeId === 'string' ? fromHistory.nodeId : null,
+        mode:
+          fromHistory.mode === 'play' || fromHistory.mode === 'replay'
+            ? fromHistory.mode
+            : null,
+      };
+    }
+
+    const raw = sessionStorage.getItem(ROUTE_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !isScreenId(parsed.screen)) return null;
+    return {
+      screen: parsed.screen,
+      nodeId: typeof parsed.nodeId === 'string' ? parsed.nodeId : null,
+      mode: parsed.mode === 'play' || parsed.mode === 'replay' ? parsed.mode : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function persistRoute() {
+  try {
+    sessionStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(route));
+  } catch {
+    // Ignore quota / private-mode failures.
+  }
+}
+
+function clearSavedRoute() {
+  try {
+    sessionStorage.removeItem(ROUTE_STORAGE_KEY);
+  } catch {
+    // Ignore.
+  }
+}
+
 /**
  * @param {ScreenId} screen
  * @param {{ nodeId?: string, mode?: 'play' | 'replay' }} [options]
@@ -65,6 +134,7 @@ function navigate(screen, options = {}, historyOptions = {}) {
     else history.pushState(state, '');
   }
 
+  persistRoute();
   render();
 }
 
@@ -142,41 +212,12 @@ function syncRouteWithProgress() {
 /**
  * @param {string} nodeId
  * @param {string} status
- * @param {DOMRect} anchor
- * @param {HTMLElement} [anchorEl]
  */
-function handleNodeTap(nodeId, status, anchor, anchorEl) {
+function handleNodeTap(nodeId, status) {
+  if (status === 'locked') return;
   const node = getNodeById(nodeId);
   if (!node) return;
-  const localized = localizeNode(node);
-
-  if (status === 'locked') {
-    openNodeStartSheet({
-      variant: 'locked',
-      title: localized.title,
-      body: t('node.lockedBody'),
-      anchorRect: anchor,
-      anchorEl: anchorEl ?? null,
-    });
-    return;
-  }
-
-  const mode = status === 'completed' ? 'replay' : 'play';
-
-  // Active node: show chapter start sheet first; CTA enters the chapter.
-  if (status === 'active') {
-    openNodeStartSheet({
-      title: localized.title,
-      actionLabel: t('node.startAction'),
-      anchorRect: anchor,
-      anchorEl: anchorEl ?? null,
-      onStart: () => enterNode(node, mode),
-    });
-    return;
-  }
-
-  // Completed node: replay immediately.
-  enterNode(node, mode);
+  enterNode(node, status === 'completed' ? 'replay' : 'play');
 }
 
 /**
@@ -240,6 +281,7 @@ function handleEndingRendered() {
 function handleResetConfirmed() {
   progress = resetProgress();
   mapHighlightNodeId = null;
+  clearSavedRoute();
   navigate('intro', {}, { replace: true });
 }
 
@@ -429,11 +471,27 @@ window.addEventListener('popstate', (event) => {
       mode: state.mode ?? null,
     };
     syncRouteWithProgress();
+    persistRoute();
     render();
     return;
   }
   route = { screen: 'map', nodeId: null, mode: null };
+  persistRoute();
   render();
 });
 
-navigate('intro', {}, { replace: true });
+const savedRoute = loadSavedRoute();
+if (savedRoute) {
+  route = savedRoute;
+  syncRouteWithProgress();
+  navigate(
+    route.screen,
+    {
+      ...(route.nodeId ? { nodeId: route.nodeId } : {}),
+      ...(route.mode ? { mode: route.mode } : {}),
+    },
+    { replace: true }
+  );
+} else {
+  navigate('intro', {}, { replace: true });
+}

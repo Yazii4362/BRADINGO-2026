@@ -3,17 +3,20 @@ import { localizeNode, t } from '../i18n.js';
 import { createAppHeader } from '../components/app-header.js';
 import { createCharacterBubbleController } from '../components/character-bubble.js';
 import { createCreatorPromoCard } from '../components/coffee-coupon.js';
+import { createMapNodeButton } from '../components/map-node.js';
 import {
-  createMapNodeButton,
-  getMapNodeAnchorRect,
-} from '../components/map-node.js';
-import { importFromCdns } from '../lib/cdn-import.js';
+  EASE,
+  MOTION,
+  createMotionScope,
+  loadGsap,
+  prefersReducedMotion,
+} from '../lib/motion.js';
 
 /**
  * @param {{
  *   nodeStatus: Record<string, 'locked' | 'active' | 'completed'>,
  *   highlightNodeId?: string | null,
- *   onNodeTap: (nodeId: string, status: string, anchor: DOMRect, anchorEl: HTMLElement) => void,
+ *   onNodeTap: (nodeId: string, status: string) => void,
  *   onHighlightPlayed?: () => void
  * }} props
  */
@@ -90,14 +93,8 @@ export function renderMap(props) {
         status,
         pathIndex: index,
       },
-      (event) => {
-        const target = event.currentTarget;
-        if (!(target instanceof HTMLElement)) return;
-        const item = target.closest('.map-path__item');
-        const anchorEl = item instanceof HTMLElement ? item : target;
-        const anchor =
-          item instanceof HTMLElement ? getMapNodeAnchorRect(item) : target.getBoundingClientRect();
-        props.onNodeTap(node.id, status, anchor, anchorEl);
+      () => {
+        props.onNodeTap(node.id, status);
       }
     );
     nodeWrap.dataset.nodeId = node.id;
@@ -122,7 +119,9 @@ export function renderMap(props) {
 
   el.append(top, canvas);
   placeCreatorPromo();
-  promoMq.addEventListener('change', placeCreatorPromo);
+
+  const scope = createMotionScope();
+  scope.listen(promoMq, 'change', placeCreatorPromo);
 
   const focusId =
     props.highlightNodeId ||
@@ -130,6 +129,7 @@ export function renderMap(props) {
     null;
 
   queueMicrotask(() => {
+    if (scope.disposed) return;
     if (focusId) scrollMapNodeIntoView(el, focusId);
   });
 
@@ -138,7 +138,7 @@ export function renderMap(props) {
       `.map-path__item[data-node-id="${props.highlightNodeId}"] .cb-map-node`
     );
     if (target instanceof HTMLElement) {
-      playUnlockHighlight(target).finally(() => {
+      playUnlockHighlight(target, scope).finally(() => {
         props.onHighlightPlayed?.();
       });
     } else {
@@ -146,6 +146,7 @@ export function renderMap(props) {
     }
   }
 
+  el.__cleanup = () => scope.dispose();
   return el;
 }
 
@@ -184,47 +185,82 @@ function scrollMapNodeIntoView(mapScreen, nodeId) {
 }
 
 /**
+ * One-shot celebration on the node that just became available.
+ * Never replays on refresh — app.js only passes highlightNodeId right after a completion.
  * @param {HTMLElement} target
+ * @param {ReturnType<typeof createMotionScope>} scope
  */
-async function playUnlockHighlight(target) {
+async function playUnlockHighlight(target, scope) {
   target.classList.add('cb-map-node--unlocking');
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = prefersReducedMotion();
   if (reduceMotion) {
-    window.setTimeout(() => {
-      if (target.isConnected) target.classList.remove('cb-map-node--unlocking');
-    }, 450);
+    await wait(200);
+    if (target.isConnected) target.classList.remove('cb-map-node--unlocking');
     return;
   }
 
-  /** @type {{ killTweensOf: (t: HTMLElement) => void, fromTo: Function } | null} */
-  let gsap = null;
-  try {
-    const mod = await importFromCdns(
-      [
-        'https://cdn.jsdelivr.net/npm/gsap@3.13.0/+esm',
-        'https://unpkg.com/gsap@3.13.0/index.js',
-        'https://esm.sh/gsap@3.13.0',
-      ],
-      'gsap'
-    );
-    gsap = mod.default;
-    if (!target.isConnected || !gsap) return;
+  spawnUnlockSparkles(target, scope);
+
+  const gsap = await loadGsap();
+  if (!target.isConnected || scope.disposed) return;
+
+  if (!gsap) {
+    target.classList.add('cb-map-node--unlock-fallback');
+    await wait(MOTION.unlock * 1000);
+    if (target.isConnected) target.classList.remove('cb-map-node--unlock-fallback');
+  } else {
+    scope.onDispose(() => gsap.killTweensOf(target));
     gsap.killTweensOf(target);
-    await gsap.fromTo(
-      target,
-      { scale: 0.88 },
-      {
-        scale: 1,
-        duration: 0.45,
-        ease: 'back.out(2)',
-        clearProps: 'transform',
-      }
-    );
-  } catch {
-    await new Promise((resolve) => window.setTimeout(resolve, 450));
-  } finally {
-    if (gsap && target.isConnected) gsap.killTweensOf(target);
-    if (target.isConnected) target.classList.remove('cb-map-node--unlocking');
+    try {
+      await gsap.fromTo(
+        target,
+        { scale: 0.8, opacity: 0.5 },
+        {
+          keyframes: [
+            { scale: 1.08, opacity: 1, duration: MOTION.unlock * 0.6, ease: EASE.standard },
+            { scale: 1, duration: MOTION.unlock * 0.4, ease: EASE.standard },
+          ],
+          clearProps: 'transform,opacity',
+        }
+      );
+    } finally {
+      if (target.isConnected) gsap.killTweensOf(target);
+    }
   }
+
+  if (target.isConnected) target.classList.remove('cb-map-node--unlocking');
+}
+
+/** @param {number} ms */
+function wait(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+/**
+ * 4 sparkles around the node — deliberately small, self-removing.
+ * @param {HTMLElement} target
+ * @param {ReturnType<typeof createMotionScope>} scope
+ */
+function spawnUnlockSparkles(target, scope) {
+  const burst = document.createElement('div');
+  burst.className = 'map-node-sparkles';
+  burst.setAttribute('aria-hidden', 'true');
+  const offsets = [
+    [-34, -26],
+    [34, -30],
+    [-28, 24],
+    [30, 20],
+  ];
+  offsets.forEach(([dx, dy], index) => {
+    const spark = document.createElement('span');
+    spark.className = 'map-node-sparkles__item';
+    spark.style.setProperty('--dx', `${dx}px`);
+    spark.style.setProperty('--dy', `${dy}px`);
+    spark.style.setProperty('--d', `${index * 55}ms`);
+    burst.appendChild(spark);
+  });
+  target.appendChild(burst);
+  scope.onDispose(() => burst.remove());
+  scope.after(() => burst.remove(), MOTION.unlock * 1000 + 300);
 }

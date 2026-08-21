@@ -173,13 +173,18 @@
   --control-height: 52px;
   --control-height-min: 44px;
 
-  /* Motion */
-  --motion-fast: 120ms;
+  /* Motion — mirrors MOTION/EASE in src/js/lib/motion.js */
+  --motion-fast: 130ms;
+  --motion-base: 200ms;
   --motion-sheet: 240ms;
-  --motion-screen: 320ms;
+  --motion-screen: 300ms;
+  --motion-panel: 320ms;
+  --motion-state: 420ms;
+  --motion-unlock: 550ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-pop: cubic-bezier(0.34, 1.42, 0.64, 1);
 
   /* App semantic aliases */
   --bg: var(--neutral-100);
