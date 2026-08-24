@@ -2,7 +2,6 @@ import { applyDocumentLocale, isLocaleId, localizeNode, setLocale, t } from './i
 import { COURSE_NODES, getNodeById, getQuizByNodeId } from './data/course.js';
 import {
   completeNode,
-  isNodePlayable,
   loadProgress,
   resetProgress,
   saveProgress,
@@ -215,7 +214,7 @@ function syncRouteWithProgress() {
  * @param {string} status
  */
 function handleNodeTap(nodeId, status) {
-  if (status === 'locked' || !isNodePlayable(nodeId)) return;
+  if (status === 'locked') return;
   const node = getNodeById(nodeId);
   if (!node) return;
   enterNode(node, status === 'completed' ? 'replay' : 'play');
@@ -226,7 +225,6 @@ function handleNodeTap(nodeId, status) {
  * @param {'play' | 'replay'} mode
  */
 function enterNode(node, mode) {
-  if (!isNodePlayable(node.id)) return;
   if (node.screen === 'quiz') {
     navigate('quiz', { nodeId: node.id, mode });
     return;

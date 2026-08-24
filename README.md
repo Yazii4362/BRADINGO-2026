@@ -2,7 +2,7 @@
 
 Public, privacy-safe snapshot of the **BRADINGO** graduation quest UI.
 
-- The **album (memories) node stays locked** so those photos are never shown. Album files are placeholders only.
+- The **album** opens as usual, but memory photos are generated placeholders.
 - Friend letters and third-party names are dummy copy.
 - This repository is an **orphan history** — it does not contain the private project’s git history.
 

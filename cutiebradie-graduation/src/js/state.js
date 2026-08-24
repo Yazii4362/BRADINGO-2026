@@ -6,17 +6,6 @@ export { STORAGE_KEY } from './constants.js';
 /** @typedef {'locked' | 'active' | 'completed'} NodeStatus */
 /** @typedef {{ version: number, nodeStatus: Record<string, NodeStatus>, endingViewed: boolean }} Progress */
 
-/** Public demo: album stays locked so real memory photos are never shown. */
-const PERMANENTLY_LOCKED = new Set(['n3']);
-
-function isPlayable(nodeId) {
-  return !PERMANENTLY_LOCKED.has(nodeId);
-}
-
-export function isNodePlayable(nodeId) {
-  return isPlayable(nodeId);
-}
-
 /**
  * Copy legacy progress into the current key when needed.
  * Errors never interrupt app startup.
@@ -68,9 +57,6 @@ export function normalizeProgress(progress) {
       status === 'locked' || status === 'active' || status === 'completed'
         ? status
         : 'locked';
-    if (!isPlayable(node.id)) {
-      nodeStatus[node.id] = 'locked';
-    }
   });
 
   const actives = COURSE_NODES.filter((node) => nodeStatus[node.id] === 'active');
@@ -81,13 +67,9 @@ export function normalizeProgress(progress) {
   }
 
   const hasActive = COURSE_NODES.some((node) => nodeStatus[node.id] === 'active');
-  const allCompleted = COURSE_NODES.filter((node) => isPlayable(node.id)).every(
-    (node) => nodeStatus[node.id] === 'completed'
-  );
+  const allCompleted = COURSE_NODES.every((node) => nodeStatus[node.id] === 'completed');
   if (!hasActive && !allCompleted) {
-    const next = COURSE_NODES.find(
-      (node) => isPlayable(node.id) && nodeStatus[node.id] !== 'completed'
-    );
+    const next = COURSE_NODES.find((node) => nodeStatus[node.id] !== 'completed');
     if (next) nodeStatus[next.id] = 'active';
   }
 
@@ -181,13 +163,9 @@ export function completeNode(progress, nodeId) {
   };
 
   const index = COURSE_NODES.findIndex((node) => node.id === nodeId);
-  for (let i = index + 1; i < COURSE_NODES.length; i += 1) {
-    const following = COURSE_NODES[i];
-    if (!isPlayable(following.id)) continue;
-    if (next.nodeStatus[following.id] === 'locked') {
-      next.nodeStatus[following.id] = 'active';
-    }
-    break;
+  const following = COURSE_NODES[index + 1];
+  if (following && next.nodeStatus[following.id] === 'locked') {
+    next.nodeStatus[following.id] = 'active';
   }
 
   if (nodeId === 'n5') {
