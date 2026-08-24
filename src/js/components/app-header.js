@@ -2,7 +2,7 @@ import { t } from '../i18n/index.js';
 
 /**
  * Top status header — streak / gems / hearts / travel (CB / App Header).
- * Streak → 연속 재학 tooltip (always 3095일).
+ * Streak → 재학 일수 tooltip (입학~졸업 3095일, 게이지는 가득 찬 졸업식).
  * Hearts → friends tooltip.
  * Travel (rightmost) → plane + country count + tooltip.
  * @param {{
@@ -136,7 +136,7 @@ export function createAppHeader(props = {}) {
   return el;
 }
 
-/** Always-on joke streak — never changes. */
+/** Enrollment length from 2018.3 to 2026.8 — the bar is full on graduation day. */
 const STREAK_DAYS = 3095;
 
 /** Countries Bradie has visited (for now). */
@@ -144,19 +144,18 @@ const TRAVEL_COUNTRY_COUNT = 4;
 
 function buildWeekState() {
   const labels = t('header.week').split(',');
-  const today = new Date().getDay(); // 0 = Sun
-  const daysHtml = labels.map((label, index) => {
-    const className =
-      index === today
-        ? 'cb-streak-tooltip__day is-today'
-        : 'cb-streak-tooltip__day';
-    return `<span class="${className}">${label.trim()}</span>`;
-  }).join('');
+  const last = labels.length - 1;
+  const daysHtml = labels
+    .map((label, index) => {
+      const className =
+        index === last
+          ? 'cb-streak-tooltip__day is-today'
+          : 'cb-streak-tooltip__day';
+      return `<span class="${className}">${label.trim()}</span>`;
+    })
+    .join('');
 
-  // Fill through today's column (Thu ≈ 71%).
-  const fillPercent = Math.round(((today + 0.5) / 7) * 1000) / 10;
-
-  return { daysHtml, fillPercent };
+  return { daysHtml, fillPercent: 100 };
 }
 
 /**
