@@ -1,0 +1,365 @@
+/* —— Friends path chapter footer —— */
+.screen--friends-path {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+.screen--friends-path .friends-header {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 40px;
+  align-items: start;
+  gap: var(--space-2);
+}
+
+.friends-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.screen--friends-path .friends-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.friends-path-footer {
+  flex-shrink: 0;
+  padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  background: var(--neutral-100);
+  border-top: 1px solid var(--neutral-200);
+}
+
+.friends-path-footer .cb-button {
+  width: 100%;
+}
+
+/* —— Friends / congratulation letters (GNB tab) —— */
+.screen--friends {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--neutral-100);
+}
+
+.friends-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-shrink: 0;
+  padding: var(--space-2) 0 var(--space-3);
+}
+
+.friends-header__copy {
+  min-width: 0;
+  text-align: center;
+  padding-top: 0.15rem;
+}
+
+.friends-header__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.friends-header__subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--feather-green-600);
+}
+
+.friends-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.friends-avatars {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  overflow-x: auto;
+  padding: 0.15rem 0.15rem 0.35rem;
+  scrollbar-width: none;
+}
+
+.friends-avatars::-webkit-scrollbar {
+  display: none;
+}
+
+.friends-avatar {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.875rem;
+  height: 3.875rem;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #a7b3ba;
+  border-radius: 999999px;
+  background: #eaf0f2;
+  color: #718088;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.friends-avatar span,
+.friends-avatar img {
+  display: block;
+  max-width: 100%;
+  pointer-events: none;
+}
+
+.friends-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.friends-avatar.is-active {
+  border-color: var(--feather-green-600);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--feather-green-600) 22%, transparent);
+  color: var(--feather-green-800);
+  transform: translateY(-1px);
+}
+
+.friends-avatar:focus-visible {
+  outline: 2px solid var(--feather-green-600);
+  outline-offset: 2px;
+}
+
+/* Stacked letter deck (messages) */
+.friends-deck {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.friends-deck__stage {
+  position: relative;
+  flex: 1;
+  min-height: 14rem;
+  touch-action: pan-y;
+}
+
+.friends-letter-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 1rem 1.05rem 1.1rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 1.15rem;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  transform-origin: center bottom;
+  transform: translate3d(calc(var(--deck-offset, 0) * 10px), calc(var(--deck-abs, 0) * 10px), 0)
+    scale(calc(1 - (var(--deck-abs, 0) * 0.045)));
+  opacity: calc(1 - (var(--deck-abs, 0) * 0.28));
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease,
+    box-shadow 180ms ease;
+  overflow: hidden;
+}
+
+.friends-letter-card.is-behind {
+  filter: saturate(0.92);
+}
+
+.friends-letter-card.is-front {
+  box-shadow:
+    0 14px 34px rgba(15, 23, 42, 0.12),
+    0 2px 0 #ebebeb;
+  opacity: 1;
+}
+
+.friends-letter-card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-shrink: 0;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid #eef0f2;
+}
+
+.friends-letter-card__avatar {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999999px;
+  overflow: hidden;
+  background: #eaf0f2;
+  border: 1px solid #d5dde2;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #718088;
+}
+
+.friends-letter-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.friends-letter-card__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.friends-letter-card__name {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.friends-letter-card__when {
+  margin: 0.1rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #8a949b;
+}
+
+.friends-letter-card__index {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #a0a8ae;
+}
+
+.friends-letter-card__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.friends-letter-card__text {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  color: #3f474d;
+  word-break: keep-all;
+  white-space: normal;
+}
+
+.friends-deck__controls {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.friends-deck__nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  border: 2px solid #e5e5e5;
+  border-radius: 999999px;
+  background: #fff;
+  color: #4b4b4b;
+  box-shadow: 0 2px 0 #ebebeb;
+  cursor: pointer;
+}
+
+.friends-deck__nav:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #ebebeb;
+}
+
+.friends-deck__nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.friends-deck__nav:focus-visible {
+  outline: 2px solid var(--feather-green-600);
+  outline-offset: 2px;
+}
+
+.friends-deck__dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.friends-deck__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999999px;
+  background: #d5dde2;
+  cursor: pointer;
+  transition: width 160ms ease, background-color 160ms ease;
+}
+
+.friends-deck__dot.is-active {
+  width: 1.15rem;
+  background: var(--feather-green-600);
+}
+
+.friends-deck__dot:focus-visible {
+  outline: 2px solid var(--feather-green-600);
+  outline-offset: 2px;
+}
+
+.friends-header,
+.friends-avatars,
+.friends-deck {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .friends-avatars {
+    justify-content: center;
+  }
+
+  .friends-deck__stage {
+    min-height: 18rem;
+  }
+}
+
+

@@ -1,0 +1,171 @@
+/**
+ * Shared shell, screen chrome, and GNB.
+ */
+
+.app-shell {
+  width: 100%;
+  max-width: var(--app-max);
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0 auto;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--neutral-alpha-10);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .app-shell {
+    max-width: var(--app-max-tablet);
+  }
+}
+
+@media (min-width: 960px) {
+  .app-shell {
+    max-width: var(--app-max-landscape);
+  }
+}
+
+.screen-root {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--page-padding) var(--page-padding) var(--page-padding-bottom);
+  gap: var(--space-4);
+}
+
+.screen__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.screen__title {
+  font-size: clamp(1.25rem, 5vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.screen__body {
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.placeholder-box {
+  margin-top: 0.5rem;
+  padding: var(--space-4);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.quiz-footer,
+.ending-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.quiz-footer .cb-button--primary,
+.memory-footer .cb-button--primary {
+  width: 100%;
+}
+
+
+/* —— Bottom GNB (map + friends) — pinned to app shell —— */
+.app-shell--with-gnb .screen-root {
+  /* Screen fills the area above the sticky GNB */
+  min-height: 0;
+}
+
+.screen--with-gnb {
+  /* GNB lives on .app-shell; keep a little end padding for scroll content */
+  padding-bottom: var(--space-4);
+}
+
+.app-gnb {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  padding-block: 0.45rem calc(0.45rem + env(safe-area-inset-bottom, 0px));
+  padding-inline: max(0.85rem, calc((100% - var(--content-max)) / 2));
+  border-top: 2px solid var(--neutral-200);
+  background: var(--neutral-100);
+}
+
+.app-gnb__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  margin: 0;
+  min-height: 44px;
+  padding: 0.35rem 0.5rem 0.25rem;
+  border: 0;
+  border-radius: 0.85rem;
+  background: transparent;
+  color: #afafaf;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-gnb__item.is-active {
+  color: var(--feather-green-600);
+  background: color-mix(in srgb, var(--feather-green-600) 10%, transparent);
+}
+
+.app-gnb__item:focus-visible {
+  outline: 2px solid var(--feather-green-600);
+  outline-offset: 2px;
+}
+
+.app-gnb__icon {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.app-gnb__icon svg {
+  display: block;
+  width: 2rem;
+  height: auto;
+}
+
+.app-gnb__label {
+  font-family: var(--font-map);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+

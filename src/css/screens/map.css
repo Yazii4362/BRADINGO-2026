@@ -1,0 +1,243 @@
+.map-progress {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.creator-promo {
+  display: block;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 16rem;
+  margin: 0;
+  padding: 0.85rem 0.8rem 0.75rem;
+  border: 2px solid var(--neutral-200);
+  border-radius: 1rem;
+  background: var(--neutral-100);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--neutral-1000) 8%, transparent);
+  text-align: left;
+}
+
+/* Mobile: sit at end of map scroll — one swipe past the path */
+.creator-promo--dock {
+  max-width: none;
+  width: calc(100% - (var(--page-padding) * 2));
+  margin: 1.25rem auto 0.5rem;
+}
+
+.creator-promo__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.35rem;
+  background: #e5e5e5;
+  color: #777;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.creator-promo__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  align-items: end;
+}
+
+.creator-promo__copy {
+  min-width: 0;
+}
+
+.creator-promo__title {
+  margin: 0;
+  font-family: var(--font-map);
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  word-break: keep-all;
+}
+
+.creator-promo__body {
+  margin: 0.35rem 0 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--muted);
+  word-break: keep-all;
+}
+
+.creator-promo__art {
+  flex-shrink: 0;
+  width: 3.1rem;
+  height: 3.1rem;
+  margin-bottom: 0.35rem;
+}
+
+.creator-promo__cup {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.creator-promo__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.25rem;
+  margin: 0;
+  padding: 0 0.65rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 0.75rem;
+  background: var(--neutral-100);
+  color: #1cb0f6;
+  font-family: var(--font-map);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #e5e5e5;
+}
+
+.creator-promo__cta:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #e5e5e5;
+}
+
+.creator-promo__cta:focus-visible {
+  outline: 2px solid #1cb0f6;
+  outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .map-top .creator-promo {
+    width: 100%;
+    max-width: 14rem;
+    margin-top: 0.15rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .map-top .creator-promo {
+    max-width: 100%;
+  }
+}
+
+.screen--map {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.screen--map::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.map-top {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.map-canvas {
+  width: 100%;
+  max-width: var(--map-canvas-max);
+  margin-inline: auto;
+  padding: var(--space-2) 0 var(--space-4);
+}
+
+/* Leave room so the docked promo sits just past one swipe on phones */
+@media (max-width: 767.98px) {
+  .screen--map .map-canvas {
+    padding-bottom: clamp(2.5rem, 18vh, 5.5rem);
+  }
+}
+
+.map-path {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+}
+
+.map-path__bird {
+  position: absolute;
+  z-index: 0;
+  top: 28%;
+  left: 58%;
+  width: var(--map-node-size);
+  height: auto;
+  aspect-ratio: 131 / 144;
+  pointer-events: none;
+  user-select: none;
+}
+
+.map-path__bird--bradie {
+  width: calc(var(--map-node-size) * 1.35);
+  aspect-ratio: 1 / 1;
+  top: 26%;
+  left: 54%;
+}
+
+.map-path__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.map-path__item .cb-map-node-stack {
+  position: relative;
+  left: var(--lane-offset, 0%);
+}
+
+@media (min-width: 960px) {
+  .screen--map {
+    display: grid;
+    grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr);
+    grid-template-rows: 1fr;
+    align-items: start;
+    gap: var(--space-6);
+    overflow: hidden;
+  }
+
+  .screen--map .map-top {
+    position: sticky;
+    top: 0;
+    align-self: start;
+  }
+
+  .screen--map .map-canvas {
+    max-width: var(--map-canvas-max);
+    width: 100%;
+    margin-inline: auto;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .screen--map .map-canvas::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+

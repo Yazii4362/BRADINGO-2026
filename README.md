@@ -1,11 +1,18 @@
-# BRADINGO-2026 (public demo)
+# BRADINGO 🎓
+### A Surprise Graduation Experience for Bradie
 
-Public, privacy-safe snapshot of the **BRADINGO** graduation quest UI.
+> **8년 6개월의 대학생활을 마친 친구를 위해 만든  
+> 단 하나뿐인 인터랙티브 졸업 서프라이즈 웹페이지**
 
-- The **album** opens as usual, but memory photos are generated placeholders.
-- Friend letters and third-party names are dummy copy.
-- This repository is an **orphan history** — it does not contain the private project’s git history.
+BRADINGO는 **8년 6개월 동안 성실하게 학교생활을 해온 저의 친구 Bradie의 졸업을 축하하기 위해 제작한 개인적인 서프라이즈 웹 프로젝트**입니다.
 
-GitHub Pages (after enabling): `https://yazii4362.github.io/BRADINGO-2026/cutiebradie-graduation/`
+Bradie는 실제로 **Duolingo 연속 학습 기록 1,000일을 돌파할 정도로 꾸준히 Duolingo를 사용해온 친구**입니다.  
+그래서 친구에게 익숙하면서도 재미있는 방식으로 졸업을 축하하고 싶어, **Duolingo의 학습 코스와 게임형 UX에서 아이디어를 얻어 Bradie의 대학생활을 하나의 ‘Graduation Quest’로 재구성**했습니다.
 
-The original project lives in a **private** repository.
+Figma Community의 오픈소스 디자인 리소스를 레퍼런스로 활용하고, 친구와 관련된 실제 에피소드, 사진, 밈, 졸업 축하 메시지와 직접 제작한 캐릭터 및 그래픽을 더해 프로젝트만의 비주얼 시스템을 만들었습니다.
+
+**7월 말부터 약 2주간 기획 → 디자인 → 개발을 진행했으며, 최종적으로 실제 웹페이지 형태로 구현하여 배포까지 완료했습니다.**
+
+친구가 직접 문제를 풀며 지난 추억을 발견하고, 마지막 졸업까지 도착하는 과정을 게임처럼 몰입할 수 있는 것에 초점을 맞춰 디자인하였습니다.
+
+**Play:** [https://yazii4362.github.io/BRADINGO-2026/](https://yazii4362.github.io/BRADINGO-2026/)
