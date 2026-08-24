@@ -1,0 +1,281 @@
+/**
+ * BRADINGO design tokens — color scales
+ * Source: Style Guidelines palette
+ */
+:root {
+  /* Feather green */
+  --feather-green-100: #e2ffcd;
+  --feather-green-200: #c5fe9b;
+  --feather-green-300: #a8fe68;
+  --feather-green-400: #8bfd36;
+  --feather-green-500: #6efd04;
+  --feather-green-600: #58cc02;
+  --feather-green-700: #4bae02;
+  --feather-green-800: #3e9001;
+  --feather-green-900: #317301;
+  --feather-green-1000: #255501;
+  --feather-green-alpha-10: color-mix(in srgb, var(--feather-green-600) 10%, transparent);
+  --feather-green-alpha-50: color-mix(in srgb, var(--feather-green-600) 50%, transparent);
+
+  /* Mask green */
+  --mask-green-100: #ebfbd8;
+  --mask-green-200: #d8f6b1;
+  --mask-green-300: #c4f28a;
+  --mask-green-400: #b1ee64;
+  --mask-green-500: #9dea3d;
+  --mask-green-600: #89e219;
+  --mask-green-700: #74c015;
+  --mask-green-800: #609e12;
+  --mask-green-900: #4b7c0e;
+  --mask-green-1000: #375b0a;
+  --mask-green-alpha-10: color-mix(in srgb, var(--mask-green-600) 10%, transparent);
+  --mask-green-alpha-50: color-mix(in srgb, var(--mask-green-600) 50%, transparent);
+
+  /* Neutral */
+  --neutral-100: #ffffff;
+  --neutral-200: #ebebeb;
+  --neutral-300: #d7d7d7;
+  --neutral-400: #c3c3c3;
+  --neutral-500: #afafaf;
+  --neutral-600: #9b9b9b;
+  --neutral-700: #878787;
+  --neutral-800: #737373;
+  --neutral-900: #5f5f5f;
+  --neutral-1000: #4b4b4b;
+  --neutral-alpha-10: color-mix(in srgb, var(--neutral-1000) 10%, transparent);
+  --neutral-alpha-50: color-mix(in srgb, var(--neutral-1000) 50%, transparent);
+
+  /* Macaw */
+  --macaw-100: #d2effd;
+  --macaw-200: #a4dffb;
+  --macaw-300: #77d0fa;
+  --macaw-400: #49c0f8;
+  --macaw-500: #1cb0f6;
+  --macaw-600: #099fe5;
+  --macaw-700: #0887c3;
+  --macaw-800: #066fa1;
+  --macaw-900: #05587f;
+  --macaw-1000: #04405d;
+  --macaw-alpha-10: color-mix(in srgb, var(--macaw-500) 10%, transparent);
+  --macaw-alpha-50: color-mix(in srgb, var(--macaw-500) 50%, transparent);
+
+  /* Cardinal */
+  --cardinal-100: #ffd2d2;
+  --cardinal-200: #ffa5a5;
+  --cardinal-300: #ff7878;
+  --cardinal-400: #ff4b4b;
+  --cardinal-500: #ff2525;
+  --cardinal-600: #fe0000;
+  --cardinal-700: #d80000;
+  --cardinal-800: #b20000;
+  --cardinal-900: #8c0000;
+  --cardinal-1000: #660000;
+  --cardinal-alpha-10: color-mix(in srgb, var(--cardinal-400) 10%, transparent);
+  --cardinal-alpha-50: color-mix(in srgb, var(--cardinal-400) 50%, transparent);
+
+  /* Bee */
+  --bee-100: #fff6d5;
+  --bee-200: #ffedaa;
+  --bee-300: #ffe380;
+  --bee-400: #ffda55;
+  --bee-500: #ffd12b;
+  --bee-600: #ffc800;
+  --bee-700: #d9aa00;
+  --bee-800: #b38c00;
+  --bee-900: #8c6e00;
+  --bee-1000: #665000;
+  --bee-alpha-10: color-mix(in srgb, var(--bee-600) 10%, transparent);
+  --bee-alpha-50: color-mix(in srgb, var(--bee-600) 50%, transparent);
+
+  /* Fox */
+  --fox-100: #ffeed5;
+  --fox-200: #ffdcaa;
+  --fox-300: #ffcb80;
+  --fox-400: #ffb955;
+  --fox-500: #ffa82b;
+  --fox-600: #ff9600;
+  --fox-700: #d98000;
+  --fox-800: #b36900;
+  --fox-900: #8c5300;
+  --fox-1000: #663c00;
+  --fox-alpha-10: color-mix(in srgb, var(--fox-600) 10%, transparent);
+  --fox-alpha-50: color-mix(in srgb, var(--fox-600) 50%, transparent);
+
+  /* Beetle */
+  --beetle-100: #efd5ff;
+  --beetle-200: #deacff;
+  --beetle-300: #ce82ff;
+  --beetle-400: #be5aff;
+  --beetle-500: #af32ff;
+  --beetle-600: #9f0aff;
+  --beetle-700: #8900e1;
+  --beetle-800: #7100b9;
+  --beetle-900: #580091;
+  --beetle-1000: #400069;
+  --beetle-alpha-10: color-mix(in srgb, var(--beetle-300) 10%, transparent);
+  --beetle-alpha-50: color-mix(in srgb, var(--beetle-300) 50%, transparent);
+
+  /* Humpback */
+  --humpback-100: #dae7f7;
+  --humpback-200: #b6cfef;
+  --humpback-300: #91b7e8;
+  --humpback-400: #6d9fe0;
+  --humpback-500: #4887d8;
+  --humpback-600: #2b70c9;
+  --humpback-700: #255fab;
+  --humpback-800: #1e4f8d;
+  --humpback-900: #183e6f;
+  --humpback-1000: #112d51;
+  --humpback-alpha-10: color-mix(in srgb, var(--humpback-600) 10%, transparent);
+  --humpback-alpha-50: color-mix(in srgb, var(--humpback-600) 50%, transparent);
+
+  /* Semantic */
+  --error-100: #fb3748;
+  --error-200: #d00416;
+  --error-alpha-10: color-mix(in srgb, var(--error-100) 10%, transparent);
+  --warning-100: #ffdb43;
+  --warning-200: #dfb400;
+  --warning-alpha-10: color-mix(in srgb, var(--warning-100) 10%, transparent);
+  --success-100: #86f0b8;
+  --success-200: #1ad571;
+  --success-alpha-10: color-mix(in srgb, var(--success-200) 10%, transparent);
+
+  /* Layout */
+  --app-max: 430px;
+  --app-max-tablet: 768px;
+  --app-max-landscape: 1024px;
+  --map-canvas-max: 100%;
+  --content-max: 100%;
+  --action-max: 100%;
+  --feedback-max: 100%;
+  --quiz-text-answer-max: 26rem;
+  --page-padding: 16px;
+  --page-padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  --page-gutter: 12px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Header / controls — Duolingo learn HUD */
+  --header-height: 56px;
+  --header-icon-size: 25px;
+  --header-close-size: 28px;
+  --header-progress-height: 16px;
+  --header-gap: 12px;
+  --header-item-gap: 6px;
+  --control-height: 52px;
+  --control-height-min: 44px;
+
+  /* Motion — mirrors MOTION/EASE in src/js/lib/motion.js */
+  --motion-fast: 130ms;
+  --motion-base: 200ms;
+  --motion-sheet: 240ms;
+  --motion-screen: 300ms;
+  --motion-panel: 320ms;
+  --motion-state: 420ms;
+  --motion-unlock: 550ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-pop: cubic-bezier(0.34, 1.42, 0.64, 1);
+
+  /* App semantic aliases */
+  --bg: var(--neutral-100);
+  --surface: var(--neutral-100);
+  --text: var(--neutral-1000);
+  --muted: var(--neutral-800);
+  --border: var(--neutral-300);
+  /* Brand / primary action — UOS Blue (not success green) */
+  --brand: #004dbd;
+  --primary: var(--brand);
+  --primary-shadow: color-mix(in srgb, var(--brand) 78%, black);
+  /* Success / correct-answer emphasis (keep green; do not alias to brand) */
+  --active: var(--feather-green-600);
+  --active-shadow: var(--feather-green-700);
+  --active-soft: var(--feather-green-100);
+  --active-muted: var(--feather-green-800);
+  --locked: var(--neutral-500);
+  --completed: var(--macaw-500);
+  --completed-soft: var(--macaw-100);
+  --completed-muted: var(--macaw-700);
+  --danger: var(--cardinal-400);
+  --danger-shadow: var(--cardinal-700);
+  --danger-soft: var(--cardinal-100);
+  --warning: var(--bee-600);
+  --success: var(--success-200);
+  --accent-purple: var(--beetle-300);
+  --start-cta-edge: var(--beetle-200);
+  --night-900: var(--humpback-1000);
+  --night-800: var(--humpback-900);
+  --night-700: var(--humpback-800);
+  --night-text: var(--humpback-100);
+  --night-muted: var(--humpback-200);
+  --night-accent: var(--humpback-300);
+  --shadow: 0 2px 8px var(--neutral-alpha-10);
+  /* Matches shipped confirm-modal overlay (was unused at 35%). */
+  --overlay-scrim: color-mix(in srgb, #000 45%, transparent);
+
+  /* Feedback sheet — Figma 96:2865 */
+  --feedback-correct-bg: #d7ffb8;
+  --feedback-correct-fg: #58a700;
+  --feedback-correct-cta: var(--feather-green-600);
+  --feedback-correct-cta-edge: var(--feather-green-700);
+  --feedback-incorrect-bg: #ffdfe0;
+  --feedback-incorrect-fg: #ea2b2b;
+  --feedback-incorrect-cta: var(--cardinal-400);
+  --feedback-incorrect-cta-edge: var(--cardinal-700);
+
+  /* Map cover — same as intro CTA (UOS brand blue) */
+  --map-cover-fill: var(--primary);
+  --map-cover-edge: var(--primary-shadow);
+  --map-cover-radius: 14px;
+  --map-cover-height: 78px;
+
+  /* Map node — Figma 71×65 ellipses */
+  --map-node-size: clamp(56px, 18vw, 71px);
+  --map-node-active: #00b3fa;
+  --map-node-active-edge: #0098d4;
+  --map-node-green: var(--feather-green-600);
+  --map-node-green-edge: color-mix(in srgb, var(--map-node-green) 85%, black);
+  --map-node-inset: var(--neutral-200);
+  --map-node-locked-fill: #e5e5e5;
+  --map-node-locked-edge: #b7b7b7;
+  --map-node-completed-fill: #00b3fa;
+  --map-node-completed-edge: #0098d4;
+  --map-callout-radius: var(--radius-sm);
+  --map-callout-green: var(--feather-green-600);
+  /* Active node start sheet — match path node blue */
+  --map-sheet-fill: var(--map-node-active);
+  --map-sheet-edge: var(--map-node-active-edge);
+  --font-map: "Nunito", "Noto Sans KR", system-ui, sans-serif;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-padding: 32px;
+    --page-gutter: 16px;
+    --page-padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    --map-canvas-max: 600px;
+    --content-max: 600px;
+    --action-max: 22rem;
+    --feedback-max: 560px;
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --page-padding: 40px;
+    --page-gutter: 16px;
+    --page-padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+    --map-canvas-max: 640px;
+    --content-max: 640px;
+    --feedback-max: 600px;
+  }
+}
