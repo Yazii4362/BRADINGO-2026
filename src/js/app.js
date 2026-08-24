@@ -413,13 +413,14 @@ window.addEventListener('popstate', (event) => {
     render();
     return;
   }
-  setRoute({ screen: 'map', nodeId: null, mode: null });
+  setRoute({ screen: 'intro', nodeId: null, mode: null });
   persistRoute();
   render();
 });
 
 const savedRoute = loadSavedRoute();
-if (savedRoute) {
+const resumeScreens = new Set(['quiz', 'chapter', 'memory', 'friends', 'ending', 'lang']);
+if (savedRoute && resumeScreens.has(savedRoute.screen)) {
   setRoute(savedRoute);
   syncRouteWithProgress();
   const route = getRoute();
