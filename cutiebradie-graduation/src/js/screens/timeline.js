@@ -1,12 +1,11 @@
-import { getTimelineYears } from '../data/timeline.js';
+import { getTimelineYearGroups } from '../data/timeline.js';
 import { t } from '../i18n.js';
 
 /**
- * GNB archive — Bradie's 2018–2026 school-life timeline (light mode).
- * Not a course node.
+ * GNB archive — chronological school-life record (not the photo album).
  */
 export function renderTimeline() {
-  const years = getTimelineYears();
+  const groups = getTimelineYearGroups();
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const el = document.createElement('section');
@@ -14,33 +13,26 @@ export function renderTimeline() {
   el.dataset.screen = 'timeline';
 
   const header = document.createElement('header');
-  header.className = 'chapter-header timeline-header';
+  header.className = 'tl-head';
   header.innerHTML = `
-    <span aria-hidden="true"></span>
-    <div class="timeline-heading">
-      <h1 class="chapter-title">${t('timeline.title')}</h1>
-      <p class="timeline-heading__sub">
-        <span class="timeline-heading__range">${t('timeline.bannerRange')}</span>
-      </p>
-    </div>
-    <span aria-hidden="true"></span>
+    <h1 class="tl-head__title">${t('timeline.title')}</h1>
+    <p class="tl-head__sub">${t('timeline.subtitle')}</p>
   `;
 
   const yearNav = document.createElement('nav');
-  yearNav.className = 'memory-filters timeline-years';
-  yearNav.setAttribute('aria-label', t('timeline.bannerRange'));
+  yearNav.className = 'tl-index';
+  yearNav.setAttribute('aria-label', t('timeline.jumpAria'));
 
   /** @type {Map<number, HTMLButtonElement>} */
   const chipByYear = new Map();
   /** @type {Map<number, HTMLElement>} */
-  const cardByYear = new Map();
+  const sectionByYear = new Map();
 
   const body = document.createElement('div');
-  body.className = 'timeline-body';
+  body.className = 'tl-body';
 
   /** @type {number | null} */
   let activeYear = null;
-  /** Scroll-driven sync pauses while a tapped jump is still animating. */
   let jumpTimer = /** @type {number | null} */ (null);
 
   /**
@@ -53,8 +45,7 @@ export function renderTimeline() {
     chipByYear.forEach((chip, chipYear) => {
       const isActive = chipYear === year;
       chip.classList.toggle('is-active', isActive);
-      if (isActive) chip.setAttribute('aria-current', 'true');
-      else chip.removeAttribute('aria-current');
+      chip.setAttribute('aria-current', isActive ? 'true' : 'false');
     });
     if (options.revealChip === false) return;
     chipByYear.get(year)?.scrollIntoView({
@@ -64,71 +55,89 @@ export function renderTimeline() {
     });
   }
 
-  const list = document.createElement('ol');
-  list.className = 'timeline-list';
+  const list = document.createElement('div');
+  list.className = 'tl-feed';
+  list.setAttribute('role', 'feed');
   list.setAttribute('aria-label', t('timeline.listAria'));
 
-  /** @type {HTMLElement[]} */
-  const allCards = [];
+  groups.forEach((group) => {
+    const section = document.createElement('section');
+    section.className = 'tl-year';
+    section.id = `tl-year-${group.year}`;
+    section.dataset.year = String(group.year);
+    section.setAttribute('aria-labelledby', `tl-year-label-${group.year}`);
 
-  years.forEach((entry, index) => {
-    const isLast = index === years.length - 1;
-    const card = document.createElement('li');
-    card.className = `timeline-card timeline-card--${entry.accent}${isLast ? ' timeline-card--goal' : ''}`;
-    card.id = `timeline-${entry.id}`;
-    card.dataset.year = String(entry.year);
-    const media = entry.image
-      ? `<span class="cb-answer-card__media timeline-card__emoji timeline-card__emoji--stamp" aria-hidden="true"><img class="timeline-card__stamp" src="${entry.image}" alt=""></span>`
-      : `<span class="cb-answer-card__media timeline-card__emoji" aria-hidden="true">${entry.emoji}</span>`;
-
-    card.innerHTML = `
-      <article class="timeline-card__panel cb-answer-card cb-answer-card--row">
-        ${media}
-        <span class="cb-answer-card__label timeline-card__copy">
-          <span class="timeline-card__meta">
-            <span class="timeline-card__year">${
-              entry.month ? `${entry.year}.${entry.month}` : entry.year
-            }</span>
-            <span class="timeline-card__tag">${t(entry.tagKey)}</span>
-          </span>
-          <span class="timeline-card__text">
-            ${t(entry.line1Key)} ${t(entry.line2Key)}
-          </span>
-        </span>
-      </article>
+    const heading = document.createElement('header');
+    heading.className = 'tl-year__head';
+    heading.innerHTML = `
+      <h2 class="tl-year__label" id="tl-year-label-${group.year}">${group.year}</h2>
     `;
-    list.appendChild(card);
-    allCards.push(card);
-    if (!cardByYear.has(entry.year)) cardByYear.set(entry.year, card);
 
-    if (chipByYear.has(entry.year)) return;
+    const ol = document.createElement('ol');
+    ol.className = 'tl-events';
+
+    group.entries.forEach((entry, index) => {
+      const isLastOverall =
+        group === groups[groups.length - 1] && index === group.entries.length - 1;
+      const li = document.createElement('li');
+      li.className = `tl-event tl-event--${entry.accent}${isLastOverall ? ' tl-event--goal' : ''}`;
+      li.id = `timeline-${entry.id}`;
+
+      const when = entry.month
+        ? `${entry.year}.${String(entry.month).padStart(2, '0')}`
+        : String(entry.year);
+      const media = entry.image
+        ? `<span class="tl-event__media tl-event__media--stamp" aria-hidden="true"><img class="tl-event__stamp" src="${entry.image}" alt=""></span>`
+        : `<span class="tl-event__media" aria-hidden="true">${entry.emoji ?? ''}</span>`;
+
+      li.innerHTML = `
+        <p class="tl-event__when"><time datetime="${entry.year}${
+          entry.month ? `-${String(entry.month).padStart(2, '0')}` : ''
+        }">${when}</time></p>
+        <div class="tl-event__card">
+          ${media}
+          <div class="tl-event__copy">
+            <p class="tl-event__tag">${t(entry.tagKey)}</p>
+            <p class="tl-event__lead">${t(entry.line1Key)}</p>
+            <p class="tl-event__note">${t(entry.line2Key)}</p>
+          </div>
+        </div>
+      `;
+      ol.appendChild(li);
+    });
+
+    section.append(heading, ol);
+    list.appendChild(section);
+    sectionByYear.set(group.year, section);
+
     const chip = document.createElement('button');
     chip.type = 'button';
-    chip.className = 'memory-filter timeline-year-chip';
-    chip.textContent = String(entry.year);
-    chip.dataset.year = String(entry.year);
+    chip.className = 'tl-index__year';
+    chip.dataset.year = String(group.year);
+    chip.setAttribute('aria-current', 'false');
+    chip.setAttribute('aria-label', t('timeline.jumpYearAria', { year: group.year }));
+    chip.innerHTML = `<span class="tl-index__num">${group.year}</span>`;
     chip.addEventListener('click', () => {
       if (jumpTimer != null) window.clearTimeout(jumpTimer);
       jumpTimer = window.setTimeout(() => {
         jumpTimer = null;
-      }, 700);
-      applyActiveYear(entry.year, { revealChip: false });
-      card.scrollIntoView({
+      }, 650);
+      applyActiveYear(group.year, { revealChip: false });
+      section.scrollIntoView({
         behavior: reduceMotion ? 'auto' : 'smooth',
         block: 'start',
       });
     });
     yearNav.appendChild(chip);
-    chipByYear.set(entry.year, chip);
+    chipByYear.set(group.year, chip);
   });
 
   body.appendChild(list);
   el.append(header, yearNav, body);
 
-  const firstYear = years[0]?.year;
+  const firstYear = groups[0]?.year;
   if (firstYear != null) applyActiveYear(firstYear, { revealChip: false });
 
-  /** Track the card nearest the top of the scroll area. */
   const observer = new IntersectionObserver(
     (entries) => {
       if (jumpTimer != null) return;
@@ -136,12 +145,12 @@ export function renderTimeline() {
         .filter((entry) => entry.isIntersecting)
         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
       if (!visible) return;
-      const year = Number(visible.target.dataset.year);
+      const year = Number(/** @type {HTMLElement} */ (visible.target).dataset.year);
       if (Number.isFinite(year)) applyActiveYear(year);
     },
-    { root: body, rootMargin: '0px 0px -60% 0px', threshold: 0.01 }
+    { root: body, rootMargin: '-8% 0px -70% 0px', threshold: 0 }
   );
-  allCards.forEach((card) => observer.observe(card));
+  sectionByYear.forEach((section) => observer.observe(section));
 
   el.__cleanup = () => {
     observer.disconnect();

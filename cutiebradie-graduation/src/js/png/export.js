@@ -2,11 +2,11 @@ import { EXPORT_FILE_NAME } from '../constants.js';
 
 export { EXPORT_FILE_NAME } from '../constants.js';
 
-/** Graduation card export uses the site OG thumbnail as the saved image. */
-export const EXPORT_IMAGE_SRC = './assets/images/og-thumbnail.jpg';
+/** Graduation PNG save uses the uncropped original card (not the 1200×630 OG crop). */
+export const EXPORT_IMAGE_SRC = './assets/images/export-card.png';
 
-/** Thumbnail native size (1200×630). Kept for callers that still reference PNG_SIZE. */
-export const PNG_SIZE = Object.freeze({ width: 1200, height: 630 });
+/** Native size of export-card.png. */
+export const PNG_SIZE = Object.freeze({ width: 1024, height: 768 });
 
 /** @type {Promise<Blob> | null} */
 let preparedBlobPromise = null;
@@ -43,6 +43,9 @@ async function loadThumbnailAsPngBlob() {
   }
 
   const sourceBlob = await response.blob();
+  if (sourceBlob.type === 'image/png' || EXPORT_IMAGE_SRC.endsWith('.png')) {
+    return sourceBlob;
+  }
   const bitmap = await createImageBitmap(sourceBlob);
   try {
     const canvas = document.createElement('canvas');

@@ -183,3 +183,21 @@ export const TIMELINE_YEARS = Object.freeze([
 export function getTimelineYears() {
   return TIMELINE_YEARS;
 }
+
+/**
+ * Group events by calendar year for archive headings + year jump.
+ * @returns {ReadonlyArray<{ year: number, entries: typeof TIMELINE_YEARS }>}
+ */
+export function getTimelineYearGroups() {
+  /** @type {Array<{ year: number, entries: typeof TIMELINE_YEARS[number][] }>} */
+  const groups = [];
+  TIMELINE_YEARS.forEach((entry) => {
+    const last = groups[groups.length - 1];
+    if (!last || last.year !== entry.year) {
+      groups.push({ year: entry.year, entries: [entry] });
+      return;
+    }
+    last.entries.push(entry);
+  });
+  return groups;
+}

@@ -2182,6 +2182,8 @@
 
 .png-preview__img {
   width: 100%;
+  height: auto;
+  object-fit: contain;
   border-radius: var(--radius-md);
   margin-top: 0.75rem;
   background: var(--night-900);
