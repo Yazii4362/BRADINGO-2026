@@ -10,31 +10,54 @@ export function renderIntro(props) {
   el.className = 'screen screen--intro';
   el.dataset.screen = 'intro';
   el.innerHTML = `
+    <div class="intro-sky" aria-hidden="true">
+      <span class="intro-cloud intro-cloud--a"></span>
+      <span class="intro-cloud intro-cloud--b"></span>
+      <span class="intro-cloud intro-cloud--c"></span>
+      <span class="intro-hill"></span>
+      <span class="intro-hill intro-hill--far"></span>
+    </div>
+
     <header class="intro-brand">
-      <svg class="intro-wordmark" viewBox="0 0 280 44" role="img" aria-label="${BRAND.wordmark}">
-        <title>${BRAND.wordmark}</title>
-        <text
-          x="140"
-          y="34"
-          text-anchor="middle"
-          fill="currentColor"
-          font-family="Nunito, 'Noto Sans KR', sans-serif"
-          font-size="36"
-          font-weight="900"
-          letter-spacing="0.04em"
-        >${BRAND.wordmark}</text>
-      </svg>
-      <p class="intro-course">${t('brand.courseTitle')}</p>
+      <p class="intro-kicker">${t('brand.courseTitle')}</p>
+      <h1 class="intro-wordmark" aria-label="${BRAND.wordmark}">
+        <span class="intro-wordmark__mark">${BRAND.wordmark}</span>
+      </h1>
     </header>
 
     <div class="intro-hero">
-      <button type="button" class="intro-egg" data-action="egg" aria-label="${t('intro.eggAria')}">
-        <span class="intro-egg__shell" aria-hidden="true"></span>
-      </button>
-      <span class="intro-sparks" aria-hidden="true">
-        <i class="intro-sparks__dot intro-sparks__dot--lg"></i>
-        <i class="intro-sparks__dot intro-sparks__dot--sm"></i>
-      </span>
+      <div class="intro-stage">
+        <ol class="intro-path" aria-hidden="true">
+          <li class="intro-path__node is-done"></li>
+          <li class="intro-path__node is-done"></li>
+          <li class="intro-path__node is-active"></li>
+          <li class="intro-path__node"></li>
+          <li class="intro-path__node"></li>
+        </ol>
+
+        <button type="button" class="intro-cast" data-action="egg" aria-label="${t('intro.eggAria')}">
+          <img
+            class="intro-cast__bradie"
+            src="./assets/images/ending/hero.webp"
+            alt=""
+            width="253"
+            height="450"
+            decoding="async"
+            fetchpriority="high"
+          />
+          <img
+            class="intro-cast__irumae"
+            src="./assets/images/map/irumae.svg"
+            alt=""
+            width="131"
+            height="144"
+            decoding="async"
+          />
+          <span class="intro-confetti" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i>
+          </span>
+        </button>
+      </div>
     </div>
 
     <div class="intro-footer">

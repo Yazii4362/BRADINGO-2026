@@ -418,7 +418,8 @@
   .screen--enter .friends-deck,
   .screen--enter .quiz-body > *,
   .screen--enter .review-body > *,
-  .intro-egg__shell,
+  .intro-cast__bradie,
+  .intro-cast__irumae,
   .lang-hero__duo,
   .cb-map-node--active .cb-map-node__asset,
   .map-path__bird,
@@ -452,7 +453,8 @@
     transition: none !important;
   }
 
-  .intro-egg__shell {
+  .intro-cast__bradie,
+  .intro-cast__irumae {
     transform: none;
     animation: none !important;
   }
