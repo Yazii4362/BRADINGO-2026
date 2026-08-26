@@ -138,7 +138,7 @@ export const TIMELINE_YEARS = Object.freeze([
     line1Key: 'timeline.y2024h.l1',
     line2Key: 'timeline.y2024h.l2',
     accent: 'gold',
-    image: './assets/images/timeline/machimnae.png',
+    image: './assets/images/timeline/machimnae.webp',
   }),
   Object.freeze({
     id: 'y2025',

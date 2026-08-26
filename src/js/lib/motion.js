@@ -6,15 +6,15 @@ import { importFromCdns } from './cdn-import.js';
 
 export const MOTION = Object.freeze({
   /** Micro interaction / press feedback */
-  fast: 0.13,
+  fast: 0.11,
   /** Tooltip, small UI */
-  base: 0.2,
+  base: 0.16,
   /** Card / panel entrance */
-  panel: 0.32,
+  panel: 0.22,
   /** Important state change (PASS, result reveal) */
-  state: 0.42,
+  state: 0.32,
   /** Node unlock */
-  unlock: 0.55,
+  unlock: 0.42,
 });
 
 export const EASE = Object.freeze({

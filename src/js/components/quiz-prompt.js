@@ -1,3 +1,5 @@
+import { speakText } from '../lib/speech.js';
+
 /**
  * CB / Quiz / Prompt — badge + instruction (+ optional speakable target word).
  * @param {{
@@ -51,11 +53,8 @@ export function createQuizPrompt(props) {
   `;
 
   el.querySelector('[data-action="speak"]')?.addEventListener('click', () => {
-    if (!word || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(word);
-    utter.lang = /[가-힣]/.test(word) ? 'ko-KR' : 'en-US';
-    window.speechSynthesis.speak(utter);
+    if (!word) return;
+    speakText(word);
   });
 
   return el;

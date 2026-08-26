@@ -9,14 +9,14 @@ const BACK_ICON = `
 </svg>
 `;
 
-/** Sequence beats (ms). Total lands just under 3s. */
+/** Sequence beats (ms). Total lands around ~2s. */
 const SEQ = Object.freeze({
-  start: 300,
-  step: 380,
+  start: 200,
+  step: 280,
   /** Last row hesitates for comic timing. */
-  lastStep: 800,
-  resultPause: 200,
-  resultReveal: 420,
+  lastStep: 480,
+  resultPause: 160,
+  resultReveal: 320,
 });
 
 /**

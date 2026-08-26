@@ -168,24 +168,24 @@
   animation: soft-rise var(--motion-panel) var(--ease-out) both;
 }
 
-.screen--enter .intro-cheer { animation-delay: 70ms; }
-.screen--enter .intro-dock { animation-delay: 110ms; }
+.screen--enter .intro-cheer { animation-delay: 40ms; }
+.screen--enter .intro-dock { animation-delay: 70ms; }
 
-.screen--enter .lang-hero { animation-delay: 30ms; }
-.screen--enter .lang-divider { animation-delay: 70ms; }
-.screen--enter .lang-list { animation-delay: 110ms; }
-.screen--enter .lang-footer { animation-delay: 160ms; }
+.screen--enter .lang-hero { animation-delay: 20ms; }
+.screen--enter .lang-divider { animation-delay: 40ms; }
+.screen--enter .lang-list { animation-delay: 70ms; }
+.screen--enter .lang-footer { animation-delay: 100ms; }
 
-.screen--enter .map-top { animation-delay: 30ms; }
-.screen--enter .cb-map-cover { animation-delay: 60ms; }
-.screen--enter .map-canvas { animation-delay: 100ms; }
-.screen--enter .creator-promo { animation-delay: 150ms; }
+.screen--enter .map-top { animation-delay: 20ms; }
+.screen--enter .cb-map-cover { animation-delay: 40ms; }
+.screen--enter .map-canvas { animation-delay: 60ms; }
+.screen--enter .creator-promo { animation-delay: 90ms; }
 
-.screen--enter .friends-deck { animation-delay: 60ms; }
+.screen--enter .friends-deck { animation-delay: 40ms; }
 
 /* N2 review: stage → checklist, nothing longer */
 .screen--enter .review-stage { animation: soft-rise var(--motion-panel) var(--ease-out) both; }
-.screen--enter .review-list { animation: soft-rise var(--motion-panel) var(--ease-out) both; animation-delay: 70ms; }
+.screen--enter .review-list { animation: soft-rise var(--motion-panel) var(--ease-out) both; animation-delay: 40ms; }
 
 /* —— Ambient —— */
 /* Intro bg stays static for full-bleed cover (no letterbox from float translate). */

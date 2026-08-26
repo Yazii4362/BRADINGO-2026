@@ -3,6 +3,7 @@ import { createFeedbackSheet } from '../components/feedback-sheet.js';
 import { openConfirmModal } from '../components/confirm-modal.js';
 import { createQuizProgressHeader } from '../components/quiz-progress-header.js';
 import { createQuizPrompt } from '../components/quiz-prompt.js';
+import { speakText } from '../lib/speech.js';
 import { createAnswerTile } from '../components/answer-tile.js';
 import { t } from '../i18n/index.js';
 
@@ -632,20 +633,6 @@ function renderChoiceQuiz(props, questions) {
 
   mountQuestion();
   return el;
-}
-
-/**
- * @param {string} text
- * @param {{ rate?: number }} [options]
- */
-function speakText(text, options = {}) {
-  const value = text.trim();
-  if (!value || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(value);
-  utter.lang = /[가-힣]/.test(value) ? 'ko-KR' : 'en-US';
-  utter.rate = Math.max(0.5, Math.min(1.2, options.rate ?? 1));
-  window.speechSynthesis.speak(utter);
 }
 
 /**

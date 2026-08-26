@@ -45,7 +45,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'pong',
             label: '',
-            image: './assets/images/quiz/n1-pong.png',
+            image: './assets/images/quiz/n1-pong.webp',
             alt: '뽕꼬니',
           }),
           Object.freeze({
@@ -57,7 +57,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'bradie',
             label: '',
-            image: './assets/images/quiz/n1-bradie.png',
+            image: './assets/images/quiz/n1-bradie.webp',
             alt: '브래디',
           }),
         ]),
@@ -122,7 +122,7 @@ export const QUIZZES = Object.freeze({
         badge: '어려운 문제',
         badgeVariant: 'hard',
         question: '들은 내용을 눌러 주세요',
-        characterImage: './assets/images/quiz/n2-character-full.png',
+        characterImage: './assets/images/quiz/n2-character-full.webp',
         characterAlt: '브래디 캐릭터',
         listenText: '브래디야 졸업을 축하해',
         listenRate: 0.65,

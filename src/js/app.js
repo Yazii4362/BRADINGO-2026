@@ -15,6 +15,7 @@ import {
   persistRoute,
   setRoute,
 } from './router.js';
+import { unlockSpeech } from './lib/speech.js';
 import { createAppGnb } from './components/app-gnb.js';
 import { renderIntro } from './screens/intro.js';
 import { renderLangSelect } from './screens/lang-select.js';
@@ -268,11 +269,15 @@ function render() {
 
   if (route.screen === 'intro') {
     screenEl = renderIntro({
-      onStart: () => navigate('lang'),
+      onStart: () => {
+        unlockSpeech();
+        navigate('lang');
+      },
     });
   } else if (route.screen === 'lang') {
     screenEl = renderLangSelect({
       onContinue: (langId) => {
+        unlockSpeech();
         if (isLocaleId(langId)) setLocale(langId);
         goToMap();
       },
