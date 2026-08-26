@@ -45,7 +45,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'pong',
             label: '',
-            image: './assets/images/quiz/n1-pong.webp',
+            image: './assets/images/quiz/n1-pong.png',
             alt: '뽕꼬니',
           }),
           Object.freeze({
@@ -57,7 +57,7 @@ export const QUIZZES = Object.freeze({
           Object.freeze({
             id: 'bradie',
             label: '',
-            image: './assets/images/quiz/n1-bradie.webp',
+            image: './assets/images/quiz/n1-bradie.png',
             alt: '브래디',
           }),
         ]),
