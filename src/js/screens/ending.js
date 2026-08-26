@@ -10,6 +10,16 @@ import {
   showPngPreview,
 } from '../lib/export.js';
 
+/** Palette tokens for graduation confetti pieces. */
+const CONFETTI_COLORS = Object.freeze([
+  'var(--feather-green-600)',
+  'var(--macaw-500)',
+  'var(--bee-600)',
+  'var(--fox-600)',
+  'var(--beetle-300)',
+  'var(--cardinal-400)',
+]);
+
 /**
  * N5 Ending screen + client PNG export.
  * @param {{
@@ -27,6 +37,7 @@ export function renderEnding(props) {
     props.progress.nodeStatus.n5 === 'completed' || props.progress.nodeStatus.n5 === 'active'
       ? stats.totalNodes
       : stats.completedCount;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const summaryRows = stats.summaryRows.map((row) => {
     if (row.id === 'stages') {
@@ -75,7 +86,7 @@ export function renderEnding(props) {
     .join('');
 
   el.innerHTML = `
-    <div class="ending-stage-wrap is-visible" data-role="stage">
+    <div class="ending-stage-wrap" data-role="stage">
       <div class="ending-bg" aria-hidden="true">
         <img class="ending-bg__img" src="./assets/images/ending/bg.webp" alt="" width="576" height="1024" decoding="async" />
       </div>
@@ -106,6 +117,7 @@ export function renderEnding(props) {
     </div>
   `;
 
+  const stageWrap = el.querySelector('.ending-stage-wrap');
   const statusEl = el.querySelector('.ending-status');
   const exportBtn = el.querySelector('[data-action="export"]');
 
@@ -239,7 +251,53 @@ export function renderEnding(props) {
     props.onEndingRendered();
   });
 
+  // Play-mode celebration after enter stagger (~250ms). Export uses a static
+  // PNG asset (not DOM capture), so confetti never appears in the saved card.
+  if (props.mode === 'play' && !reduceMotion && stageWrap instanceof HTMLElement) {
+    window.setTimeout(() => {
+      if (!el.isConnected) return;
+      spawnEndingConfetti(stageWrap, reduceMotion);
+    }, 250);
+  }
+
   return el;
+}
+
+/**
+ * Graduation confetti burst — mirrors chapter.js spawnApprovalSparkles pattern.
+ * @param {HTMLElement} host
+ * @param {boolean} reduceMotion
+ */
+function spawnEndingConfetti(host, reduceMotion) {
+  if (reduceMotion) return;
+
+  const layer = document.createElement('div');
+  layer.className = 'ending-confetti';
+  layer.setAttribute('aria-hidden', 'true');
+
+  const count = 24 + Math.floor(Math.random() * 7);
+  for (let i = 0; i < count; i += 1) {
+    const piece = document.createElement('span');
+    piece.className = 'ending-confetti__piece';
+    const dx = (Math.random() - 0.5) * 120;
+    const dy = 58 + Math.random() * 28;
+    const delay = Math.floor(Math.random() * 600);
+    const rot = Math.floor((Math.random() - 0.5) * 540);
+    const size = 6 + Math.floor(Math.random() * 6);
+    piece.style.setProperty('--dx', `${dx}vw`);
+    piece.style.setProperty('--dy', `${dy}vh`);
+    piece.style.setProperty('--d', `${delay}ms`);
+    piece.style.setProperty('--rot', `${rot}deg`);
+    piece.style.setProperty('--size', `${size}px`);
+    piece.style.setProperty(
+      '--piece-color',
+      CONFETTI_COLORS[i % CONFETTI_COLORS.length]
+    );
+    layer.appendChild(piece);
+  }
+
+  host.appendChild(layer);
+  window.setTimeout(() => layer.remove(), 2800);
 }
 
 /**

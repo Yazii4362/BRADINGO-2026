@@ -1,4 +1,5 @@
 import { getFriendsFeed } from '../data/friends.js';
+import { createScreenHeader } from '../components/screen-header.js';
 import { t } from '../i18n/index.js';
 
 /**
@@ -42,28 +43,12 @@ export function renderFriends(props = {}) {
   el.className = `screen screen--friends${isPathChapter ? ' screen--friends-path' : ''}`;
   el.dataset.screen = 'friends';
 
-  const header = document.createElement('header');
-  header.className = `friends-header${isPathChapter ? '' : ' friends-header--tab'}`;
-  header.innerHTML = `
-    ${
-      isPathChapter
-        ? `<button type="button" class="friends-back" aria-label="${t('chapter.backToMap')}">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>`
-        : ''
-    }
-    <div class="friends-header__copy">
-      <h1 class="friends-header__title">${escapeHtml(t('friends.title'))}</h1>
-      <p class="friends-header__subtitle">${escapeHtml(t('friends.subtitle'))}</p>
-    </div>
-  `;
-  if (isPathChapter) {
-    header.querySelector('.friends-back')?.addEventListener('click', () => {
-      props.onBackToMap?.();
-    });
-  }
+  const header = createScreenHeader({
+    title: t('friends.title'),
+    subtitle: t('friends.subtitle'),
+    leading: isPathChapter ? 'back' : 'none',
+    onLeading: isPathChapter ? () => props.onBackToMap?.() : undefined,
+  });
 
   const avatars = document.createElement('div');
   avatars.className = 'friends-avatars';

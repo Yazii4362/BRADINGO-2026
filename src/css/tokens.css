@@ -196,6 +196,9 @@
   --brand: #004dbd;
   --primary: var(--brand);
   --primary-shadow: color-mix(in srgb, var(--brand) 78%, black);
+  /* Ending / intro sky wash */
+  --ending-bg: #e8f7ff;
+  --intro-bg: var(--ending-bg);
   /* Success / correct-answer emphasis (keep green; do not alias to brand) */
   --active: var(--feather-green-600);
   --active-shadow: var(--feather-green-700);

@@ -1,6 +1,5 @@
 import { BRAND } from '../data/brand.js';
 import { t } from '../i18n/index.js';
-import { createCheerHeart } from '../components/cheer-heart.js';
 import { createTapUnlock, openCreatorSupport } from '../components/creator-promo.js';
 
 /**
@@ -11,29 +10,42 @@ export function renderIntro(props) {
   el.className = 'screen screen--intro';
   el.dataset.screen = 'intro';
   el.innerHTML = `
-    <h1 class="visually-hidden">${BRAND.wordmark}</h1>
-    <img
-      class="intro-bg"
-      src="./assets/images/intro/bg.webp"
-      alt=""
-      width="576"
-      height="1024"
-      decoding="sync"
-      fetchpriority="high"
-      aria-hidden="true"
-    />
+    <header class="intro-brand">
+      <svg class="intro-wordmark" viewBox="0 0 280 44" role="img" aria-label="${BRAND.wordmark}">
+        <title>${BRAND.wordmark}</title>
+        <text
+          x="140"
+          y="34"
+          text-anchor="middle"
+          fill="currentColor"
+          font-family="Nunito, 'Noto Sans KR', sans-serif"
+          font-size="36"
+          font-weight="900"
+          letter-spacing="0.04em"
+        >${BRAND.wordmark}</text>
+      </svg>
+      <p class="intro-course">${t('brand.courseTitle')}</p>
+    </header>
+
     <div class="intro-hero">
-      <button type="button" class="intro-egg" data-action="egg" aria-label="${t('intro.eggAria')}"></button>
+      <button type="button" class="intro-egg" data-action="egg" aria-label="${t('intro.eggAria')}">
+        <span class="intro-egg__shell" aria-hidden="true"></span>
+      </button>
+      <span class="intro-sparks" aria-hidden="true">
+        <i class="intro-sparks__dot intro-sparks__dot--lg"></i>
+        <i class="intro-sparks__dot intro-sparks__dot--sm"></i>
+      </span>
     </div>
-    <div class="intro-dock">
+
+    <div class="intro-footer">
       <p class="intro-lead">${t('intro.lead', { course: BRAND.courseName })}</p>
-      <div class="cb-button-row">
-        <button type="button" class="cb-button cb-button--primary cb-button--fill" data-action="start">${t('intro.start')}</button>
-      </div>
+      <button
+        type="button"
+        class="cb-button cb-button--primary cb-button--fill intro-start"
+        data-action="start"
+      >${t('intro.start')}</button>
     </div>
   `;
-
-  el.querySelector('.intro-hero')?.appendChild(createCheerHeart({ className: 'intro-cheer' }));
 
   const unlockEgg = createTapUnlock({
     taps: 5,

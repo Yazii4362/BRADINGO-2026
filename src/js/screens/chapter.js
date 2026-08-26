@@ -1,13 +1,8 @@
 import { CHECK_ICON, createFeedbackSheet } from '../components/feedback-sheet.js';
+import { createScreenHeader } from '../components/screen-header.js';
 import { createMotionScope, prefersReducedMotion } from '../lib/motion.js';
 import { REVIEW_ITEMS } from '../data/chapter.js';
 import { t } from '../i18n/index.js';
-
-const BACK_ICON = `
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-`;
 
 /** Sequence beats (ms). Total lands around ~2s. */
 const SEQ = Object.freeze({
@@ -39,16 +34,13 @@ export function renderChapter(props) {
   el.dataset.screen = 'chapter';
   el.dataset.nodeId = props.nodeId;
 
-  const header = document.createElement('header');
-  header.className = 'chapter-header';
-  header.innerHTML = `
-    <button type="button" class="chapter-back" aria-label="${t('chapter.backToMap')}">${BACK_ICON}</button>
-    <h1 class="chapter-title">${t('review.title')}</h1>
-    <span aria-hidden="true"></span>
-  `;
-  header.querySelector('.chapter-back')?.addEventListener('click', () => {
-    scope.dispose();
-    props.onBackToMap();
+  const header = createScreenHeader({
+    title: t('review.title'),
+    leading: 'back',
+    onLeading: () => {
+      scope.dispose();
+      props.onBackToMap();
+    },
   });
 
   const main = document.createElement('div');

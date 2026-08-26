@@ -13,7 +13,7 @@ export const MESSAGES = {
     'lang.es': '스페인어',
 
     'intro.eggAria': '숨겨진 쿠폰',
-    'intro.lead': '마지막 코스가 열렸어요 🎓',
+    'intro.lead': '긴 여정을 함께 되돌아봐요',
     'intro.start': '여정 시작하기',
 
     'map.coverAria': '{title} — 브래디에게 인사하기',
@@ -300,7 +300,7 @@ export const MESSAGES = {
     'lang.es': 'Spanish',
 
     'intro.eggAria': 'Hidden coupon',
-    'intro.lead': 'The final course is open. 🎓',
+    'intro.lead': 'Let’s look back on the journey together',
     'intro.start': 'Start the journey',
 
     'map.coverAria': '{title} — say hi to Bradie',
@@ -589,7 +589,7 @@ export const MESSAGES = {
     'lang.es': 'スペイン語',
 
     'intro.eggAria': '隠しクーポン',
-    'intro.lead': '最後のコースが開きました。🎓',
+    'intro.lead': '長い旅を一緒に振り返ろう',
     'intro.start': '旅をはじめる',
 
     'map.coverAria': '{title} — ブレーディに挨拶',
@@ -878,7 +878,7 @@ export const MESSAGES = {
     'lang.es': 'Español',
 
     'intro.eggAria': 'Cupón oculto',
-    'intro.lead': 'El curso final ya está abierto. 🎓',
+    'intro.lead': 'Repasemos juntos este largo viaje',
     'intro.start': 'Empezar el viaje',
 
     'map.coverAria': '{title} — saluda a Bradie',

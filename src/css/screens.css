@@ -82,8 +82,7 @@
   line-height: 1.45;
 }
 
-.quiz-footer,
-.ending-actions {
+.quiz-footer {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);

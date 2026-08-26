@@ -1,11 +1,6 @@
 import { getMemoryByNodeId } from '../data/memory.js';
+import { createScreenHeader } from '../components/screen-header.js';
 import { t } from '../i18n/index.js';
-
-const BACK_ICON = `
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-`;
 
 const CAMERA_ICON = `
 <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -62,21 +57,20 @@ export function renderMemory(props) {
   el.dataset.nodeId = props.nodeId;
   el.dataset.mode = props.mode;
 
-  const header = document.createElement('header');
-  header.className = 'memory-album-header';
-  header.innerHTML = `
-    <button type="button" class="memory-album-header__back" aria-label="${t('memory.backAria')}" data-action="back">
-      ${BACK_ICON}
-    </button>
-    <div class="memory-album-header__copy">
-      <h1 class="memory-album-header__title">${t('memory.title')}</h1>
-      <p class="memory-album-header__subtitle">${t('memory.subtitle')}</p>
-    </div>
-    <span class="memory-album-header__camera" aria-hidden="true">${CAMERA_ICON}</span>
-  `;
-  header.querySelector('[data-action="back"]')?.addEventListener('click', () => {
-    viewer?.close();
-    props.onBackToMap();
+  const camera = document.createElement('span');
+  camera.className = 'cb-screen-header__trail-icon';
+  camera.setAttribute('aria-hidden', 'true');
+  camera.innerHTML = CAMERA_ICON;
+
+  const header = createScreenHeader({
+    title: t('memory.title'),
+    subtitle: t('memory.subtitle'),
+    leading: 'back',
+    trailing: camera,
+    onLeading: () => {
+      viewer?.close();
+      props.onBackToMap();
+    },
   });
 
   const filters = document.createElement('div');

@@ -12,6 +12,7 @@
  * CB / Quiz / Answer Card     →  .cb-answer-card (+ --selected|--correct|--incorrect)
  * CB / Feedback / Sheet       →  .cb-feedback-sheet (+ --correct|--incorrect)
  * CB / Overlay / Confirm      →  .cb-confirm-modal
+ * CB / Screen Header          →  .cb-screen-header
  * CB / Memory / Card          →  .cb-memory-card
  * CB / Ending / Stat          →  .cb-ending-stat
  */
@@ -116,6 +117,105 @@
 
 .cb-button-row .cb-button--primary {
   width: 100%;
+}
+
+.cb-screen-header {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  column-gap: var(--space-2);
+  flex-shrink: 0;
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  height: var(--header-height);
+  min-height: var(--header-height);
+  padding: var(--space-2) 0 var(--space-3);
+  box-sizing: border-box;
+}
+
+.cb-screen-header__slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.cb-screen-header__slot--trailing {
+  justify-self: end;
+}
+
+.cb-screen-header__lead {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cb-screen-header__lead:focus-visible {
+  outline: 2px solid var(--feather-green-600);
+  outline-offset: 2px;
+}
+
+.cb-screen-header__close-icon {
+  display: block;
+  width: 23px;
+  height: 23px;
+}
+
+.cb-screen-header__copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.cb-screen-header__title {
+  margin: 0;
+  max-width: 100%;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cb-screen-header__subtitle {
+  margin: 0.1rem 0 0;
+  max-width: 100%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--feather-green-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cb-screen-header__trail-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--feather-green-600);
+  pointer-events: none;
 }
 
 .cb-app-header {

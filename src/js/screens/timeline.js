@@ -1,4 +1,5 @@
 import { getTimelineYearGroups } from '../data/timeline.js';
+import { createScreenHeader } from '../components/screen-header.js';
 import { t } from '../i18n/index.js';
 
 /**
@@ -12,12 +13,11 @@ export function renderTimeline() {
   el.className = 'screen screen--timeline screen--with-gnb';
   el.dataset.screen = 'timeline';
 
-  const header = document.createElement('header');
-  header.className = 'tl-head';
-  header.innerHTML = `
-    <h1 class="tl-head__title">${t('timeline.title')}</h1>
-    <p class="tl-head__sub">${t('timeline.subtitle')}</p>
-  `;
+  const header = createScreenHeader({
+    title: t('timeline.title'),
+    subtitle: t('timeline.subtitle'),
+    leading: 'none',
+  });
 
   const yearNav = document.createElement('nav');
   yearNav.className = 'tl-index';

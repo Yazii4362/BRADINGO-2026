@@ -24,37 +24,57 @@
   }
 }
 
-/* Ending reveal — runs on splash exit, ends within ~850ms */
-.ending-stage-wrap.is-visible .ending-stage {
+/* Ending reveal — tied to .screen--enter (no splash / is-visible) */
+.screen--enter .ending-stage {
   animation: ending-fade-up var(--motion-panel) var(--ease-out) both;
 }
 
-.ending-stage-wrap.is-visible .ending-hero {
-  animation: ending-hero-in var(--motion-state) var(--ease-out) 60ms both;
+.screen--enter .ending-hero {
+  animation: ending-hero-in var(--motion-panel) var(--ease-out) 40ms both;
 }
 
-.ending-stage-wrap.is-visible .ending-title {
-  animation: ending-fade-up var(--motion-panel) var(--ease-out) 220ms both;
+.screen--enter .ending-title {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 90ms both;
 }
 
-.ending-stage-wrap.is-visible .ending-lead {
-  animation: ending-fade-up var(--motion-panel) var(--ease-out) 300ms both;
+.screen--enter .ending-lead {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 130ms both;
 }
 
-.ending-stage-wrap.is-visible .ending-tagline {
-  animation: ending-fade-up var(--motion-panel) var(--ease-out) 350ms both;
+.screen--enter .ending-tagline {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 160ms both;
 }
 
-.ending-stage-wrap.is-visible .ending-congrats {
-  animation: ending-fade-up var(--motion-panel) var(--ease-out) 380ms both;
+.screen--enter .ending-congrats {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 180ms both;
 }
 
-.ending-stage-wrap.is-visible .ending-summary {
-  animation: ending-fade-up var(--motion-panel) var(--ease-out) 420ms both;
+.screen--enter .ending-summary {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 210ms both;
 }
 
-.ending-stage-wrap.is-visible .ending-actions {
-  animation: ending-fade-up var(--motion-panel) var(--ease-out) 560ms both;
+.screen--enter .ending-actions {
+  animation: ending-fade-up var(--motion-panel) var(--ease-out) 250ms both;
+}
+
+@keyframes confetti-drift {
+  0% {
+    opacity: 0;
+    transform:
+      translate3d(calc(-50% + var(--dx, 0px) * 0.15), -8px, 0)
+      rotate(calc(var(--rot, 0deg) * 0.2))
+      scale(0.7);
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate3d(calc(-50% + var(--dx, 0px)), var(--dy, 72vh), 0)
+      rotate(var(--rot, 180deg))
+      scale(1);
+  }
 }
 
 @keyframes screen-enter {
@@ -152,8 +172,9 @@
 }
 
 /* —— Staggered enter (children) —— */
-.screen--enter .intro-cheer,
-.screen--enter .intro-dock,
+.screen--enter .intro-brand,
+.screen--enter .intro-hero,
+.screen--enter .intro-footer,
 .screen--enter .lang-hero,
 .screen--enter .lang-divider,
 .screen--enter .lang-list,
@@ -168,8 +189,9 @@
   animation: soft-rise var(--motion-panel) var(--ease-out) both;
 }
 
-.screen--enter .intro-cheer { animation-delay: 40ms; }
-.screen--enter .intro-dock { animation-delay: 70ms; }
+.screen--enter .intro-brand { animation-delay: 20ms; }
+.screen--enter .intro-hero { animation-delay: 60ms; }
+.screen--enter .intro-footer { animation-delay: 100ms; }
 
 .screen--enter .lang-hero { animation-delay: 20ms; }
 .screen--enter .lang-divider { animation-delay: 40ms; }
@@ -371,18 +393,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ending-stage-wrap.is-visible .ending-stage,
-  .ending-stage-wrap.is-visible .ending-hero,
-  .ending-stage-wrap.is-visible .ending-title,
-  .ending-stage-wrap.is-visible .ending-lead,
-  .ending-stage-wrap.is-visible .ending-tagline,
-  .ending-stage-wrap.is-visible .ending-congrats,
-  .ending-stage-wrap.is-visible .ending-summary,
-  .ending-stage-wrap.is-visible .ending-actions,
+  .screen--enter .ending-stage,
+  .screen--enter .ending-hero,
+  .screen--enter .ending-title,
+  .screen--enter .ending-lead,
+  .screen--enter .ending-tagline,
+  .screen--enter .ending-congrats,
+  .screen--enter .ending-summary,
+  .screen--enter .ending-actions,
+  .ending-confetti__piece,
   .screen--enter,
   .quiz-sheet-host:not(:empty) .cb-feedback-sheet,
-  .screen--enter .intro-cheer,
-  .screen--enter .intro-dock,
+  .screen--enter .intro-brand,
+  .screen--enter .intro-hero,
+  .screen--enter .intro-footer,
   .screen--enter .lang-hero,
   .screen--enter .lang-divider,
   .screen--enter .lang-list,
@@ -394,7 +418,7 @@
   .screen--enter .friends-deck,
   .screen--enter .quiz-body > *,
   .screen--enter .review-body > *,
-  .intro-bg,
+  .intro-egg__shell,
   .lang-hero__duo,
   .cb-map-node--active .cb-map-node__asset,
   .map-path__bird,
@@ -428,7 +452,8 @@
     transition: none !important;
   }
 
-  .intro-bg {
+  .intro-egg__shell {
     transform: none;
+    animation: none !important;
   }
 }
